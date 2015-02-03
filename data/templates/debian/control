@@ -1,0 +1,13 @@
+Source: {{.Name}}
+Standards-Version: {{.Version}}
+Section: base
+Priority: optional
+Maintainer: {{.Packager}}
+
+Architecture: all
+Package: {{.Name}}
+Build-Depends: {{.BuildRequires}}
+Depends: {{.Requires}}
+Description: {{.Summary}}
+{{.Description}}
+

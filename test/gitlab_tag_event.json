@@ -1,0 +1,47 @@
+{
+   "repository" : {
+      "homepage" : "http://gitlab.com/testuser/testproject",
+      "url" : "git@git.tm.tmcs:testuser/testproject.git",
+      "name" : "testproject",
+      "description" : ""
+   },
+   "ref" : "refs/tags/v0.0.1",
+   "total_commits_count" : 3,
+   "user_name" : "Test User",
+   "after" : "5010dede33b67ea825282355b397ef45e9c3a3ec",
+   "commits" : [
+      {
+         "timestamp" : "2014-12-18T17:40:07-08:00",
+         "url" : "http://git.tm.tmcs/testuser/testproject/commit/5010dede33b67ea825282355b397ef45e9c3a3ec",
+         "author" : {
+            "email" : "testuser@gitlab.com",
+            "name" : "testuser"
+         },
+         "id" : "5010dede33b67ea825282355b397ef45e9c3a3ec",
+         "message" : "URL time format fix for firefox and safari\n"
+      },
+      {
+         "timestamp" : "2014-12-18T16:51:10-08:00",
+         "url" : "http://git.tm.tmcs/testuser/testproject/commit/9a9b50a129c1b13e80928e5e376a2f2339822dbc",
+         "author" : {
+            "email" : "testuser@gitlab.com",
+            "name" : "testuser"
+         },
+         "id" : "9a9b50a129c1b13e80928e5e376a2f2339822dbc",
+         "message" : "Fix for table with in regards to the message taking up all the space.\n"
+      },
+      {
+         "timestamp" : "2014-12-18T16:20:51-08:00",
+         "url" : "http://git.tm.tmcs/testuser/testproject/commit/56a3991df8363ce0b5ee7f365843f46590ea90e1",
+         "author" : {
+            "email" : "testuser@gitlab.com",
+            "name" : "testuser"
+         },
+         "id" : "56a3991df8363ce0b5ee7f365843f46590ea90e1",
+         "message" : "Side panel UI change\n"
+      }
+   ],
+   "user_id" : 32,
+   "before" : "56a3991df8363ce0b5ee7f365843f46590ea90e1",
+   "project_id" : 1826
+}

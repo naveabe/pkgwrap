@@ -1,0 +1,11 @@
+{
+    "port": 6565,
+    "api_prefix": "/api/builder",
+    "repository": "data/repository",
+    "templates": "data/templates",
+    "imagefiles": "data/imagefiles",
+    "endpoints": {
+        "gitlab": "/gitlab",
+        "github": "/github",
+        "builder": "/api/builder"
+    }
