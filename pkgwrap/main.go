@@ -125,7 +125,7 @@ func main() {
 
 			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_URI)
 
-			if err = datastore.RecordJob(*bJob); err != nil {
+			if err = bJob.Record(datastore); err != nil {
 				logger.Error.Printf("%s\n", err)
 			}
 

@@ -1,7 +1,7 @@
 {
     "port": 6565,
     "repository": "/opt/pkgwrap/data/repository",
-    "data_dir": "/Users/abs/workbench/GoLang/src/github.com/naveabe/pkgwrap/data",
+    "data_dir": "/opt/pkgwrap/data",
     "endpoints": {
         "gitlab": "/gitlab",
         "github": "",
@@ -10,10 +10,10 @@
     "builder": {
         "image_prefix": "buildsys-",
         "mounts": {
-            "/vagrant/data/bin":"/opt/pkgwrap/bin"
+            "/opt/pkgwrap/data/bin":"/opt/pkgwrap/bin"
         },
         "repo_mount": {
-            "src_base": "/vagrant/data/repository",
+            "src_base": "/opt/pkgwrap/data/repository",
             "mount_point": "/opt/pkgwrap/repo"
         }
     },

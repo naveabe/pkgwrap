@@ -29,17 +29,6 @@ func NewBuildJobIdFromString(jobId string) (*BuildJobId, error) {
 }
 
 /*
-type JobId string
-
-func (j *JobId) HostURI() string {
-	return strings.Split(string(*j), "@")[1]
-}
-func (j *JobId) ContainerId() string {
-	return strings.Split(string(*j), "@")[0]
-}
-*/
-
-/*
    Holds a single packge request job for a given project.
    i.e. 1 per project regardless of the no. of distros
 */
@@ -71,13 +60,8 @@ func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *
 }
 
 /*
-func NewBuildJobFromURL(url, tag, version string, ids []string) *BuildJob {
-	b := BuildJob{
-		URL:       url,
-		TagBranch: tag,
-		Version:   version,
-	}
-
-    return &b
-}
+	Add BuildJob to datastore
 */
+func (b *BuildJob) Record(ds IJobstore) error {
+	return ds.Add(*b)
+}
