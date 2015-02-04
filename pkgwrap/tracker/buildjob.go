@@ -29,8 +29,11 @@ func NewBuildJobIdFromString(jobId string) (*BuildJobId, error) {
 }
 
 /*
-   Holds a single packge request job for a given project.
-   i.e. 1 per project regardless of the no. of distros
+   Holds a single packge request job for a given project. i.e. 1 per
+   project regardless of the no. of distros.  Each distro container
+   id is stored along with the uri for the host container.
+
+   This is used to retreive details about the builds byt the user.
 */
 type BuildJob struct {
 	Timestamp float64      `json:"timestamp"`
@@ -43,20 +46,23 @@ type BuildJob struct {
 }
 
 func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *BuildJob {
-	jBldIds := make([]BuildJobId, len(buildIds))
-	for i, v := range buildIds {
-		jid, _ := NewBuildJobIdFromString(v + "@" + uri)
-		jBldIds[i] = *jid
-	}
-	return &BuildJob{
+
+	bj := BuildJob{
 		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
 		Username:  pkgReq.Package.Packager,
 		URL:       pkgReq.Package.URL,
 		Project:   pkgReq.Package.Name,
 		TagBranch: pkgReq.Package.TagBranch,
 		Version:   pkgReq.Package.Version,
-		Jobs:      jBldIds,
+		Jobs:      make([]BuildJobId, len(buildIds)),
 	}
+
+	for i, v := range buildIds {
+		jid, _ := NewBuildJobIdFromString(v + "@" + uri)
+		bj.Jobs[i] = *jid
+	}
+
+	return &bj
 }
 
 /*

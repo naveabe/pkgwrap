@@ -2,13 +2,11 @@ package websvchooks
 
 import (
 	"encoding/json"
-	//"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"io/ioutil"
 	"net/http"
-	//"strings"
 )
 
 type GitlabRepo struct {
@@ -44,37 +42,32 @@ type GitlabWebHook struct {
 	RequestChan chan specer.PackageRequest
 }
 
-func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var gl GitlabTagEvent
+func (g *GitlabWebHook) parseTagEvent(payload []byte) (*specer.PackageRequest, error) {
+	var (
+		glEvt  GitlabTagEvent
+		err    error
+		pkgReq *specer.PackageRequest
+	)
 
-	b, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		g.Logger.Error.Printf("%s\n", err)
-		w.WriteHeader(400)
-		return
-	}
-
-	if err = json.Unmarshal(b, &gl); err != nil {
-		g.Logger.Error.Printf("%s\n", err)
-		w.WriteHeader(400)
-		return
+	if err = json.Unmarshal(payload, &glEvt); err != nil {
+		return pkgReq, err
 	}
 	// Version may be in build config
-	version, err := GetVersionFromRef(gl.Ref)
+	version, err := GetVersionFromRef(glEvt.Ref)
 	if err != nil {
 		g.Logger.Error.Printf("%s\n", err)
 	}
 
-	pkgReq := specer.NewPackageRequest(gl.Repository.Name)
+	pkgReq = specer.NewPackageRequest(glEvt.Repository.Name)
 	pkgReq.Version = version
 
 	pkgReq.Package, err = specer.NewUserPackage(pkgReq.Name, pkgReq.Version,
 		pkgReq.Name+"/"+pkgReq.Version+"/"+pkgReq.Name, initscript.BasicRunnable{})
 
-	pkgReq.Package.URL = gl.Repository.Homepage
+	pkgReq.Package.URL = glEvt.Repository.Homepage
 	pkgReq.Package.BuildType = specer.BUILDTYPE_SOURCE
 
-	tagbranch, err := GetTagFromRef(gl.Ref)
+	tagbranch, err := GetTagFromRef(glEvt.Ref)
 	if err != nil {
 		g.Logger.Warning.Printf("%s - using default: %s\n", err, pkgReq.Package.TagBranch)
 	} else {
@@ -87,10 +80,29 @@ func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	pkgReq.Package.Packager = pkgr
 
-	//g.RequestChan <- pkgReq
+	return pkgReq, nil
+}
+
+func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		g.Logger.Error.Printf("%s\n", err)
+		w.WriteHeader(400)
+		return
+	}
+
+	pkgReq, err := g.parseTagEvent(b)
+	if err != nil {
+		g.Logger.Error.Printf("%s\n", err)
+		w.WriteHeader(400)
+		return
+	}
+
+	g.Logger.Debug.Printf("Queueing request: %#v ...\n", pkgReq)
+	g.RequestChan <- *pkgReq
 
 	rslt, _ := json.MarshalIndent(pkgReq, "", "  ")
 	g.Logger.Trace.Printf("%s\n", rslt)
-
 	w.WriteHeader(200)
 }
