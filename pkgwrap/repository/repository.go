@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const PROJECT_CONFIG_NAME = ".pkgwrap.yml"
+
 /*
 	BuildRepository contains info and structure for
 	where user packages will be stored.
@@ -27,7 +29,7 @@ func (b *BuildRepository) BuildDir(pkgName, pkgVersion string) string {
 }
 
 func (b *BuildRepository) BuildConfig(pkgName, pkgVersion string) string {
-	return b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgName + "/.pkgwrap.yml"
+	return b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgName + "/" + PROJECT_CONFIG_NAME
 }
 
 /*
