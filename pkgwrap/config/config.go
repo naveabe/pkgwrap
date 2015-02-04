@@ -5,6 +5,13 @@ import (
 	"io/ioutil"
 )
 
+type DatastoreConfig struct {
+	Host        string `json:"host"`
+	Port        int    `json:"port"`
+	Index       string `json:"index"`
+	MappingFile string `json:"mapping_file"`
+}
+
 type RepoMountConfig struct {
 	// Base dir for source repo
 	SrcBase    string `json:"src_base"`
@@ -24,13 +31,14 @@ type HttpEndpointsConfig struct {
 }
 
 type AppConfig struct {
-	Repository string `json:"repository"`
 	//Templates  string              `json:"templates"`
 	//ImageFiles string              `json:"imagefiles"`
-	DataDir   string              `json:"data_dir"`
-	Port      int                 `json:"port"`
-	Endpoints HttpEndpointsConfig `json:"endpoints"`
-	Builder   BuilderConfig       `json:"builder"`
+	Repository string              `json:"repository"`
+	DataDir    string              `json:"data_dir"`
+	Port       int                 `json:"port"`
+	Endpoints  HttpEndpointsConfig `json:"endpoints"`
+	Builder    BuilderConfig       `json:"builder"`
+	Jobstore   DatastoreConfig     `json:"jobstore"`
 }
 
 func (a *AppConfig) TemplatesDir() string {

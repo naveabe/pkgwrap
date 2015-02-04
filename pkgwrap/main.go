@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/builder"
@@ -9,10 +10,12 @@ import (
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
+	"github.com/naveabe/pkgwrap/pkgwrap/tracker"
 	"github.com/naveabe/pkgwrap/pkgwrap/websvc"
 	"github.com/naveabe/pkgwrap/pkgwrap/websvchooks"
 	"net/http"
 	"os"
+	"time"
 )
 
 var (
@@ -89,6 +92,13 @@ func main() {
 
 	repo := repository.BuildRepository{cfg.Repository}
 	tmplMgr := templater.TemplatesManager{cfg.TemplatesDir()}
+
+	datastore, err := tracker.NewEssDatastore(&cfg.Jobstore, logger)
+	if err != nil {
+		logger.Error.Printf("Failed to init datastore: %s\n", err)
+		os.Exit(2)
+	}
+
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan)
 
@@ -108,5 +118,26 @@ func main() {
 
 		buildIds := tBld.StartBuilds(DOCKER_URI)
 		logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+
+		// Write build info
+		jBldIds := make([]tracker.BuildJobId, len(buildIds))
+		for i, v := range buildIds {
+			jid, _ := tracker.NewBuildJobIdFromString(v + "@" + DOCKER_URI)
+			jBldIds[i] = *jid
+		}
+		bJob := tracker.BuildJob{
+			Timestamp: float64(time.Now().UnixNano()) / 1000000000,
+			Username:  pkgReq.Package.Packager,
+			URL:       pkgReq.Package.URL,
+			Project:   pkgReq.Package.Name,
+			TagBranch: pkgReq.Package.TagBranch,
+			Version:   pkgReq.Package.Version,
+			Jobs:      jBldIds,
+		}
+		if err = datastore.RecordJob(bJob); err != nil {
+			logger.Error.Printf("%s\n", err)
+		}
+		b, _ := json.MarshalIndent(bJob, "", "  ")
+		logger.Trace.Printf("Wrote job: %s\n", b)
 	}
 }

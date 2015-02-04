@@ -36,14 +36,13 @@ func NewTargetedPackageBuild(cfg config.BuilderConfig, repo repository.BuildRepo
 		err error
 	)
 	// Create 1 container per distro build
-	// ?? get rid of this ??
-	if err = b.addPackageDistroContainers(); err != nil {
+	if err = b.buildDistroContainers(); err != nil {
 		return &b, err
 	}
 	return &b, nil
 }
 
-func (b *TargetedPackageBuild) addPackageDistroContainers() error {
+func (b *TargetedPackageBuild) buildDistroContainers() error {
 	b.DistroContainers = make(map[string]*ContainerRunner)
 	for _, distro := range b.BuildRequest.Distributions {
 		if err := b.Add(distro, b.BuildRequest.Package); err != nil {
@@ -120,7 +119,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 	}
 
 	b.logger.Debug.Printf("Re-processing distros: %d\n", len(b.DistroContainers))
-	if err = b.addPackageDistroContainers(); err != nil {
+	if err = b.buildDistroContainers(); err != nil {
 		return err
 	}
 	return nil
@@ -146,17 +145,14 @@ func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
 
 	cBytes, err := ioutil.ReadFile(bldConf)
 	if err != nil {
-		//b.logger.Error.Printf("%s\n", err)
 		return err
 	}
 
 	if err = yaml.Unmarshal(cBytes, b.BuildRequest); err != nil {
-		//b.logger.Error.Printf("%s\n", err)
 		return err
 	}
 
 	if err = b.BuildRequest.Validate(true); err != nil {
-		//b.logger.Error.Printf("%s\n", err)
 		return err
 	}
 	b.logger.Debug.Printf("Project config read: %s\n", bldConf)
