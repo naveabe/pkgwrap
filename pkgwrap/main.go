@@ -15,7 +15,6 @@ import (
 	"github.com/naveabe/pkgwrap/pkgwrap/websvchooks"
 	"net/http"
 	"os"
-	"time"
 )
 
 var (
@@ -79,65 +78,82 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 func main() {
 	flag.Parse()
 
-	logger := logging.NewStdLogger()
+	var (
+		logger     = logging.NewStdLogger()
+		pkgReqChan = make(chan specer.PackageRequest)
+		cfg        *config.AppConfig
+		err        error
+	)
+
 	logger.SetLogLevel(*LOGLEVEL)
 
-	cfg, err := config.LoadConfigFromFile(*CONFIG_FILE)
-	if err != nil {
+	if cfg, err = config.LoadConfigFromFile(*CONFIG_FILE); err != nil {
 		logger.Error.Printf("%s\n", err)
 		os.Exit(1)
 	}
 
-	pkgReqChan := make(chan specer.PackageRequest)
-
 	repo := repository.BuildRepository{cfg.Repository}
 	tmplMgr := templater.TemplatesManager{cfg.TemplatesDir()}
-
-	datastore, err := tracker.NewEssDatastore(&cfg.Jobstore, logger)
-	if err != nil {
-		logger.Error.Printf("Failed to init datastore: %s\n", err)
-		os.Exit(2)
-	}
 
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan)
 
-	// Read and process requests from the channel
-	for {
-		pkgReq := <-pkgReqChan
+	// Avoid extra if statement in busy loop
+	if cfg.JobTracker.Enabled {
+		logger.Warning.Printf("Job tracker ENABLED!\n")
 
-		logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
-			pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
-
-		tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
+		datastore, err := tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
 		if err != nil {
-			logger.Error.Printf("%s\n", err)
-			continue
+			logger.Error.Printf("Failed to init datastore: %s\n", err)
+			os.Exit(2)
 		}
-		logger.Trace.Printf("%s\n", tBld.ListContainers())
 
-		buildIds := tBld.StartBuilds(DOCKER_URI)
-		logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+		for {
+			pkgReq := <-pkgReqChan
 
-		// Write build info
-		jBldIds := make([]tracker.BuildJobId, len(buildIds))
-		for i, v := range buildIds {
-			jid, _ := tracker.NewBuildJobIdFromString(v + "@" + DOCKER_URI)
-			jBldIds[i] = *jid
+			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
+				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
+
+			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
+			if err != nil {
+				logger.Error.Printf("%s\n", err)
+				continue
+			}
+
+			buildIds := tBld.StartBuilds(DOCKER_URI)
+			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+
+			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_URI)
+
+			if err = datastore.RecordJob(*bJob); err != nil {
+				logger.Error.Printf("%s\n", err)
+			}
+
+			b, _ := json.MarshalIndent(bJob, "", "  ")
+			logger.Trace.Printf("Wrote job: %s\n", b)
 		}
-		bJob := tracker.BuildJob{
-			Timestamp: float64(time.Now().UnixNano()) / 1000000000,
-			Username:  pkgReq.Package.Packager,
-			URL:       pkgReq.Package.URL,
-			Project:   pkgReq.Package.Name,
-			TagBranch: pkgReq.Package.TagBranch,
-			Version:   pkgReq.Package.Version,
-			Jobs:      jBldIds,
+	} else {
+		logger.Warning.Printf("Job tracker DISABLED!\n")
+
+		for {
+			pkgReq := <-pkgReqChan
+
+			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
+				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
+
+			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
+			if err != nil {
+				logger.Error.Printf("%s\n", err)
+				continue
+			}
+
+			buildIds := tBld.StartBuilds(DOCKER_URI)
+			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+
+			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_URI)
+
+			b, _ := json.MarshalIndent(bJob, "", "  ")
+			logger.Trace.Printf("Build job: %s\n", b)
 		}
-		if err = datastore.RecordJob(bJob); err != nil {
-			logger.Error.Printf("%s\n", err)
-		}
-		b, _ := json.MarshalIndent(bJob, "", "  ")
-		logger.Trace.Printf("Wrote job: %s\n", b)
 	}
 }

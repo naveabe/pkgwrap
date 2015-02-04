@@ -5,6 +5,11 @@ import (
 	"io/ioutil"
 )
 
+type BuildJobTracker struct {
+	Enabled   bool
+	Datastore DatastoreConfig `json:"datastore"`
+}
+
 type DatastoreConfig struct {
 	Host        string `json:"host"`
 	Port        int    `json:"port"`
@@ -38,7 +43,7 @@ type AppConfig struct {
 	Port       int                 `json:"port"`
 	Endpoints  HttpEndpointsConfig `json:"endpoints"`
 	Builder    BuilderConfig       `json:"builder"`
-	Jobstore   DatastoreConfig     `json:"jobstore"`
+	JobTracker BuildJobTracker     `json:"job_tracker"`
 }
 
 func (a *AppConfig) TemplatesDir() string {

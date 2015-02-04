@@ -2,7 +2,9 @@ package tracker
 
 import (
 	"fmt"
+	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"strings"
+	"time"
 )
 
 type BuildJobId struct {
@@ -49,6 +51,23 @@ type BuildJob struct {
 	TagBranch string       `json:"tagbranch"`
 	Version   string       `json:"version"`
 	Jobs      []BuildJobId `json:"jobs"`
+}
+
+func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *BuildJob {
+	jBldIds := make([]BuildJobId, len(buildIds))
+	for i, v := range buildIds {
+		jid, _ := NewBuildJobIdFromString(v + "@" + uri)
+		jBldIds[i] = *jid
+	}
+	return &BuildJob{
+		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
+		Username:  pkgReq.Package.Packager,
+		URL:       pkgReq.Package.URL,
+		Project:   pkgReq.Package.Name,
+		TagBranch: pkgReq.Package.TagBranch,
+		Version:   pkgReq.Package.Version,
+		Jobs:      jBldIds,
+	}
 }
 
 /*

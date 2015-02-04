@@ -8,18 +8,17 @@ INSTALL_DIR = build/pkgwrap
 .clean:
 	rm -rf ./build
 
+#
 # Build git2go
+#
 .git2go:
 	go get -d github.com/libgit2/git2go
-	cd $$GOPATH/src/github.com/libgit2/git2go
-	git submodule update --init
-	make install
-	cd -
+	cd "$$GOPATH/src/github.com/libgit2/git2go" && git submodule update --init && make install
 
 .deb_deps:
-	apt-get install build-essential libgit2-0 libgit2-dev golang docker.io
+	apt-get install cmake pkg-config build-essential libgit2-0 libgit2-dev golang docker.io
 
-.deps:
+.deps: .git2go
 	go get -d -v ./...
 
 .build:

@@ -1,8 +1,7 @@
 {
     "port": 6565,
     "repository": "/opt/pkgwrap/data/repository",
-    "templates": "/opt/pkgwrap/data/templates",
-    "imagefiles": "/opt/pkgwrap/data/imagefiles",
+    "data_dir": "/Users/abs/workbench/GoLang/src/github.com/naveabe/pkgwrap/data",
     "endpoints": {
         "gitlab": "/gitlab",
         "github": "",
@@ -10,9 +9,21 @@
     },
     "builder": {
         "image_prefix": "buildsys-",
-        "mount_points": {
-            "bin": "/opt/pkgwrap/data/bin:/opt/pkgwrap/bin",
-            "repo": "/opt/pkgwrap/data/repository:/opt/pkgwrap/repo"
+        "mounts": {
+            "/vagrant/data/bin":"/opt/pkgwrap/bin"
+        },
+        "repo_mount": {
+            "src_base": "/vagrant/data/repository",
+            "mount_point": "/opt/pkgwrap/repo"
+        }
+    },
+    "job_tracker": {
+        "enabled": false,
+        "datastore": {
+            "host": "localhost",
+            "port": 9200,
+            "index": "pkgwrap",
+            "mapping_file": "/etc/pkgwrap/ess_mapping.json"
         }
     }
 }
