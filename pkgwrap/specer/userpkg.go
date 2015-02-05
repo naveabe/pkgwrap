@@ -128,10 +128,10 @@ func (u *UserPackage) CloneRepo(repoBase string) error {
 /*
 	Params:
 		repo : Repository
-		pkgType : [ rpm | deb ]
+		distroLabel : e.g. centos, centos-6, ubuntu-12.04 ...
 */
-func (u *UserPackage) AutoSetRelease(repo repository.BuildRepository, pkgType string) {
-	nextRelease := repo.NextRelease(u.Name, u.Version, pkgType)
+func (u *UserPackage) AutoSetRelease(repo repository.BuildRepository, distroLabel string) {
+	nextRelease := repo.NextRelease(u.Name, u.Version, distroLabel)
 	if nextRelease > u.Release {
 		u.Release = nextRelease
 	}

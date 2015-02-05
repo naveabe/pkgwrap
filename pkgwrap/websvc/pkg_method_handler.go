@@ -155,7 +155,7 @@ func (m PkgBuilderMethodHandler) downloadUserPackage(pkgname, pkgversion string,
 	return nil
 }
 
-func (m *PkgBuilderMethodHandler) POST(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 
 	var (
 		contentType       = r.Header.Get("Content-Type")

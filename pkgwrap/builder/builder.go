@@ -193,7 +193,8 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 */
 func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
 	// Auto increment release if necessary
-	b.BuildRequest.Package.AutoSetRelease(b.Repository, "rpm")
+	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
+	//b.BuildRequest.Package.AutoSetRelease(b.Repository, "rpm")
 	// Write spec to repository
 	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro, b.Repository.RepoDir)
 	return err

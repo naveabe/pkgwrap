@@ -14,7 +14,8 @@ const PROJECT_CONFIG_NAME = ".pkgwrap.yml"
 	where user packages will be stored.
 
 	This is also the place where generated startup script,
-	spec file/s and the uncompressed package will be stored.
+	spec file/s and the uncompressed package will be stored
+	along with the generated .rpm's and .deb's
 */
 type BuildRepository struct {
 	RepoDir string
@@ -22,6 +23,74 @@ type BuildRepository struct {
 
 func (b *BuildRepository) PackagePath(shortPath string) string {
 	return b.RepoDir + "/" + shortPath
+}
+
+func (b *BuildRepository) ListPackageVersions(pkgname string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname)
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	flist := make([]string, len(files))
+	for i, f := range files {
+		flist[i] = f.Name()
+	}
+	return flist, nil
+}
+
+func (b *BuildRepository) ListPackages(pkgname, pkgversion, distroLabel string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname + "/" + pkgversion + "/" + distroLabel)
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	var flist []string
+	if len(files) > 2 {
+		flist = make([]string, len(files)-2)
+		i := 0
+		for _, f := range files {
+			/* TODO: exclusion based on distro */
+			if strings.HasSuffix(f.Name(), ".spec") || f.Name() == "RELEASE" {
+				continue
+			}
+			flist[i] = f.Name()
+			i++
+		}
+	} else {
+		flist = make([]string, 0)
+	}
+	return flist, nil
+}
+
+func (b *BuildRepository) ListPackageDistros(pkgname, pkgversion string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname + "/" + pkgversion)
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	var flist []string
+	if len(files) > 2 {
+		flist = make([]string, len(files)-2)
+		i := 0
+		for _, f := range files {
+			if strings.HasPrefix(f.Name(), pkgname) {
+				continue
+			}
+			flist[i] = f.Name()
+			i++
+		}
+	} else {
+		flist = make([]string, 0)
+	}
+	return flist, nil
+}
+
+func (b *BuildRepository) GetPackagePathForDistro(name, version, distroLabel, pkg string) (string, error) {
+	pkgPath := b.RepoDir + "/" + name + "/" + version + "/" + distroLabel + "/" + pkg
+	if _, err := os.Stat(pkgPath); err != nil {
+		return pkgPath, err
+	}
+	return pkgPath, nil
 }
 
 func (b *BuildRepository) BuildDir(pkgName, pkgVersion string) string {
@@ -40,8 +109,8 @@ func (b *BuildRepository) BuildConfig(pkgName, pkgVersion string) string {
  		Release number
  		-1 if unknown
 */
-func (b *BuildRepository) LastRelease(pkgName, pkgVersion, pkgType string) int64 {
-	if b, err := ioutil.ReadFile(b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgType + "/RELEASE"); err == nil {
+func (b *BuildRepository) LastRelease(pkgName, pkgVersion, distroLabel string) int64 {
+	if b, err := ioutil.ReadFile(b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + distroLabel + "/RELEASE"); err == nil {
 		relstr := strings.TrimSpace(string(b))
 		if val, err := strconv.ParseInt(relstr, 10, 64); err == nil {
 			return val
@@ -61,14 +130,18 @@ func (b *BuildRepository) LastRelease(pkgName, pkgVersion, pkgType string) int64
 	Returns:
 		-1 if unknown
 */
-func (b *BuildRepository) NextRelease(pkgName, pkgVersion, pkgType string) int64 {
-	lastRel := b.LastRelease(pkgName, pkgVersion, pkgType)
+func (b *BuildRepository) NextRelease(pkgName, pkgVersion, distroLabel string) int64 {
+	lastRel := b.LastRelease(pkgName, pkgVersion, distroLabel)
 	if lastRel == -1 {
 		return lastRel
 	}
 	return lastRel + 1
 }
 
+/*
+	Remove cloned package repo or uncompressed tarball upload
+	by the user
+*/
 func (b *BuildRepository) Clean(pkgName, pkgVersion string) error {
 	rmDir := b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgName
 	if _, err := os.Stat(rmDir); err == nil {

@@ -49,7 +49,7 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 		RequestChan: reqChan, // testing
 	}
 
-	websvc.NewPkgBuilderHandler(cfg.Endpoints.Builder, &methodHandler, logger)
+	websvc.NewRestHandler(cfg.Endpoints.Builder, &methodHandler, logger)
 	logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Builder)
 
 	if cfg.Endpoints.Gitlab != "" {
@@ -67,6 +67,10 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	} else {
 		logger.Warning.Printf("Github service disabled!\n")
 	}
+
+	repoHandle := websvc.NewRepoHandler(repo, logger)
+	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
+	logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Repo)
 
 	logger.Warning.Printf("Starting service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {

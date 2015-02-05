@@ -12,9 +12,9 @@ var (
 	testMethodHandler = DefaultMethodHandler{}
 )
 
-func Test_PkgBuilderHandler(t *testing.T) {
+func Test_RestHandler(t *testing.T) {
 	go func() {
-		NewPkgBuilderHandler(testPrefix, &testMethodHandler, nil)
+		NewRestHandler(testPrefix, &testMethodHandler, nil)
 		t.Logf("Starting web server... %s", testAddr)
 		http.ListenAndServe(testAddr, nil)
 	}()
@@ -52,9 +52,9 @@ func Test_PkgBuilderHandler(t *testing.T) {
 	}
 }
 
-func Test_PkgBuilderHandler_TrailingSlash(t *testing.T) {
+func Test_RestHandler_TrailingSlash(t *testing.T) {
 	go func() {
-		NewPkgBuilderHandler("/with/prefix-slash/", &testMethodHandler, nil)
+		NewRestHandler("/with/prefix-slash/", &testMethodHandler, nil)
 		http.ListenAndServe(testAddr, nil)
 	}()
 	// name test

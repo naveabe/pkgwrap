@@ -112,6 +112,14 @@ func NewDistribution(name OSDistro, release string) (Distribution, error) {
 	return d, err
 }
 
+func (d *Distribution) Label() string {
+	if d.Release == "" {
+		return fmt.Sprintf("%s", d.Name)
+	} else {
+		return fmt.Sprintf("%s-%s", d.Name, d.Release)
+	}
+}
+
 func (d *Distribution) PackageType() OSPackageType {
 	return DISTRO_PKG_TYPE[d.Name]
 }

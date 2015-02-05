@@ -9,45 +9,45 @@ import (
 )
 
 type IMethodHandler interface {
-	GET(r *http.Request, args ...string) (map[string]string, interface{}, int)
-	POST(r *http.Request, args ...string) (map[string]string, interface{}, int)
-	PUT(r *http.Request, args ...string) (map[string]string, interface{}, int)
-	DELETE(r *http.Request, args ...string) (map[string]string, interface{}, int)
-	OPTIONS(r *http.Request, args ...string) (map[string]string, interface{}, int)
+	GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int)
+	POST(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int)
+	PUT(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int)
+	DELETE(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int)
+	OPTIONS(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int)
 }
 
 type DefaultMethodHandler struct{}
 
-func (d *DefaultMethodHandler) GET(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
-func (d *DefaultMethodHandler) PATCH(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) PATCH(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
-func (d *DefaultMethodHandler) DELETE(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) DELETE(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
-func (d *DefaultMethodHandler) OPTIONS(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) OPTIONS(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
-func (d *DefaultMethodHandler) POST(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) POST(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
-func (d *DefaultMethodHandler) PUT(r *http.Request, args ...string) (map[string]string, interface{}, int) {
+func (d *DefaultMethodHandler) PUT(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	return map[string]string{}, map[string]string{"error": "Method not allowed"}, 405
 }
 
-type PkgBuilderHandler struct {
+type RestHandler struct {
 	Prefix        string
 	MethodHandler IMethodHandler
 	logger        *logging.Logger
 }
 
-func NewPkgBuilderHandler(prefix string, methodHandler IMethodHandler, logger *logging.Logger) *PkgBuilderHandler {
+func NewRestHandler(prefix string, methodHandler IMethodHandler, logger *logging.Logger) *RestHandler {
 	if logger == nil {
 		logger = logging.NewStdLogger()
 	}
-	p := PkgBuilderHandler{prefix, methodHandler, logger}
+	p := RestHandler{prefix, methodHandler, logger}
 
 	http.Handle(prefix, &p)
 	if strings.HasSuffix(prefix, "/") {
@@ -58,7 +58,7 @@ func NewPkgBuilderHandler(prefix string, methodHandler IMethodHandler, logger *l
 	return &p
 }
 
-func (p *PkgBuilderHandler) parsePath(path string) []string {
+func (p *RestHandler) parsePath(path string) []string {
 	sPath := strings.TrimPrefix(path, p.Prefix)
 	parts := make([]string, 0)
 	for _, part := range strings.Split(sPath, "/") {
@@ -69,50 +69,42 @@ func (p *PkgBuilderHandler) parsePath(path string) []string {
 	return parts
 }
 
-func (p *PkgBuilderHandler) callMethod(r *http.Request, pkgName, pkgVersion string) (map[string]string, interface{}, int) {
+func (p *RestHandler) callMethod(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 
 	switch r.Method {
 	case "GET":
-		return p.MethodHandler.GET(r, pkgName, pkgVersion)
+		return p.MethodHandler.GET(w, r, args...)
 	case "POST":
-		return p.MethodHandler.POST(r, pkgName, pkgVersion)
+		return p.MethodHandler.POST(w, r, args...)
 	case "DELETE":
-		return p.MethodHandler.DELETE(r, pkgName, pkgVersion)
+		return p.MethodHandler.DELETE(w, r, args...)
 	case "PUT":
-		return p.MethodHandler.PUT(r, pkgName, pkgVersion)
+		return p.MethodHandler.PUT(w, r, args...)
 	case "OPTIONS":
-		return p.MethodHandler.OPTIONS(r, pkgName, pkgVersion)
+		return p.MethodHandler.OPTIONS(w, r, args...)
 	default:
 		return nil, fmt.Sprintf(`{"error": "Method not supported: %s"}`, r.Method), 405
 	}
 }
 
-func (p *PkgBuilderHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var (
-		pkgName    string
-		pkgVersion = ""
-		pathParts  = p.parsePath(r.URL.Path)
-	)
-	//p.logger.Trace.Printf("%v\n", pathParts)
+func (p *RestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	pathParts := p.parsePath(r.URL.Path)
 
-	switch len(pathParts) {
-	case 1:
-		pkgName = pathParts[0]
-		break
-	case 2:
-		pkgName = pathParts[0]
-		pkgVersion = pathParts[1]
-		break
-	default:
+	if len(pathParts) < 1 {
 		p.writeJsonResponse(w, r, nil, []byte(fmt.Sprintf(`{"error": "Bad request: %s", "code": 404}`, r.URL.Path)), 404)
 		return
+	} else if len(pathParts) == 1 {
+		pathParts = append(pathParts, "")
 	}
 
-	headers, data, code := p.callMethod(r, pkgName, pkgVersion)
-	p.writeJsonResponse(w, r, headers, data, code)
+	headers, data, code := p.callMethod(w, r, pathParts...)
+	// Don't write response if method has already written the response
+	if code != -1 {
+		p.writeJsonResponse(w, r, headers, data, code)
+	}
 }
 
-func (p *PkgBuilderHandler) writeResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data []byte, respCode int) {
+func (p *RestHandler) writeResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data []byte, respCode int) {
 	if headers != nil {
 		for k, v := range headers {
 			w.Header().Set(k, v)
@@ -123,7 +115,7 @@ func (p *PkgBuilderHandler) writeResponse(w http.ResponseWriter, r *http.Request
 	p.logger.Info.Printf("%s %d %s\n", r.Method, respCode, r.URL.RequestURI())
 }
 
-func (p *PkgBuilderHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data interface{}, respCode int) {
+func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data interface{}, respCode int) {
 	var b []byte
 	switch data.(type) {
 	case string:

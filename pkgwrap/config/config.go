@@ -33,6 +33,7 @@ type HttpEndpointsConfig struct {
 	Gitlab  string `json:"gitlab"`
 	Github  string `json:"github"`
 	Builder string `json:"builder"`
+	Repo    string `json:"repo"`
 }
 
 type AppConfig struct {

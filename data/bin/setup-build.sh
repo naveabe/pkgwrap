@@ -27,6 +27,8 @@ BUILD_HOME_DIR="/home/$BUILD_USER";
 echo "";
 echo " Environment:";
 echo "";
+echo "   Distro     : $PKG_DISTRO";
+echo "";
 echo "   Project    : $PROJECT";
 echo "   Tag        : $TAG";
 echo "   Version    : $PKG_VERSION";

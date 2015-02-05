@@ -115,7 +115,8 @@ func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, dist
 	spec.PreUninstall = distro.PreUninstall
 	spec.PostUninstall = distro.PostUninstall
 
-	specDir := filepath.Join(repoDir, pkgReq.Name, pkgReq.Version, "rpm")
+	//specDir := filepath.Join(repoDir, pkgReq.Name, pkgReq.Version, "rpm")
+	specDir := filepath.Join(repoDir, pkgReq.Name, pkgReq.Version, distro.Label())
 	if err = tmplMgr.WriteSpecFile(pkgReq.Name, string(distro.Name), spec, specDir); err != nil {
 
 		return spec, err
