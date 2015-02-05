@@ -50,12 +50,12 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 
 	websvc.NewRestHandler(cfg.Endpoints.Builder, &methodHandler, logger)
-	logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Builder)
+	logger.Warning.Printf("Builder API: %s\n", cfg.Endpoints.Builder)
 
 	if cfg.Endpoints.Gitlab != "" {
 		glHandle := websvchooks.GitlabWebHook{logger, reqChan}
 		http.Handle(cfg.Endpoints.Gitlab, &glHandle)
-		logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Gitlab)
+		logger.Warning.Printf("Gitlab service: %s\n", cfg.Endpoints.Gitlab)
 	} else {
 		logger.Warning.Printf("Gitlab service disabled!\n")
 	}
@@ -63,14 +63,14 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	if cfg.Endpoints.Github != "" {
 		ghHandle := websvchooks.GithubWebHook{logger, reqChan}
 		http.Handle(cfg.Endpoints.Github, &ghHandle)
-		logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Github)
+		logger.Warning.Printf("Github service: %s\n", cfg.Endpoints.Github)
 	} else {
 		logger.Warning.Printf("Github service disabled!\n")
 	}
 
 	repoHandle := websvc.NewRepoHandler(repo, logger)
 	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
-	logger.Warning.Printf("Registered endpoint: %s\n", cfg.Endpoints.Repo)
+	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 
 	logger.Warning.Printf("Starting service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {
