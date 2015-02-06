@@ -43,6 +43,7 @@ func NewTargetedPackageBuild(cfg config.BuilderConfig, repo repository.BuildRepo
 }
 
 func (b *TargetedPackageBuild) buildDistroContainers() error {
+
 	b.DistroContainers = make(map[string]*ContainerRunner)
 	for _, distro := range b.BuildRequest.Distributions {
 		if err := b.Add(distro, b.BuildRequest.Package); err != nil {
@@ -196,10 +197,11 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
 	// Auto increment release if necessary
 	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
-	//b.BuildRequest.Package.AutoSetRelease(b.Repository, "rpm")
+	//b.BuildRequest.Package.Au toSetRelease(b.Repository, "rpm")
+	specDst := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
+		"/" + distro.Label()
 	// Write spec to repository
-	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro,
-		b.Repository.RepoDir+"/"+b.BuildRequest.Package.Packager)
+	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro, specDst)
 	return err
 }
 

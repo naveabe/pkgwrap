@@ -44,7 +44,7 @@ func (d *DockerEventMonitor) Start() error {
 			continue
 		}
 		d.logger.Trace.Printf("%s - %s\n", event.Status, event.Id)
-		if event.Status == "die" {
+		if event.Status == "die" || event.Status == "kill" {
 			bldJob, err := d.datastore.GetBuild(event.Id)
 			if err != nil {
 				if err.Error() == "Not found" {
@@ -56,7 +56,7 @@ func (d *DockerEventMonitor) Start() error {
 			}
 			for i, j := range bldJob.Jobs {
 				if j.Id == event.Id {
-					bldJob.Jobs[i].Status = "die"
+					bldJob.Jobs[i].Status = event.Status
 					break
 				}
 			}
