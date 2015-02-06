@@ -101,6 +101,8 @@ func (p *RestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Don't write response if method has already written the response
 	if code != -1 {
 		p.writeJsonResponse(w, r, headers, data, code)
+	} else {
+		p.logger.Trace.Printf("Not writing HTTP response!\n")
 	}
 }
 

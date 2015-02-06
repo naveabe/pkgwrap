@@ -39,8 +39,11 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 		return err
 	}
 
-	//logUrl := fmt.Sprintf("http://%s/containers/%s/logs?stderr=1&stdout=1&follow=1", job.Uri, job.Id)
 	logUrl := fmt.Sprintf("http://%s/containers/%s/logs?stderr=1&stdout=1", job.Uri, job.Id)
+	if _, ok := r.URL.Query()["follow"]; ok {
+		logUrl += "&follow=1"
+	}
+
 	resp, err := http.Get(logUrl)
 	if err != nil {
 		return err
@@ -48,20 +51,18 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 		l.logger.Warning.Printf("Could not retrieve log: %s\n", logUrl)
 		return fmt.Errorf("%s", resp.Status)
 	}
-
-	l.logger.Trace.Printf("Log response: %#v\n", resp)
+	//l.logger.Trace.Printf("Log response: %#v\n", resp)
 
 	bRdr := bufio.NewReader(resp.Body)
 
 	defer resp.Body.Close()
 
 	l.logger.Trace.Printf("Tailing log: %s...\n", id)
-
 	for {
 		lineBytes, err := bRdr.ReadBytes('\n')
 		if err != nil {
 			if err == io.EOF {
-				w.WriteHeader(200)
+				l.logger.Debug.Printf("End of log: %s\n", id)
 				break
 			}
 			l.logger.Warning.Printf("%s\n", err)
