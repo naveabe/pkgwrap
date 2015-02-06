@@ -47,9 +47,6 @@ echo "";
 echo "   Build Home : $BUILD_HOME_DIR";
 echo "";
 
-#REPO_URL="https://${REPO}/${BUILD_USER}/${PROJECT}.git"
-
-
 
 # Setup build user
 ( id $BUILD_USER > /dev/null 2>&1 ) || useradd $BUILD_USER

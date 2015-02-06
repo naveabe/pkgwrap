@@ -113,7 +113,7 @@ func (c *ContainerRunner) getMounts() []string {
 		i++
 	}
 
-	out[len(out)-1] = c.cfg.RepoMount.SrcBase + "/" + c.Package.Name + "/" + c.Package.Version +
+	out[len(out)-1] = c.cfg.RepoMount.SrcBase + "/" + c.Package.Packager + "/" + c.Package.Name + "/" + c.Package.Version +
 		":" + c.cfg.RepoMount.MountPoint
 	return out
 }

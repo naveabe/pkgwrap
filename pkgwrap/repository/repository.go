@@ -21,12 +21,12 @@ type BuildRepository struct {
 	RepoDir string
 }
 
-func (b *BuildRepository) PackagePath(shortPath string) string {
-	return b.RepoDir + "/" + shortPath
+func (b *BuildRepository) PackagePath(pkgr, shortPath string) string {
+	return b.RepoDir + "/" + pkgr + "/" + shortPath
 }
 
-func (b *BuildRepository) ListPackageVersions(pkgname string) ([]string, error) {
-	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname)
+func (b *BuildRepository) ListPackageVersions(pkgr, pkgname string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname)
 	if err != nil {
 		return make([]string, 0), err
 	}
@@ -38,8 +38,8 @@ func (b *BuildRepository) ListPackageVersions(pkgname string) ([]string, error) 
 	return flist, nil
 }
 
-func (b *BuildRepository) ListPackages(pkgname, pkgversion, distroLabel string) ([]string, error) {
-	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname + "/" + pkgversion + "/" + distroLabel)
+func (b *BuildRepository) ListPackages(pkgr, pkgname, pkgversion, distroLabel string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname + "/" + pkgversion + "/" + distroLabel)
 	if err != nil {
 		return make([]string, 0), err
 	}
@@ -62,8 +62,8 @@ func (b *BuildRepository) ListPackages(pkgname, pkgversion, distroLabel string) 
 	return flist, nil
 }
 
-func (b *BuildRepository) ListPackageDistros(pkgname, pkgversion string) ([]string, error) {
-	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgname + "/" + pkgversion)
+func (b *BuildRepository) ListPackageDistros(pkgr, pkgname, pkgversion string) ([]string, error) {
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname + "/" + pkgversion)
 	if err != nil {
 		return make([]string, 0), err
 	}
@@ -85,20 +85,20 @@ func (b *BuildRepository) ListPackageDistros(pkgname, pkgversion string) ([]stri
 	return flist, nil
 }
 
-func (b *BuildRepository) GetPackagePathForDistro(name, version, distroLabel, pkg string) (string, error) {
-	pkgPath := b.RepoDir + "/" + name + "/" + version + "/" + distroLabel + "/" + pkg
+func (b *BuildRepository) GetPackagePathForDistro(pkgr, name, version, distroLabel, pkg string) (string, error) {
+	pkgPath := b.RepoDir + "/" + pkgr + "/" + name + "/" + version + "/" + distroLabel + "/" + pkg
 	if _, err := os.Stat(pkgPath); err != nil {
 		return pkgPath, err
 	}
 	return pkgPath, nil
 }
 
-func (b *BuildRepository) BuildDir(pkgName, pkgVersion string) string {
-	return b.RepoDir + "/" + pkgName + "/" + pkgVersion
+func (b *BuildRepository) BuildDir(pkgr, pkgName, pkgVersion string) string {
+	return b.RepoDir + "/" + pkgr + "/" + pkgName + "/" + pkgVersion
 }
 
-func (b *BuildRepository) BuildConfig(pkgName, pkgVersion string) string {
-	return b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgName + "/" + PROJECT_CONFIG_NAME
+func (b *BuildRepository) BuildConfig(pkgr, pkgName, pkgVersion string) string {
+	return b.RepoDir + "/" + pkgr + "/" + pkgName + "/" + pkgVersion + "/" + pkgName + "/" + PROJECT_CONFIG_NAME
 }
 
 /*
@@ -109,8 +109,8 @@ func (b *BuildRepository) BuildConfig(pkgName, pkgVersion string) string {
  		Release number
  		-1 if unknown
 */
-func (b *BuildRepository) LastRelease(pkgName, pkgVersion, distroLabel string) int64 {
-	if b, err := ioutil.ReadFile(b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + distroLabel + "/RELEASE"); err == nil {
+func (b *BuildRepository) LastRelease(pkgr, pkgName, pkgVersion, distroLabel string) int64 {
+	if b, err := ioutil.ReadFile(b.RepoDir + "/" + pkgr + "/" + pkgName + "/" + pkgVersion + "/" + distroLabel + "/RELEASE"); err == nil {
 		relstr := strings.TrimSpace(string(b))
 		if val, err := strconv.ParseInt(relstr, 10, 64); err == nil {
 			return val
@@ -130,8 +130,8 @@ func (b *BuildRepository) LastRelease(pkgName, pkgVersion, distroLabel string) i
 	Returns:
 		-1 if unknown
 */
-func (b *BuildRepository) NextRelease(pkgName, pkgVersion, distroLabel string) int64 {
-	lastRel := b.LastRelease(pkgName, pkgVersion, distroLabel)
+func (b *BuildRepository) NextRelease(pkgr, pkgName, pkgVersion, distroLabel string) int64 {
+	lastRel := b.LastRelease(pkgr, pkgName, pkgVersion, distroLabel)
 	if lastRel == -1 {
 		return lastRel
 	}
@@ -142,8 +142,8 @@ func (b *BuildRepository) NextRelease(pkgName, pkgVersion, distroLabel string) i
 	Remove cloned package repo or uncompressed tarball upload
 	by the user
 */
-func (b *BuildRepository) Clean(pkgName, pkgVersion string) error {
-	rmDir := b.RepoDir + "/" + pkgName + "/" + pkgVersion + "/" + pkgName
+func (b *BuildRepository) Clean(pkgr, pkgName, pkgVersion string) error {
+	rmDir := b.RepoDir + "/" + pkgr + "/" + pkgName + "/" + pkgVersion + "/" + pkgName
 	if _, err := os.Stat(rmDir); err == nil {
 		return os.RemoveAll(rmDir)
 	}

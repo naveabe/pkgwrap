@@ -65,7 +65,7 @@ func (m *PkgBuilderMethodHandler) getPackageRequestFromConf(usrFile *multipart.F
  *
  * e.g. curl -XPOST http://.... -F package=@path/to/file.tgz -F conf=/path/to/conf.json
  */
-func (m *PkgBuilderMethodHandler) assembleBuiltPkgReq(req *http.Request, pkgName, pkgVersion string) (specer.PackageRequest, *multipart.FileHeader, error) {
+func (m *PkgBuilderMethodHandler) assembleBuiltPkgReq(req *http.Request, pkgr, pkgName, pkgVersion string) (specer.PackageRequest, *multipart.FileHeader, error) {
 	var (
 		pkgReq  = specer.NewPackageRequest(pkgName)
 		pkgFile *multipart.FileHeader
@@ -75,6 +75,7 @@ func (m *PkgBuilderMethodHandler) assembleBuiltPkgReq(req *http.Request, pkgName
 	if pkgVersion != "" {
 		pkgReq.Version = pkgVersion
 	}
+	pkgReq.Package.Packager = pkgr
 
 	if err = req.ParseMultipartForm(128); err != nil {
 		return *pkgReq, pkgFile, err
@@ -107,10 +108,11 @@ func (m *PkgBuilderMethodHandler) assembleBuiltPkgReq(req *http.Request, pkgName
 		PackageRequest assembled from user supplied data
 		error
 */
-func (m PkgBuilderMethodHandler) assembleBuildPkgReq(r *http.Request, pkgname, pkgversion string) (specer.PackageRequest, error) {
+func (m PkgBuilderMethodHandler) assembleBuildPkgReq(r *http.Request, pkgr, pkgname, pkgversion string) (specer.PackageRequest, error) {
 	pkgReq := specer.NewPackageRequest(pkgname)
 	pkgReq.Version = pkgversion
 	pkgReq.Package.Version = pkgversion
+	pkgReq.Package.Packager = pkgr
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -132,8 +134,8 @@ func (m PkgBuilderMethodHandler) assembleBuildPkgReq(r *http.Request, pkgname, p
 	return *pkgReq, nil
 }
 
-func (m PkgBuilderMethodHandler) downloadUserPackage(pkgname, pkgversion string, pkgfile *multipart.FileHeader) error {
-	pkgFilepath := filepath.Join(m.Config.Repository, pkgname, pkgversion)
+func (m PkgBuilderMethodHandler) downloadUserPackage(pkgr, pkgname, pkgversion string, pkgfile *multipart.FileHeader) error {
+	pkgFilepath := filepath.Join(m.Config.Repository, pkgr, pkgname, pkgversion)
 	os.MkdirAll(pkgFilepath, 0755)
 
 	pkgFilepath += "/" + pkgfile.Filename
@@ -165,13 +167,17 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 		pkgFile *multipart.FileHeader
 	)
 
+	if len(args) < 3 {
+		return nil, map[string]string{"error": "Invalid request"}, 400
+	}
+
 	// Determines build type: 'source' or 'binary'
 	if strings.HasPrefix(contentType, "application/json") {
-		pkgReq, err = m.assembleBuildPkgReq(r, args[0], args[1])
+		pkgReq, err = m.assembleBuildPkgReq(r, args[0], args[1], args[2])
 	} else {
-		pkgReq, pkgFile, err = m.assembleBuiltPkgReq(r, args[0], args[1])
+		pkgReq, pkgFile, err = m.assembleBuiltPkgReq(r, args[0], args[1], args[2])
 		if err == nil {
-			err = m.downloadUserPackage(args[0], args[1], pkgFile)
+			err = m.downloadUserPackage(args[0], args[1], args[2], pkgFile)
 		}
 	}
 	// Final check

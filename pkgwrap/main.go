@@ -72,6 +72,10 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
 	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 
+	logsHandle := websvc.NewLogProxyHandler(logger)
+	websvc.NewRestHandler(cfg.Endpoints.Logs, logsHandle, logger)
+	logger.Warning.Printf("Logs API: %s\n", cfg.Endpoints.Logs)
+
 	logger.Warning.Printf("Starting service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {
 		logger.Error.Printf("%s\n", err)

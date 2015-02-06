@@ -74,6 +74,7 @@ func (b *TargetedPackageBuild) StartBuilds(uri string) []string {
 
 		if dkrCntr, err := dRun.Start(uri); err == nil {
 			b.logger.Trace.Printf("Starting container: %s (%s)\n", id, b.BuildRequest.Package.Packager)
+			b.logger.Trace.Printf("Config: %#v\n", dkrCntr.HostConfig)
 			runningConts = append(runningConts, dkrCntr.ID)
 		} else {
 			b.logger.Error.Printf("Failed to start container %s: %s\n", id, err)
@@ -91,7 +92,8 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		return err
 	}
 
-	if err = b.Repository.Clean(b.BuildRequest.Package.Name, b.BuildRequest.Package.Version); err != nil {
+	if err = b.Repository.Clean(b.BuildRequest.Package.Packager,
+		b.BuildRequest.Package.Name, b.BuildRequest.Package.Version); err != nil {
 		return err
 	}
 
@@ -102,8 +104,8 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		}
 	} else {
 		// Git clone if source
-		if err = b.BuildRequest.Package.CloneRepo(b.Repository.RepoDir); err != nil {
-			b.logger.Error.Printf("%s\n", err)
+		if err = b.BuildRequest.Package.CloneRepo(b.Repository); err != nil {
+			//b.logger.Error.Printf("%s\n", err)
 			return err
 		}
 		b.logger.Trace.Printf("Cloned: %s %s\n", b.BuildRequest.Name, b.BuildRequest.Version)
@@ -128,7 +130,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 func (b *TargetedPackageBuild) buildInitScript(tmplMgr *templater.TemplatesManager) error {
 	if b.BuildRequest.Package.InitScript != nil && b.BuildRequest.Package.InitScript.Runnable.Path != "" {
 		return initscript.BuildInitScript(tmplMgr, *b.BuildRequest.Package.InitScript,
-			b.Repository.RepoDir+"/"+b.BuildRequest.Name+"/"+b.BuildRequest.Version)
+			b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version))
 	} else {
 		b.logger.Info.Printf("Not creating startup script. No runnable path specified!\n")
 	}
@@ -140,7 +142,7 @@ func (b *TargetedPackageBuild) buildInitScript(tmplMgr *templater.TemplatesManag
 	distro containers.
 */
 func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
-	bldConf := b.Repository.BuildConfig(b.BuildRequest.Name, b.BuildRequest.Version)
+	bldConf := b.Repository.BuildConfig(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version)
 	b.logger.Trace.Printf("Reading project config: %s\n", bldConf)
 
 	cBytes, err := ioutil.ReadFile(bldConf)
@@ -196,7 +198,8 @@ func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr
 	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
 	//b.BuildRequest.Package.AutoSetRelease(b.Repository, "rpm")
 	// Write spec to repository
-	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro, b.Repository.RepoDir)
+	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro,
+		b.Repository.RepoDir+"/"+b.BuildRequest.Package.Packager)
 	return err
 }
 
@@ -215,11 +218,12 @@ func (b *TargetedPackageBuild) Add(distro specer.Distribution, pkg *specer.UserP
 		return err
 	}
 
-	if cRunner.Distro.Release == "" {
-		b.DistroContainers[fmt.Sprintf("%s", cRunner.Distro.Name)] = cRunner
-	} else {
-		b.DistroContainers[fmt.Sprintf("%s-%s", cRunner.Distro.Name, cRunner.Distro.Release)] = cRunner
-	}
+	b.DistroContainers[distro.Label()] = cRunner
+	//if cRunner.Distro.Release == "" {
+	//	b.DistroContainers[fmt.Sprintf("%s", cRunner.Distro.Name)] = cRunner
+	//} else {
+	//	b.DistroContainers[fmt.Sprintf("%s-%s", cRunner.Distro.Name, cRunner.Distro.Release)] = cRunner
+	//}
 	return nil
 }
 

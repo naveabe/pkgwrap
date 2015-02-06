@@ -112,13 +112,13 @@ func (u *UserPackage) PackagerFromURL() (string, error) {
 	}
 }
 
-func (u *UserPackage) CloneRepo(repoBase string) error {
+func (u *UserPackage) CloneRepo(repo repository.BuildRepository) error {
 	repoUrl := u.URL + ".git"
 	//b.logger.Trace.Printf("Cloning: %s\n", repoUrl)
 	copts := git.CloneOptions{
 		CheckoutBranch: u.TagBranch,
 	}
-	_, err := git.Clone(repoUrl, repoBase+"/"+u.Path, &copts)
+	_, err := git.Clone(repoUrl, repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name, &copts)
 	if err != nil {
 		return err
 	}
@@ -131,14 +131,14 @@ func (u *UserPackage) CloneRepo(repoBase string) error {
 		distroLabel : e.g. centos, centos-6, ubuntu-12.04 ...
 */
 func (u *UserPackage) AutoSetRelease(repo repository.BuildRepository, distroLabel string) {
-	nextRelease := repo.NextRelease(u.Name, u.Version, distroLabel)
+	nextRelease := repo.NextRelease(u.Packager, u.Name, u.Version, distroLabel)
 	if nextRelease > u.Release {
 		u.Release = nextRelease
 	}
 }
 
 func (u *UserPackage) Uncompress(repoBase string) error {
-	dst := filepath.Dir(repoBase + "/" + u.Path)
+	dst := filepath.Dir(repoBase + "/" + u.Packager + "/" + u.Path)
 
 	if strings.HasSuffix(u.Path, ".tgz") || strings.HasSuffix(u.Path, ".tar.gz") {
 		// Gzip tarball //
@@ -155,7 +155,7 @@ func (u *UserPackage) Uncompress(repoBase string) error {
 }
 
 func (u *UserPackage) unGzipTar(repoBase, dstDir string) error {
-	irdr, err := os.Open(repoBase + "/" + u.Path)
+	irdr, err := os.Open(repoBase + "/" + u.Packager + "/" + u.Path)
 	if err != nil {
 		return err
 	}

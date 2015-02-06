@@ -91,7 +91,7 @@ func NewRPMSpec(name, version string) (*RPMSpec, error) {
 	return &rspec, nil
 }
 
-func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, distro Distribution, repoDir string) (*RPMSpec, error) {
+func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, distro Distribution, dstDir string) (*RPMSpec, error) {
 	spec, err := NewRPMSpec(pkgReq.Name, pkgReq.Version)
 	if err != nil {
 		return spec, err
@@ -115,9 +115,7 @@ func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, dist
 	spec.PreUninstall = distro.PreUninstall
 	spec.PostUninstall = distro.PostUninstall
 
-	//specDir := filepath.Join(repoDir, pkgReq.Name, pkgReq.Version, "rpm")
-	specDir := filepath.Join(repoDir, pkgReq.Name, pkgReq.Version, distro.Label())
-	if err = tmplMgr.WriteSpecFile(pkgReq.Name, string(distro.Name), spec, specDir); err != nil {
+	if err = tmplMgr.WriteSpecFile(pkgReq.Name, string(distro.Name), spec, dstDir); err != nil {
 
 		return spec, err
 	}
