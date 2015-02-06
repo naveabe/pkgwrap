@@ -5,7 +5,8 @@
     "endpoints": {
         "gitlab": "/gitlab",
         "github": "",
-        "builder": "/api/builder"
+        "builder": "/api/builder",
+        "repo": "/api/repo"
     },
     "builder": {
         "image_prefix": "buildsys-",
