@@ -8,12 +8,13 @@ import (
 )
 
 type BuildJobId struct {
-	Id  string `json:"id"`
-	Uri string `json:"uri"`
+	Id     string `json:"id"`
+	Uri    string `json:"uri"`
+	Status string `json:"status"`
 }
 
-func NewBuildJobId(id, host string) *BuildJobId {
-	return &BuildJobId{id, host}
+func NewBuildJobId(id, uri string) *BuildJobId {
+	return &BuildJobId{Id: id, Uri: uri}
 }
 
 func NewBuildJobIdFromString(jobId string) (*BuildJobId, error) {
@@ -36,6 +37,7 @@ func NewBuildJobIdFromString(jobId string) (*BuildJobId, error) {
    This is used to retreive details about the builds byt the user.
 */
 type BuildJob struct {
+	Id        string       `json:"_id,omitempty"`
 	Timestamp float64      `json:"timestamp"`
 	Username  string       `json:"username"`
 	Project   string       `json:"project"`
@@ -70,4 +72,13 @@ func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *
 */
 func (b *BuildJob) Record(ds IJobstore) error {
 	return ds.Add(*b)
+}
+
+func (b *BuildJob) GetSubJob(id string) (BuildJobId, error) {
+	for _, v := range b.Jobs {
+		if v.Id == id {
+			return v, nil
+		}
+	}
+	return BuildJobId{}, fmt.Errorf("Not found")
 }

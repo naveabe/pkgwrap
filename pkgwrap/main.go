@@ -23,7 +23,8 @@ var (
 )
 
 const (
-	DOCKER_URI = "tcp://localhost:5555"
+	DOCKER_HOST_PORT = "localhost:5555"
+	DOCKER_URI       = "tcp://" + DOCKER_HOST_PORT
 )
 
 func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildRepository, pkgReq *specer.PackageRequest, tmplMgr *templater.TemplatesManager) (*builder.TargetedPackageBuild, error) {
@@ -72,14 +73,17 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
 	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 
-	logsHandle := websvc.NewLogProxyHandler(logger)
-	websvc.NewRestHandler(cfg.Endpoints.Logs, logsHandle, logger)
-	logger.Warning.Printf("Logs API: %s\n", cfg.Endpoints.Logs)
-
 	logger.Warning.Printf("Starting service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {
 		logger.Error.Printf("%s\n", err)
 		os.Exit(2)
+	}
+}
+
+func StartEventMonitor(dstore *tracker.EssDatastore, logger *logging.Logger) {
+	dem := tracker.NewDockerEventMonitor("http://localhost:5555", dstore, logger)
+	if err := dem.Start(); err != nil {
+		logger.Error.Fatalf("%s\n", err)
 	}
 }
 
@@ -90,6 +94,7 @@ func main() {
 		logger     = logging.NewStdLogger()
 		pkgReqChan = make(chan specer.PackageRequest)
 		cfg        *config.AppConfig
+		datastore  *tracker.EssDatastore
 		err        error
 	)
 
@@ -103,18 +108,27 @@ func main() {
 	repo := repository.BuildRepository{cfg.Repository}
 	tmplMgr := templater.TemplatesManager{cfg.TemplatesDir()}
 
-	// HTTP server /api/builder
-	go StartWebServices(cfg, repo, logger, pkgReqChan)
-
-	// Avoid extra if statement in busy loop
 	if cfg.JobTracker.Enabled {
 		logger.Warning.Printf("Job tracker ENABLED!\n")
 
-		datastore, err := tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
+		datastore, err = tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
 		if err != nil {
 			logger.Error.Printf("Failed to init datastore: %s\n", err)
 			os.Exit(2)
 		}
+
+		jobsHandle := websvc.NewJobsHandler(datastore, logger)
+		websvc.NewRestHandler(cfg.Endpoints.Jobs, jobsHandle, logger)
+		logger.Warning.Printf("Logs API: %s\n", cfg.Endpoints.Jobs)
+	}
+
+	// HTTP server /api/builder
+	go StartWebServices(cfg, repo, logger, pkgReqChan)
+
+	go StartEventMonitor(datastore, logger)
+
+	// Avoid extra if statement in busy loop
+	if cfg.JobTracker.Enabled {
 
 		for {
 			pkgReq := <-pkgReqChan
@@ -131,7 +145,10 @@ func main() {
 			buildIds := tBld.StartBuilds(DOCKER_URI)
 			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
 
-			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_URI)
+			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_HOST_PORT)
+			for i, _ := range bJob.Jobs {
+				bJob.Jobs[i].Status = "start"
+			}
 
 			if err = bJob.Record(datastore); err != nil {
 				logger.Error.Printf("%s\n", err)
@@ -158,7 +175,7 @@ func main() {
 			buildIds := tBld.StartBuilds(DOCKER_URI)
 			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
 
-			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_URI)
+			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_HOST_PORT)
 
 			b, _ := json.MarshalIndent(bJob, "", "  ")
 			logger.Trace.Printf("Build job: %s\n", b)

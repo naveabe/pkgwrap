@@ -34,7 +34,7 @@ type HttpEndpointsConfig struct {
 	Github  string `json:"github"`
 	Builder string `json:"builder"`
 	Repo    string `json:"repo"`
-	Logs    string `json:"logs"`
+	Jobs    string `json:"jobs"`
 }
 
 type AppConfig struct {

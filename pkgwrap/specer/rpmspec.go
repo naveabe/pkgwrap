@@ -3,7 +3,7 @@ package specer
 import (
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
-	"path/filepath"
+	//"path/filepath"
 	"strings"
 	"time"
 )
