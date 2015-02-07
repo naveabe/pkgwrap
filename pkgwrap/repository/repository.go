@@ -1,6 +1,7 @@
 package repository
 
 import (
+	//"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -63,24 +64,18 @@ func (b *BuildRepository) ListPackages(pkgr, pkgname, pkgversion, distroLabel st
 }
 
 func (b *BuildRepository) ListPackageDistros(pkgr, pkgname, pkgversion string) ([]string, error) {
+	flist := make([]string, 0)
+
 	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname + "/" + pkgversion)
 	if err != nil {
-		return make([]string, 0), err
+		return flist, err
 	}
 
-	var flist []string
-	if len(files) > 2 {
-		flist = make([]string, len(files)-2)
-		i := 0
-		for _, f := range files {
-			if strings.HasPrefix(f.Name(), pkgname) {
-				continue
-			}
-			flist[i] = f.Name()
-			i++
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), pkgname) {
+			continue
 		}
-	} else {
-		flist = make([]string, 0)
+		flist = append(flist, f.Name())
 	}
 	return flist, nil
 }
