@@ -15,7 +15,7 @@ Distributions:
       - docker-io
     
       build_cmd: 
-      - make all
+      - make .deps .build
     
       post_install: 
       - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
