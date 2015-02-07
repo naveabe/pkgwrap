@@ -105,6 +105,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		}
 	} else {
 		// Git clone if source
+		// TODO: After reading reading config check tagbranch and checkout.
 		if err = b.BuildRequest.Package.CloneRepo(b.Repository); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
