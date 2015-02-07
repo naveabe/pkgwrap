@@ -13,7 +13,7 @@ RUN yum -y update
 
 RUN yum -y groupinstall "Development Tools"
 
-RUN yum -y install rpmdevtools git cmake pkgconfig
+RUN yum -y install which rpmdevtools git cmake pkgconfig
 RUN echo -e '[ -e "~/rpmbuild" ] || rpmdev-setuptree\n' >> /etc/skel/.bashrc
 
 RUN mkdir -p /opt/pkgwrap/repo; mkdir -p /opt/pkgwrap/bin; 
