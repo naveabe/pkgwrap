@@ -3,10 +3,11 @@
     "repository": "/opt/pkgwrap/data/repository",
     "data_dir": "/opt/pkgwrap/data",
     "endpoints": {
-        "gitlab": "/gitlab",
-        "github": "",
+        "gitlab" : "/webhook/gitlab",
+        "github" : "/webhook/github",
         "builder": "/api/builder",
-        "repo": "/api/repo"
+        "repo"   : "/api/repo",
+        "jobs"   : "/api/jobs"
     },
     "builder": {
         "image_prefix": "buildsys-",

@@ -66,9 +66,6 @@ func (d *DockerEventMonitor) Start() error {
 			d.logger.Trace.Printf("Skipping event: %s\n", event.Status)
 			continue
 		}
-
-		// Process 'die' status
-
 	}
 
 	return nil
