@@ -36,6 +36,7 @@ INSTALL_DIR = build/pkgwrap
 	cp -a data/templates "$(INSTALL_DIR)$(APP_HOME)/data/"
 	cp -a data/imagefiles "$(INSTALL_DIR)$(APP_HOME)/data/"
 	cp -a scripts "$(INSTALL_DIR)$(APP_HOME)/"
+	cp -a etc "$(INSTALL_DIR)/"
 
 all: .deps .build
 

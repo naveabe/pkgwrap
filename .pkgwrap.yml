@@ -1,0 +1,28 @@
+Distributions:
+    - name: centos
+      release: 6
+      
+      build_deps:
+      - git
+      - cmake
+      - pkg-config
+      - docker-io-devel
+      - libgit2-devel
+    
+      deps:
+      - libgit2
+      - golang
+      - docker-io
+    
+      build_cmd: 
+      - make all
+    
+      post_install: 
+      - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
+      - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
+      - "chown -R pkgwrap /opt/pkgwrap"
+     
+Package:
+    build_env: go
+    url: https://github.com/naveabe/pkgwrap
+    tagbranch: ghelsappa
