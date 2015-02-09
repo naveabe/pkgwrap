@@ -6,8 +6,11 @@
 
 DOCKER_CMD="docker -H 127.0.0.1:5555"
 
+DOCKER_BUILD_OPTS="--no-cache"
+
 IMAGEFILES_DIR="data/imagefiles"
 IMG_PREFIX="buildsys-"
+
 
 [ -d "$IMAGEFILES_DIR" ] || {
     echo "Image files directory not found: $IMAGEFILES_DIR";
@@ -17,11 +20,11 @@ IMG_PREFIX="buildsys-"
 build_images() {
     distro=$1
     cd "$IMAGEFILES_DIR/$distro";
-    $DOCKER_CMD build -t ${IMG_PREFIX}${distro} . ;
+    $DOCKER_CMD build $DOCKER_BUILD_OPTS -t ${IMG_PREFIX}${distro} . ;
     cd - ;
     for release in `ls $IMAGEFILES_DIR/${distro} | grep -v Dockerfile`; do
         cd "$IMAGEFILES_DIR/${distro}/$release" ;
-        $DOCKER_CMD build --no-cache -t ${IMG_PREFIX}${distro}:${release} . ;
+        $DOCKER_CMD build $DOCKER_BUILD_OPTS -t ${IMG_PREFIX}${distro}:${release} . ;
         cd - ;
     done;
 }
