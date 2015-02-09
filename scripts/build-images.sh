@@ -21,7 +21,7 @@ build_images() {
     cd - ;
     for release in `ls $IMAGEFILES_DIR/${distro} | grep -v Dockerfile`; do
         cd "$IMAGEFILES_DIR/${distro}/$release" ;
-        $DOCKER_CMD build -t ${IMG_PREFIX}${distro}:${release} . ;
+        $DOCKER_CMD build --no-cache -t ${IMG_PREFIX}${distro}:${release} . ;
         cd - ;
     done;
 }
