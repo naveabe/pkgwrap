@@ -68,11 +68,12 @@ func (b *TargetedPackageBuild) StartBuilds(uri string) []string {
 	runningConts := make([]string, 0)
 
 	for id, dRun := range b.DistroContainers {
-		if dRun.Distro.Name == specer.DISTRO_UBUNTU || dRun.Distro.Name == specer.DISTRO_DEBIAN {
-			b.logger.Info.Printf("Distro not yet supported: %s\n", dRun.Distro.Name)
-			continue
-		}
-
+		/*
+			if dRun.Distro.Name == specer.DISTRO_UBUNTU || dRun.Distro.Name == specer.DISTRO_DEBIAN {
+				b.logger.Info.Printf("Distro not yet supported: %s\n", dRun.Distro.Name)
+				continue
+			}
+		*/
 		if dkrCntr, err := dRun.Start(uri); err == nil {
 			b.logger.Trace.Printf("Starting container: %s (%s)\n", id, b.BuildRequest.Package.Packager)
 			b.logger.Trace.Printf("Config: %#v\n", dkrCntr.HostConfig)
@@ -210,8 +211,13 @@ func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr
 	All pre-build setup before the .deb build can start
 */
 func (b *TargetedPackageBuild) setupDEBBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
-	b.logger.Warning.Printf("** Debian package builds not yet supported! **")
-	return nil
+	b.logger.Warning.Printf("** Debian packaging in development! **")
+
+	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
+
+	dstDir := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
+		"/" + distro.Label()
+	return specer.BuildDebStructure(tmplMgr, b.BuildRequest.Package, distro, dstDir)
 }
 
 func (b *TargetedPackageBuild) Add(distro specer.Distribution, pkg *specer.UserPackage) error {
@@ -222,11 +228,6 @@ func (b *TargetedPackageBuild) Add(distro specer.Distribution, pkg *specer.UserP
 	}
 
 	b.DistroContainers[distro.Label()] = cRunner
-	//if cRunner.Distro.Release == "" {
-	//	b.DistroContainers[fmt.Sprintf("%s", cRunner.Distro.Name)] = cRunner
-	//} else {
-	//	b.DistroContainers[fmt.Sprintf("%s-%s", cRunner.Distro.Name, cRunner.Distro.Release)] = cRunner
-	//}
 	return nil
 }
 

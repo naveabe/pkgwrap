@@ -2,12 +2,12 @@ Source: {{.Name}}
 Standards-Version: {{.Version}}
 Section: base
 Priority: optional
-Maintainer: {{.Packager}}
+Maintainer: {{.Packager}}{{if .BuildDeps}}
+Build-Depends: {{.BuildDeps}}{{end}}{{if .Url}}
+Homepage: {{.Url}}{{end}}
 
-Architecture: all
-Package: {{.Name}}
-Build-Depends: {{.BuildRequires}}
-Depends: {{.Requires}}
+Architecture: any
+Package: {{.Name}}{{if .Deps}}
+Depends: {{.Deps}}{{end}}
 Description: {{.Summary}}
 {{.Description}}
-

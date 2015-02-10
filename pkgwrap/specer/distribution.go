@@ -61,8 +61,8 @@ var DISTRO_BUILD_SCRIPT = map[OSDistro]string{
 	DISTRO_ORACLE: DISTRO_BIN_PREFIX + "/run-rpm-build.sh",
 	DISTRO_REDHAT: DISTRO_BIN_PREFIX + "/run-rpm-build.sh",
 
-	DISTRO_UBUNTU: DISTRO_BIN_PREFIX + "/build-deb.sh",
-	DISTRO_DEBIAN: DISTRO_BIN_PREFIX + "/build-deb.sh",
+	DISTRO_UBUNTU: DISTRO_BIN_PREFIX + "/run-deb-build.sh",
+	DISTRO_DEBIAN: DISTRO_BIN_PREFIX + "/run-deb-build.sh",
 }
 
 var DISTRO_PKG_TYPE = map[OSDistro]OSPackageType{

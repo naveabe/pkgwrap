@@ -16,10 +16,10 @@ type DockerEventMonitor struct {
 	URL    string
 	logger *logging.Logger
 
-	datastore *EssDatastore
+	datastore *EssJobstore
 }
 
-func NewDockerEventMonitor(url string, dstore *EssDatastore, logger *logging.Logger) *DockerEventMonitor {
+func NewDockerEventMonitor(url string, dstore *EssJobstore, logger *logging.Logger) *DockerEventMonitor {
 	return &DockerEventMonitor{
 		URL: url, logger: logger, datastore: dstore}
 }

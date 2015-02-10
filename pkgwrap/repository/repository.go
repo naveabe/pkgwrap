@@ -39,6 +39,23 @@ func (b *BuildRepository) ListPackageVersions(pkgr, pkgname string) ([]string, e
 	return flist, nil
 }
 
+func (b *BuildRepository) ListUserProjects(pkgr string) ([]string, error) {
+	flist := make([]string, 0)
+
+	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr)
+	if err != nil {
+		return make([]string, 0), err
+	}
+
+	for _, f := range files {
+		if f.IsDir() {
+			flist = append(flist, f.Name())
+		}
+	}
+
+	return flist, nil
+}
+
 func (b *BuildRepository) ListPackages(pkgr, pkgname, pkgversion, distroLabel string) ([]string, error) {
 	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname + "/" + pkgversion + "/" + distroLabel)
 	if err != nil {

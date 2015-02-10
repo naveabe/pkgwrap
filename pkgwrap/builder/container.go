@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"strings"
@@ -21,6 +22,8 @@ type ContainerRunner struct {
 	dockerCont *docker.Container
 
 	cfg config.BuilderConfig
+
+	logger *logging.Logger
 }
 
 func NewContainerRunner(builderCfg config.BuilderConfig, distro specer.Distribution, pkg *specer.UserPackage, repo repository.BuildRepository) (*ContainerRunner, error) {
@@ -33,6 +36,7 @@ func NewContainerRunner(builderCfg config.BuilderConfig, distro specer.Distribut
 		Package:    pkg,
 		Repository: repo,
 		cfg:        builderCfg,
+		logger:     logging.NewStdLogger(),
 	}
 
 	c.ContainerConfig, err = c.initContainerConfig()
@@ -67,10 +71,13 @@ func (c *ContainerRunner) initContainerConfig() (docker.CreateContainerOptions, 
 		"BUILD_DEPS=" + strings.Join(c.Distro.BuildDeps, " "),
 		"PKG_DEPS=" + strings.Join(c.Distro.Deps, " "),
 		"PKG_DISTRO=" + c.Distro.Label(),
+		fmt.Sprintf("PKG_TYPE=%s", c.Distro.PackageType()),
 		fmt.Sprintf("PKG_RELEASE=%d", c.Package.Release),
 		fmt.Sprintf("PKG_VERSION=%s", c.Package.Version),
 		fmt.Sprintf("BUILD_TYPE=%s", c.Package.BuildType),
 	}
+
+	c.logger.Trace.Printf("Container env: %v\n", opts.Config.Env)
 
 	return opts, nil
 }

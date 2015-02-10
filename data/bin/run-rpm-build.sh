@@ -35,8 +35,9 @@ if [ "$BUILD_TYPE" == "source" ]; then
     else
         echo " ** No build command specified! **"
     fi
-else
-    su - $BUILD_USER -c "cp -a $PROJECT_PATH ~/rpmbuild/SOURCES/" || exit 3
+    
+    #else
+    #su - $BUILD_USER -c "cp -a $PROJECT_PATH ~/rpmbuild/SOURCES/" || exit 3
 fi
 
 # Build spec

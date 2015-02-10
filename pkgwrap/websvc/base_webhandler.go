@@ -112,6 +112,7 @@ func (p *RestHandler) writeResponse(w http.ResponseWriter, r *http.Request, head
 			w.Header().Set(k, v)
 		}
 	}
+	//p.logger.Trace.Printf("User headers: %v\n", headers)
 	w.WriteHeader(respCode)
 	w.Write(data)
 	p.logger.Info.Printf("%s %d %s\n", r.Method, respCode, r.URL.RequestURI())
@@ -133,5 +134,5 @@ func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	p.writeResponse(w, r, nil, b, respCode)
+	p.writeResponse(w, r, headers, b, respCode)
 }

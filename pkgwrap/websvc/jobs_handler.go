@@ -14,10 +14,10 @@ type JobsHandler struct {
 
 	logger *logging.Logger
 
-	datastore *tracker.EssDatastore
+	datastore *tracker.EssJobstore
 }
 
-func NewJobsHandler(dstore *tracker.EssDatastore, logger *logging.Logger) *JobsHandler {
+func NewJobsHandler(dstore *tracker.EssJobstore, logger *logging.Logger) *JobsHandler {
 	lgh := JobsHandler{datastore: dstore}
 	if logger != nil {
 		lgh.logger = logger

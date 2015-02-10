@@ -28,6 +28,7 @@ echo "";
 echo " Environment:";
 echo "";
 echo "   Distro     : $PKG_DISTRO";
+echo "   Package    : $PKG_TYPE";
 echo "";
 echo "   Project    : $PROJECT";
 echo "   Tag        : $TAG";
@@ -48,8 +49,8 @@ echo "   Build Home : $BUILD_HOME_DIR";
 echo "";
 
 
-# Setup build user
-( id $BUILD_USER > /dev/null 2>&1 ) || useradd $BUILD_USER
+# Setup build user (-m needed by ubuntu to create home dir)
+( id $BUILD_USER > /dev/null 2>&1 ) || useradd -m $BUILD_USER
 
 #REPO_LOCAL_PATH="/opt/pkgbuilder/repo"
 REPO_LOCAL_PATH="/opt/pkgwrap/repo"
@@ -73,8 +74,14 @@ if [ "$BUILD_TYPE" == "source" ]; then
     esac
 else
     echo "Running $BUILD_TYPE build..."
-    su - $BUILD_USER -c "id > /dev/null";
-    su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
+    if [ "$PKG_TYPE" == "rpm" ]; then
+        su - $BUILD_USER -c "id > /dev/null";
+        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
+    else
+        su - $BUILD_USER -c "[ -d $BUILD_HOME_DIR/debuild ] || mkdir -p $BUILD_HOME_DIR/debuild";
+        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/";
+        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/$PROJECT.orig";
+    fi
 fi
 
 

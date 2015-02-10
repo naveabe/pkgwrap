@@ -1,7 +1,6 @@
 package tracker
 
 import (
-	"encoding/json"
 	"fmt"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
@@ -75,94 +74,4 @@ func (e *EssDatastore) initializeIndex(mappingFile string) error {
 	}
 	e.logger.Warning.Printf("Updated _default_ mapping for %s: %s\n", e.index, b)
 	return nil
-}
-
-func (e *EssDatastore) Add(job BuildJob) error {
-	resp, err := e.conn.Index(e.index, "job", "", nil, job)
-	//e.conn.Flush()
-	if err != nil {
-		e.logger.Trace.Printf("%s\n", err)
-		return err
-	}
-
-	if !resp.Created {
-		return fmt.Errorf("Failed to record job: %s", resp)
-	}
-
-	return nil
-}
-
-func (e *EssDatastore) performQuery(terms map[string]interface{}) ([]BuildJob, error) {
-	var (
-		out []BuildJob
-		//filters = map[string]map[string]string{"term": terms}
-	)
-
-	q := map[string]interface{}{
-		"sort":   map[string]string{"timestamp": "desc"},
-		"filter": map[string]map[string]interface{}{"term": terms},
-	}
-	e.logger.Trace.Printf("Query: %v\n", q)
-
-	resp, err := e.conn.Search(e.index, "job", nil, q)
-	if err != nil {
-		return out, err
-	}
-
-	out = make([]BuildJob, len(resp.Hits.Hits))
-	for i, hit := range resp.Hits.Hits {
-		if err := json.Unmarshal(*hit.Source, &out[i]); err != nil {
-			return out, err
-		}
-		out[i].Id = hit.Id
-	}
-
-	return out, nil
-}
-
-func (e *EssDatastore) GetBuildsForPackageVersion(pkgr, name, version string) ([]BuildJob, error) {
-	terms := map[string]interface{}{
-		"username": pkgr,
-		"project":  name,
-		"version":  version,
-	}
-
-	return e.performQuery(terms)
-}
-
-func (e *EssDatastore) GetBuildsForPackage(pkgr, name string) ([]BuildJob, error) {
-	terms := map[string]interface{}{
-		"username": pkgr,
-		"project":  name,
-	}
-	return e.performQuery(terms)
-}
-
-func (e *EssDatastore) GetBuildsForUser(pkgr string) ([]BuildJob, error) {
-	terms := map[string]interface{}{
-		"username": pkgr,
-	}
-	return e.performQuery(terms)
-}
-
-func (e *EssDatastore) GetBuild(id string) (*BuildJob, error) {
-	terms := map[string]interface{}{
-		"jobs.id": []string{id},
-	}
-
-	bJobs, err := e.performQuery(terms)
-	if err != nil {
-		return nil, err
-	}
-	if len(bJobs) > 1 {
-		e.logger.Trace.Printf("** BIG BIG PROBLEM! MORE THAN ONE FOUND: %d **\n", len(bJobs))
-	} else if len(bJobs) == 0 {
-		return nil, fmt.Errorf("Not found")
-	}
-
-	//bJobs[0].Id
-	//data := map[string]map[string]string{"doc":{}}
-	//e.conn.Update(e.index, "job", bJobs[0].Id, nil, data)
-
-	return &bJobs[0], nil
 }

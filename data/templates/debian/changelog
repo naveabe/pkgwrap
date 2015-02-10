@@ -1,5 +1,5 @@
 {{.Name}} ({{.Version}}-{{.Release}}) UNRELEASED; urgency=medium
 
-  * Initial release.
+  * pkgwrap build.
 
- -- {{.Packager}} {{.CurrentDateTime}}
+ -- {{.Packager}} <{{.Packager}}>  {{.CurrentDateTime}}

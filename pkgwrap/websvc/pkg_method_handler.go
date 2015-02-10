@@ -38,6 +38,8 @@ type PkgBuilderMethodHandler struct {
 
 	// This channel will be read to get PackageRequests
 	RequestChan chan specer.PackageRequest
+
+	//requestStore *tracker.EssRequeststore
 }
 
 func (m *PkgBuilderMethodHandler) getPackageRequestFromConf(usrFile *multipart.FileHeader, pkgReq *specer.PackageRequest) error {
@@ -190,6 +192,7 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 	if _, ok := params["dryrun"]; !ok {
 
 		m.RequestChan <- pkgReq
+		//err = requestStore.Add(pkgReq)
 	}
 
 	return nil, pkgReq, 200

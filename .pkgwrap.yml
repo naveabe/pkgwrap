@@ -21,7 +21,34 @@ Distributions:
       - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
       - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
       - "chown -R pkgwrap /opt/pkgwrap"
+
+
+    - name: ubuntu
+      release: 14.04
+
+      build_deps:
+      - git-core
+      - cmake
+      - pkg-config
+      - build-essential
+      - libgit2.0
+      - libgit2-dev
+      - golang
+      - docker.io
      
+      deps:
+      - libgit2.0
+      - golang
+      - docker.io
+
+      build_cmd:
+      - make .deps .build
+
+      post_install: 
+      - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
+      - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
+      - "chown -R pkgwrap /opt/pkgwrap"
+
 Package:
     build_env: go
     url: https://github.com/naveabe/pkgwrap

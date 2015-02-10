@@ -80,7 +80,7 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 }
 
-func StartEventMonitor(dstore *tracker.EssDatastore, logger *logging.Logger) {
+func StartEventMonitor(dstore *tracker.EssJobstore, logger *logging.Logger) {
 	dem := tracker.NewDockerEventMonitor("http://localhost:5555", dstore, logger)
 	if err := dem.Start(); err != nil {
 		logger.Error.Fatalf("%s\n", err)
@@ -94,7 +94,7 @@ func main() {
 		logger     = logging.NewStdLogger()
 		pkgReqChan = make(chan specer.PackageRequest)
 		cfg        *config.AppConfig
-		datastore  *tracker.EssDatastore
+		datastore  *tracker.EssJobstore
 		err        error
 	)
 
@@ -111,7 +111,8 @@ func main() {
 	if cfg.JobTracker.Enabled {
 		logger.Warning.Printf("Job tracker ENABLED!\n")
 
-		datastore, err = tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
+		//datastore, err = tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
+		datastore, err = tracker.NewEssJobstore(&cfg.JobTracker.Datastore, logger)
 		if err != nil {
 			logger.Error.Printf("Failed to init datastore: %s\n", err)
 			os.Exit(2)

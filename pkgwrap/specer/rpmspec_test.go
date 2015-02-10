@@ -9,10 +9,11 @@ var (
 	testPkgVersion = "0.0.1"
 	testTmpRepoDir = "/tmp"
 	testPkgPath    = testPkgName + "/" + testPkgVersion + "/annolityx"
+	testBsRunnable = initscript.BasicRunnable{"/path/to/bin", "-l info", map[string]string{}}
 )
 
 func Test_NewRPMSpec(t *testing.T) {
-	spec, err := NewRPMSpec(testPkgName, testPkgVersion)
+	_, err := NewRPMSpec(testPkgName, testPkgVersion)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}
@@ -20,12 +21,12 @@ func Test_NewRPMSpec(t *testing.T) {
 }
 
 func Test_BuildRPMSpec(t *testing.T) {
-	runnable := initscript.BasicRunnable{"/path/to/bin", "-l info", map[string]string{}}
-	pkg, _ := NewUserPackage(testPkgName, testPkgVersion, testPkgPath, runnable)
+
+	pkg, _ := NewUserPackage(testPkgName, testPkgVersion, testPkgPath, testBsRunnable)
 
 	tDistro, _ := NewDistribution("centos", "6")
 	tDistro.Deps = []string{"zeromq3"}
-	_, err := BuildRPMSpec(pkg, tDistro, testTmpRepoDir)
+	_, err := BuildRPMSpec(&testTmplMgr, pkg, tDistro, testTmpRepoDir)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}
