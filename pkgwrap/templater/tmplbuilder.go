@@ -36,6 +36,10 @@ type TemplatesManager struct {
 	TemplatesDir string
 }
 
+func (tm *TemplatesManager) DebRulesTemplateBuilder(distroName string) (*TemplateBuilder, error) {
+	return NewTemplateBuilder("rules", tm.TemplatesDir+"/"+distroName+"/rules")
+}
+
 func (tm *TemplatesManager) DebChangelogTemplateBuilder(distroName string) (*TemplateBuilder, error) {
 	return NewTemplateBuilder("changelog", tm.TemplatesDir+"/"+distroName+"/changelog")
 }

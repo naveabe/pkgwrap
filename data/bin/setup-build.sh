@@ -78,6 +78,7 @@ else
         su - $BUILD_USER -c "id > /dev/null";
         su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
     else
+        # TODO: This needs fixing.  Paths are off.
         su - $BUILD_USER -c "[ -d $BUILD_HOME_DIR/debuild ] || mkdir -p $BUILD_HOME_DIR/debuild";
         su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/";
         su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/$PROJECT.orig";

@@ -36,16 +36,8 @@ func (d *DEBSpec) WriteDirStructure(dstDir string) error {
 	debDir := dstDir + "/" + "debian"
 	os.MkdirAll(debDir, 0755)
 
-	err := d.writeCompat(debDir, 9) // debian compatibility version. should be 9 in almost all cases //
-	if err != nil {
-		return err
-	}
-
-	if err = d.writeRules(debDir); err != nil {
-		return err
-	}
-	//return d.writeInstallFiles(debDir)
-	return nil
+	// debian compatibility version. should be 9 in almost all cases //
+	return d.writeCompat(debDir, 9)
 }
 
 func (d *DEBSpec) writeCompat(dstDir string, version int) error {
@@ -56,29 +48,21 @@ func (d *DEBSpec) writeCompat(dstDir string, version int) error {
 /*
  * Not to be changed as building will happen externally.
  */
-func (d *DEBSpec) writeRules(dstDir string) error {
-	rules := `#!/usr/bin/make -f
-%:
-	dh $@`
+func WriteDebRulesFile(tmplMgr *templater.TemplatesManager, data interface{}, dstDir string) error {
+	bldr, err := tmplMgr.DebRulesTemplateBuilder("debian")
+	if err != nil {
+		return err
+	}
 
-	return ioutil.WriteFile(dstDir+"/"+"rules",
-		[]byte(rules), 0755)
-}
-
-/*
-func (d *DEBSpec) writeInstallFiles(dstDir string) error {
-	var (
-		fh *os.File
-	)
-
-	fh, _ = os.OpenFile(fmt.Sprintf("%s/%s.install", dstDir, d.Name),
-		os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-
+	outFile := dstDir + "/rules"
+	fh, err := os.OpenFile(outFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+	if err != nil {
+		return err
+	}
 	defer fh.Close()
 
-	return nil
+	return bldr.Build(data, fh)
 }
-*/
 
 func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, distro Distribution, dstDir string) error {
 	var (
@@ -95,6 +79,10 @@ func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, d
 	dspec.Deps = strings.Join(distro.Deps, " ")
 
 	if err := dspec.WriteDirStructure(dstDir); err != nil {
+		return err
+	}
+
+	if err = WriteDebRulesFile(tmplMgr, dspec, dstDir+"/debian"); err != nil {
 		return err
 	}
 
