@@ -39,7 +39,7 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 		return err
 	}
 
-	logUrl := fmt.Sprintf("http://%s/containers/%s/logs?stderr=1&stdout=1", job.Uri, job.Id)
+	logUrl := fmt.Sprintf("http://%s/containers/%s/logs?&stderr=1&stdout=1", job.Uri, job.Id)
 	if _, ok := r.URL.Query()["follow"]; ok {
 		logUrl += "&follow=1"
 	}
@@ -58,6 +58,7 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 	defer resp.Body.Close()
 
 	l.logger.Trace.Printf("Tailing log: %s...\n", id)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	for {
 		lineBytes, err := bRdr.ReadBytes('\n')
 		if err != nil {
@@ -68,8 +69,8 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 			l.logger.Warning.Printf("%s\n", err)
 			continue
 		}
-
-		_, err = w.Write(lineBytes)
+		// Do not send 8 byte docker header
+		_, err = w.Write(lineBytes[8:])
 		if err != nil {
 			l.logger.Warning.Printf("%s\n", err)
 			continue

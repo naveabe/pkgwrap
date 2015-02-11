@@ -102,6 +102,7 @@ EOF
 
     echo -n $PKG_RELEASE > "$REPO_LOCAL_PATH/$PKG_DISTRO/RELEASE"
     echo "Release Updated!"
+    # TODO: fire - added-to-repo event
 }
 
 
@@ -118,4 +119,5 @@ install_built_pkg() {
     echo "";
     echo "  ** DONE **"
     echo "";
+    # TODO: fire - installed-built-pkg event
 }

@@ -126,10 +126,10 @@ func main() {
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan)
 
-	go StartEventMonitor(datastore, logger)
-
 	// Avoid extra if statement in busy loop
 	if cfg.JobTracker.Enabled {
+		// Used for updating state changes.
+		go StartEventMonitor(datastore, logger)
 
 		for {
 			pkgReq := <-pkgReqChan

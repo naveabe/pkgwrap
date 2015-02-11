@@ -57,25 +57,18 @@ func (b *BuildRepository) ListUserProjects(pkgr string) ([]string, error) {
 }
 
 func (b *BuildRepository) ListPackages(pkgr, pkgname, pkgversion, distroLabel string) ([]string, error) {
+	flist := make([]string, 0)
+
 	files, err := ioutil.ReadDir(b.RepoDir + "/" + pkgr + "/" + pkgname + "/" + pkgversion + "/" + distroLabel)
 	if err != nil {
-		return make([]string, 0), err
+		return flist, err
 	}
 
-	var flist []string
-	if len(files) > 2 {
-		flist = make([]string, len(files)-2)
-		i := 0
-		for _, f := range files {
-			/* TODO: exclusion based on distro */
-			if strings.HasSuffix(f.Name(), ".spec") || f.Name() == "RELEASE" {
-				continue
-			}
-			flist[i] = f.Name()
-			i++
+	for _, f := range files {
+
+		if strings.HasSuffix(f.Name(), ".rpm") || strings.HasSuffix(f.Name(), ".deb") {
+			flist = append(flist, f.Name())
 		}
-	} else {
-		flist = make([]string, 0)
 	}
 	return flist, nil
 }

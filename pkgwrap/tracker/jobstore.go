@@ -102,9 +102,5 @@ func (e *EssJobstore) GetBuild(id string) (*BuildJob, error) {
 		return nil, fmt.Errorf("Not found")
 	}
 
-	//bJobs[0].Id
-	//data := map[string]map[string]string{"doc":{}}
-	//e.conn.Update(e.index, "job", bJobs[0].Id, nil, data)
-
 	return &bJobs[0], nil
 }

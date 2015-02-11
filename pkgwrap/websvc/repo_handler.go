@@ -37,7 +37,7 @@ func NewRepoHandler(repo repository.BuildRepository, logger *logging.Logger) *Re
 func (rh *RepoHandler) GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	pkgr := args[0]
 	//project := args[1]
-	//rh.logger.Trace.Printf("%s/%s (%d)", pkgr, project, len(args))
+	rh.logger.Trace.Printf("Path - %v\n", args)
 
 	switch len(args) {
 	case 1:
@@ -59,6 +59,7 @@ func (rh *RepoHandler) GET(w http.ResponseWriter, r *http.Request, args ...strin
 		}
 		return ALL_ORIGIN_ACL, list, 200
 	case 4:
+		//rh.logger.Trace.Printf("Path - %v\n", args)
 		list, err := rh.Repository.ListPackages(pkgr, args[1], args[2], args[3])
 		if err != nil {
 			return nil, map[string]string{"error": err.Error()}, 500
