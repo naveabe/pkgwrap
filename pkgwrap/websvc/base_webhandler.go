@@ -93,12 +93,11 @@ func (p *RestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if len(pathParts) < 1 {
 		p.writeJsonResponse(w, r, nil, []byte(fmt.Sprintf(`{"error": "Bad request: %s", "code": 404}`, r.URL.Path)), 404)
 		return
-	} /*else if len(pathParts) == 2 {
-		pathParts = append(pathParts, "")
-	}*/
+	}
 
 	headers, data, code := p.callMethod(w, r, pathParts...)
-	// Don't write response if method has already written the response
+	// Don't write response.  The method must write the response
+	// and return -1 for the status code.
 	if code != -1 {
 		p.writeJsonResponse(w, r, headers, data, code)
 	} else {
@@ -112,7 +111,6 @@ func (p *RestHandler) writeResponse(w http.ResponseWriter, r *http.Request, head
 			w.Header().Set(k, v)
 		}
 	}
-	//p.logger.Trace.Printf("User headers: %v\n", headers)
 	w.WriteHeader(respCode)
 	w.Write(data)
 	p.logger.Info.Printf("%s %d %s\n", r.Method, respCode, r.URL.RequestURI())

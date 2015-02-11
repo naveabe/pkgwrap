@@ -51,7 +51,6 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 		l.logger.Warning.Printf("Could not retrieve log: %s\n", logUrl)
 		return fmt.Errorf("%s", resp.Status)
 	}
-	//l.logger.Trace.Printf("Log response: %#v\n", resp)
 
 	bRdr := bufio.NewReader(resp.Body)
 
@@ -118,6 +117,6 @@ func (l *JobsHandler) GET(w http.ResponseWriter, r *http.Request, args ...string
 	if err != nil {
 		return nil, map[string]string{"error": err.Error()}, 400
 	}
-	//l.logger.Trace.Printf("%v\n", args)
+
 	return nil, bJobs, 200
 }
