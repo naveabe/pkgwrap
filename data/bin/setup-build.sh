@@ -1,20 +1,13 @@
 #! /bin/bash
+
 #
-# Environment Variables:
+# Common for both .deb and .rpm builds
 #
-#  REPO = github.com
-#  BUILD_USER = 
-#  BUILD_ENV = 
-#  BUILD_CMD = 
-#  BUILD_DEPS = 
 
 PROJECT=$1
 TAG=$2
 if [ "$TAG" == "" ]; then
     TAG=master
-    #VERSION="N/A"
-    #else 
-    #VERSION=`echo $TAG | sed -e "s/^[^0-9]*//g" -e "s/[^0-9]*$//g"`
 fi
 
 if [[ ( "$BUILD_USER" == "" ) || ( "$REPO" == "" ) ]]; then
@@ -52,7 +45,6 @@ echo "";
 # Setup build user (-m needed by ubuntu to create home dir)
 ( id $BUILD_USER > /dev/null 2>&1 ) || useradd -m $BUILD_USER
 
-#REPO_LOCAL_PATH="/opt/pkgbuilder/repo"
 REPO_LOCAL_PATH="/opt/pkgwrap/repo"
 
 # Initial clone puts the project at the root of user homedir
@@ -72,20 +64,58 @@ if [ "$BUILD_TYPE" == "source" ]; then
             echo "* No build environment selected using defaults!"        
             ;;
     esac
-else
-    echo "Running $BUILD_TYPE build..."
-    if [ "$PKG_TYPE" == "rpm" ]; then
-        su - $BUILD_USER -c "id > /dev/null";
-        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
-    else
-        # TODO: This needs fixing.  Paths are off.
-        su - $BUILD_USER -c "[ -d $BUILD_HOME_DIR/debuild ] || mkdir -p $BUILD_HOME_DIR/debuild";
-        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/";
-        su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/debuild/$PROJECT.orig";
-    fi
 fi
-
 
 echo "";
 echo "   Project path: $PROJECT_PATH"
 echo "";
+echo "Running $BUILD_TYPE build..."
+
+# rhel does not immediately setup the user (first login)
+su - $BUILD_USER -c "id > /dev/null";
+
+
+##### Helper functions #####
+install_deps() {
+    pkg_mgr="$1"
+    if [ "$BUILD_DEPS" != "" ]; then
+        for pkg in $BUILD_DEPS; do 
+            $pkg_mgr -y install "$pkg" || exit 1;
+        done
+    fi
+}
+
+
+add_pkg_to_repo() {
+    base_dir="$1"
+    find $base_dir -name "$PROJECT*.$PKG_TYPE" -exec cp -v '{}' $REPO_LOCAL_PATH/$PKG_DISTRO/ \; || {
+        echo "** Failed to add package to repo! **"
+        exit 7;
+    }
+cat <<EOF
+
+  *
+  * $PKG_TYPE successfully built!
+  *
+
+EOF
+
+    echo -n $PKG_RELEASE > "$REPO_LOCAL_PATH/$PKG_DISTRO/RELEASE"
+    echo "Release Updated!"
+}
+
+
+# Install built package on the build system.
+# i.e. test
+install_built_pkg() {
+    pkg_mgr="$1"
+
+    for pkg in `ls $REPO_LOCAL_PATH/$PKG_DISTRO/ | egrep "^$PROJECT.*$PKG_VERSION-$PKG_RELEASE.*\.$PKG_TYPE"`; do
+        echo "-> $pkg_mgr $REPO_LOCAL_PATH/$PKG_DISTRO/$pkg"
+        $pkg_mgr $REPO_LOCAL_PATH/$PKG_DISTRO/$pkg;
+    done
+
+    echo "";
+    echo "  ** DONE **"
+    echo "";
+}

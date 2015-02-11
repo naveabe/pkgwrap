@@ -1,23 +1,12 @@
 #! /bin/bash
-
-. /opt/pkgwrap/bin/setup-build.sh
-
 #
 # build/$name contains vfs tarball
 #
+. /opt/pkgwrap/bin/setup-build.sh
 
-# Install deps as build happens outside of .spec file.
-install_deps() {
-    yum -y update
-    
-    if [ "$BUILD_DEPS" != "" ]; then
-        for pkg in $BUILD_DEPS; do 
-            yum -y install "$pkg" || exit 1;
-        done
-    fi
-}
+yum -y update
+install_deps "yum"
 
-install_deps;
 
 # Copy spec file from repo
 su - $BUILD_USER -c "cp $REPO_LOCAL_PATH/$PKG_DISTRO/$PROJECT.spec ~/rpmbuild/SPECS/" || exit 2
@@ -35,6 +24,9 @@ if [ "$BUILD_TYPE" == "source" ]; then
     else
         echo " ** No build command specified! **"
     fi
+else
+  # Binary
+  su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
 fi
 
 # Build spec
@@ -42,23 +34,6 @@ fi
 su - $BUILD_USER -c "QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -ba ~/rpmbuild/SPECS/$PROJECT.spec" || exit 6
 
 # Copy RPM back to repo
-#[ -d "$REPO_LOCAL_PATH/$PKG_DISTRO" ] || mkdir -p "$REPO_LOCAL_PATH/$PKG_DISTRO"
-find $BUILD_HOME_DIR/rpmbuild/RPMS/ -name "$PROJECT*.rpm" -exec cp -v '{}' $REPO_LOCAL_PATH/$PKG_DISTRO/ \; || exit 7
-cat <<EOF
-  
-  *
-  * RPM successfully built!
-  *
-  * Attempting to install RPM...
-  *
-EOF
-echo -n $PKG_RELEASE > "$REPO_LOCAL_PATH/$PKG_DISTRO/RELEASE"
-
+add_pkg_to_repo "$BUILD_HOME_DIR/rpmbuild/RPMS/"
 # Install produced rpm
-for pkg in `ls $REPO_LOCAL_PATH/$PKG_DISTRO/ | egrep "^$PROJECT-$PKG_VERSION-$PKG_RELEASE.*\.rpm"`; do
-    yum -y install $REPO_LOCAL_PATH/$PKG_DISTRO/$pkg;
-done
-
-echo "";
-echo "  ** DONE **"
-echo "";
+install_built_pkg "yum -y install"

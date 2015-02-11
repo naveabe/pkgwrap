@@ -32,16 +32,31 @@ func (t *TemplateBuilder) Build(input interface{}, output io.Writer) error {
 	return t.tmpl.Execute(output, input)
 }
 
+func (t *TemplateBuilder) WriteNormalizedFile(data interface{}, dstFile string) error {
+	fh, err := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+
+	return t.Build(data, fh)
+}
+
 type TemplatesManager struct {
 	TemplatesDir string
 }
 
+/*
 func (tm *TemplatesManager) DebRulesTemplateBuilder(distroName string) (*TemplateBuilder, error) {
 	return NewTemplateBuilder("rules", tm.TemplatesDir+"/"+distroName+"/rules")
 }
 
 func (tm *TemplatesManager) DebChangelogTemplateBuilder(distroName string) (*TemplateBuilder, error) {
 	return NewTemplateBuilder("changelog", tm.TemplatesDir+"/"+distroName+"/changelog")
+}
+*/
+func (tm *TemplatesManager) DebScriptTemplateBuilder(distroName, script string) (*TemplateBuilder, error) {
+	return NewTemplateBuilder(script, tm.TemplatesDir+"/"+distroName+"/"+script)
 }
 
 func (tm *TemplatesManager) DebControlTemplateBuilder(distroName string) (*TemplateBuilder, error) {
@@ -51,6 +66,7 @@ func (tm *TemplatesManager) DebControlTemplateBuilder(distroName string) (*Templ
 func (tm *TemplatesManager) SpecTemplateBuilder(distroName string) (*TemplateBuilder, error) {
 	return NewTemplateBuilder(distroName+".spec", tm.TemplatesDir+"/spec/"+distroName+".spec")
 }
+
 func (tm *TemplatesManager) WriteSpecFile(specName, distroName string, spec interface{}, outDir string) error {
 	os.MkdirAll(outDir, 0755)
 

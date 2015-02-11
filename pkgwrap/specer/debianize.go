@@ -3,23 +3,37 @@ package specer
 import (
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
-	"time"
+	//"time"
+	"archive/tar"
+	"compress/gzip"
 )
+
+const DEB_BIN_VERSION = "2.0"
+const DEFAULT_SHELL = "#!/bin/bash"
 
 type DEBSpec struct {
 	PackageMetadata
 
+	Shell string
+
 	Url string
+
+	Arch string
 
 	Summary string
 
 	BuildDeps string
 	Deps      string
 
-	CurrentDateTime string // used for changelog
+	PreInstall    []string
+	PostInstall   []string
+	PreUninstall  []string
+	PostUninstall []string
+	//CurrentDateTime string // used for changelog
 }
 
 func NewDEBSpec(name, version string) *DEBSpec {
@@ -28,26 +42,43 @@ func NewDEBSpec(name, version string) *DEBSpec {
 			Name:    name,
 			Version: version,
 		},
-		CurrentDateTime: time.Now().Format(time.RFC1123Z),
+		Shell: DEFAULT_SHELL,
+		//CurrentDateTime: time.Now().Format(time.RFC1123Z),
 	}
 }
 
 func (d *DEBSpec) WriteDirStructure(dstDir string) error {
-	debDir := dstDir + "/" + "debian"
+	var (
+		debDir = dstDir + "/" + "debian"
+		//err    error
+	)
 	os.MkdirAll(debDir, 0755)
 
+	//err = ioutil.WriteFile(debDir+"/postinst", data, 0755)
+
 	// debian compatibility version. should be 9 in almost all cases //
-	return d.writeCompat(debDir, 9)
+	//if err = d.writeCompat(debDir, 9); err != nil {
+	//	return err
+	//}
+	return d.writeDebianBinary(debDir)
+	//; err != nil {
+
+	//os.MkdirAll(debDir+"/source", 0755)
+	//return ioutil.WriteFile(debDir+"/source/format", []byte("3.0 (quilt)"), 0775)
 }
 
+/*
 func (d *DEBSpec) writeCompat(dstDir string, version int) error {
 	return ioutil.WriteFile(dstDir+"/"+"compat",
 		[]byte(fmt.Sprintf("%d", version)), 0755)
 }
+*/
+func (d *DEBSpec) writeDebianBinary(dstDir string) error {
+	return ioutil.WriteFile(dstDir+"/"+"debian-binary",
+		[]byte(fmt.Sprintf("%s\n", DEB_BIN_VERSION)), 0755)
+}
 
 /*
- * Not to be changed as building will happen externally.
- */
 func WriteDebRulesFile(tmplMgr *templater.TemplatesManager, data interface{}, dstDir string) error {
 	bldr, err := tmplMgr.DebRulesTemplateBuilder("debian")
 	if err != nil {
@@ -63,56 +94,148 @@ func WriteDebRulesFile(tmplMgr *templater.TemplatesManager, data interface{}, ds
 
 	return bldr.Build(data, fh)
 }
+*/
 
-func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, distro Distribution, dstDir string) error {
+func (d *DEBSpec) WriteScripts(tmplMgr *templater.TemplatesManager, dstDir string) ([]string, error) {
 	var (
-		dspec = NewDEBSpec(uPkg.Name, uPkg.Version)
-		err   error
+		bldr    *templater.TemplateBuilder
+		err     error
+		scripts = make([]string, 0)
 	)
 
-	dspec.Packager = uPkg.Packager
-	dspec.Url = uPkg.URL
-	dspec.Release = uPkg.Release
-	dspec.Description = uPkg.Description
-	dspec.Summary = uPkg.Name + " " + uPkg.Version
-	dspec.BuildDeps = strings.Join(distro.BuildDeps, " ")
-	dspec.Deps = strings.Join(distro.Deps, " ")
+	if d.PreInstall != nil && len(d.PreInstall) > 0 {
+		if bldr, err = tmplMgr.DebScriptTemplateBuilder("debian", "preinst"); err != nil {
+			return scripts, err
+		}
+		if err = bldr.WriteNormalizedFile(d, dstDir+"/preinst"); err != nil {
+			return scripts, err
+		}
+		scripts = append(scripts, "preinst")
+	}
+	if d.PostInstall != nil && len(d.PostInstall) > 0 {
+		if bldr, err = tmplMgr.DebScriptTemplateBuilder("debian", "postinst"); err != nil {
+			return scripts, err
+		}
+		if err = bldr.WriteNormalizedFile(d, dstDir+"/postinst"); err != nil {
+			return scripts, err
+		}
+		scripts = append(scripts, "postinst")
+	}
+	if d.PreUninstall != nil && len(d.PreUninstall) > 0 {
+		if bldr, err = tmplMgr.DebScriptTemplateBuilder("debian", "prerm"); err != nil {
+			return scripts, err
+		}
+		if err = bldr.WriteNormalizedFile(d, dstDir+"/prerm"); err != nil {
+			return scripts, err
+		}
+		scripts = append(scripts, "prerm")
+	}
+	if d.PostUninstall != nil && len(d.PostUninstall) > 0 {
+		if bldr, err = tmplMgr.DebScriptTemplateBuilder("debian", "postrm"); err != nil {
+			return scripts, err
+		}
+		if err = bldr.WriteNormalizedFile(d, dstDir+"/postrm"); err != nil {
+			return scripts, err
+		}
+		scripts = append(scripts, "postrm")
+	}
+	return scripts, nil
+}
 
-	if err := dspec.WriteDirStructure(dstDir); err != nil {
+func WriteControlArchive(dstDir string, scripts []string) error {
+	archFiles := append([]string{"control"}, scripts...)
+
+	outFh, err := os.OpenFile(dstDir+"/control.tar.gz", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+	if err != nil {
 		return err
 	}
+	defer outFh.Close()
 
-	if err = WriteDebRulesFile(tmplMgr, dspec, dstDir+"/debian"); err != nil {
-		return err
+	//var fWriter io.WriteCloser = outFh
+	fWriter := gzip.NewWriter(outFh)
+	defer fWriter.Close()
+
+	tw := tar.NewWriter(fWriter)
+	defer tw.Close()
+
+	for _, s := range archFiles {
+		fInfo, err := os.Stat(dstDir + "/" + s)
+		if err != nil {
+			return err
+		}
+
+		hdr := tar.Header{
+			Name:    fInfo.Name(),
+			Size:    fInfo.Size(),
+			Mode:    int64(fInfo.Mode()),
+			ModTime: fInfo.ModTime(),
+		}
+		if err = tw.WriteHeader(&hdr); err != nil {
+			return err
+		}
+
+		fh, err := os.Open(dstDir + "/" + s)
+		if err != nil {
+			return err
+		}
+		defer fh.Close()
+
+		if _, err = io.Copy(tw, fh); err != nil {
+			return err
+		}
 	}
 
+	return nil
+}
+
+func WriteDebControlFile(tmplMgr *templater.TemplatesManager, data interface{}, dstDir string) error {
 	tbldr, err := tmplMgr.DebControlTemplateBuilder("debian")
 	if err != nil {
 		return err
 	}
 
-	outFile := dstDir + "/debian/control"
+	outFile := dstDir + "/control"
 	fh, err := os.OpenFile(outFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
 		return err
 	}
 	defer fh.Close()
 
-	if err = tbldr.Build(dspec, fh); err != nil {
+	return tbldr.Build(data, fh)
+}
+
+func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, distro Distribution, dstDir string) error {
+	var (
+		dspec   = NewDEBSpec(uPkg.Name, uPkg.Version)
+		err     error
+		scripts []string
+	)
+	// TODO: auto configure
+	dspec.Arch = "amd64"
+	dspec.Packager = uPkg.Packager
+	dspec.Url = uPkg.URL
+	dspec.Release = uPkg.Release
+	dspec.Description = uPkg.Description
+	dspec.Summary = uPkg.Name + " " + uPkg.Version
+	dspec.BuildDeps = strings.Join(distro.BuildDeps, ", ")
+	dspec.Deps = strings.Join(distro.Deps, ", ")
+
+	dspec.PreInstall = distro.PreInstall
+	dspec.PostInstall = distro.PostInstall
+	dspec.PreUninstall = distro.PreUninstall
+	dspec.PostUninstall = distro.PostUninstall
+
+	if err = dspec.WriteDirStructure(dstDir); err != nil {
 		return err
 	}
 
-	cbldr, err := tmplMgr.DebChangelogTemplateBuilder("debian")
-	if err != nil {
+	if scripts, err = dspec.WriteScripts(tmplMgr, dstDir+"/debian"); err != nil {
 		return err
 	}
 
-	outClog := dstDir + "/debian/changelog"
-	cfh, err := os.OpenFile(outClog, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
-	if err != nil {
+	if err = WriteDebControlFile(tmplMgr, dspec, dstDir+"/debian"); err != nil {
 		return err
 	}
-	defer cfh.Close()
 
-	return cbldr.Build(dspec, cfh)
+	return WriteControlArchive(dstDir+"/debian", scripts)
 }

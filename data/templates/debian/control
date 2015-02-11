@@ -1,13 +1,11 @@
-Source: {{.Name}}
-Standards-Version: {{.Version}}
+Package: {{.Name}}
+Version: {{.Version}}
 Section: base
 Priority: optional
-Maintainer: {{.Packager}}{{if .BuildDeps}}
+Architecture: {{.Arch}}{{if .BuildDeps}}
 Build-Depends: {{.BuildDeps}}{{end}}{{if .Url}}
-Homepage: {{.Url}}{{end}}
-
-Architecture: any
-Package: {{.Name}}{{if .Deps}}
+Homepage: {{.Url}}{{end}}{{if .Deps}}
 Depends: {{.Deps}}{{end}}
+Maintainer: {{.Packager}}
 Description: {{.Summary}}
 {{.Description}}

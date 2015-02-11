@@ -4,44 +4,36 @@
 #
 . /opt/pkgwrap/bin/setup-build.sh
 
-install_deps() {
-    apt-get update
-    
-    if [ "$BUILD_DEPS" != "" ]; then
-        for pkg in $BUILD_DEPS; do 
-            apt-get -y install "$pkg" || exit 1;
-        done
-    fi
-}
-apt-get -y install tree
-install_deps;
+apt-get update
+install_deps "apt-get";
 
-su - $BUILD_USER -c "[ -d ~/debuild/$PROJECT-$PKG_VERSION ] || mkdir -p ~/debuild/$PROJECT-$PKG_VERSION" || exit 3;
-su - $BUILD_USER -c "cp -a $REPO_LOCAL_PATH/$PKG_DISTRO/debian ~/debuild/$PROJECT-$PKG_VERSION/" || exit 6
 
-su - $BUILD_USER -c "ls -lah ~/debuild/"
+su - $BUILD_USER -c "[ -d ~/debuild ] || mkdir -p ~/debuild" || exit 2;
+
+su - $BUILD_USER -c "cp -a $REPO_LOCAL_PATH/$PKG_DISTRO/debian/debian-binary ~/debuild/" || exit 2
+su - $BUILD_USER -c "cp -a $REPO_LOCAL_PATH/$PKG_DISTRO/debian/control.tar.gz ~/debuild/" || exit 2;
 
 if [ "$BUILD_TYPE" == "source" ]; then
     # Build source.
     if [ "$BUILD_CMD" != "" ]; then
-        su - $BUILD_USER -c "cp -a $PROJECT_PATH ~/debuild/$PROJECT-$PKG_VERSION.orig" || exit 2
-        su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || exit 2
+        # User build command
+        su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || exit 3
+        # TODO: fire - user-build-success event    
         
-        # Copy package data to deb build env
-        su - $BUILD_USER -c "cp -a $PROJECT_PATH/build ~/debuild/$PROJECT-$PKG_VERSION/" || exit 4
-        
+        # Create data tarball
+        su - $BUILD_USER -c "cd ~/debuild && tar zcvf data.tar.gz -C $PROJECT_PATH/build/$PROJECT ." || exit 4; 
     else
-        echo " ** No build command specified! **"
+        echo " ** WARNING: No build command specified! **"
     fi
+else
+    # Binary (pre-compiled)
+    su - $BUILD_USER -c "cd ~/debuild && tar czvf data.tar.gz -C $PROJECT_PATH ." || exit 3;
 fi
 
-su - $BUILD_USER -c "cd ~/debuild/$PROJECT-$PKG_VERSION && debuild -us -uc" || exit 7
+# Make .deb (i.e. ar -r ...)
+su - $BUILD_USER -c "cd ~/debuild && ar -r ${PROJECT}_${PKG_VERSION}-${PKG_RELEASE}_amd64.deb debian-binary control.tar.gz data.tar.gz" || exit 5;
 
-find $BUILD_HOME_DIR/debuild/ -name "$PROJECT*.deb" -exec cp -v '{}' $REPO_LOCAL_PATH/$PKG_DISTRO/ \; || exit 7
-cat <<EOF
-  
-  *
-  * DEB successfully built!
-  *
-EOF
-echo -n $PKG_RELEASE > "$REPO_LOCAL_PATH/$PKG_DISTRO/RELEASE"
+# Copy .deb back to repo
+add_pkg_to_repo "$BUILD_HOME_DIR/debuild/"
+# Install build pkg (i.e. test)
+install_built_pkg "dpkg -i"
