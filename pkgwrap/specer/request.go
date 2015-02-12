@@ -16,6 +16,8 @@ type PackageRequest struct {
 
 	Package       *UserPackage   `yaml:"Package"`
 	Distributions []Distribution `yaml:"Distributions"`
+
+	Id string `json:"-"`
 }
 
 func NewPackageRequest(name string) *PackageRequest {

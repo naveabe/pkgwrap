@@ -2,6 +2,7 @@ package builder
 
 import (
 	"fmt"
+	//"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
 	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
@@ -63,26 +64,28 @@ func (b *TargetedPackageBuild) buildDistroContainers() error {
 	Todo:
 	uri : should be a pool of docker uri's
 */
-func (b *TargetedPackageBuild) StartBuilds(uri string) []string {
-
-	runningConts := make([]string, 0)
+//func (b *TargetedPackageBuild) StartBuilds(uri string) []string {
+func (b *TargetedPackageBuild) StartBuilds(uri string) []map[string]string {
+	cntInfo := make([]map[string]string, 0)
 
 	for id, dRun := range b.DistroContainers {
-		/*
-			if dRun.Distro.Name == specer.DISTRO_UBUNTU || dRun.Distro.Name == specer.DISTRO_DEBIAN {
-				b.logger.Info.Printf("Distro not yet supported: %s\n", dRun.Distro.Name)
-				continue
-			}
-		*/
+
 		if dkrCntr, err := dRun.Start(uri); err == nil {
 			b.logger.Trace.Printf("Starting container: %s (%s)\n", id, b.BuildRequest.Package.Packager)
 			b.logger.Trace.Printf("Config: %#v\n", dkrCntr.HostConfig)
-			runningConts = append(runningConts, dkrCntr.ID)
+
+			cntInfo = append(cntInfo, map[string]string{"id": dkrCntr.ID, "label": id})
+			for i, d := range b.BuildRequest.Distributions {
+				if d.Label() == id {
+					b.BuildRequest.Distributions[i].Id = dkrCntr.ID
+					break
+				}
+			}
 		} else {
 			b.logger.Error.Printf("Failed to start container %s: %s\n", id, err)
 		}
 	}
-	return runningConts
+	return cntInfo
 }
 
 func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) error {
@@ -170,7 +173,9 @@ func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
 func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesManager) error {
 	var ptype specer.OSPackageType
 
-	for _, distro := range b.BuildRequest.Distributions {
+	for i, distro := range b.BuildRequest.Distributions {
+		b.BuildRequest.Distributions[i].AutoSetRelease(b.Repository, b.BuildRequest.Package)
+
 		ptype = distro.PackageType()
 
 		b.logger.Debug.Printf("Processing distro: %s", distro.Name)

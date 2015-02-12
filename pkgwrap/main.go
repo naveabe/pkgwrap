@@ -141,8 +141,8 @@ func main() {
 			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
 				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
 
-			// Add request
-			if err = datastore.AddRequest(pkgReq); err != nil {
+			// IN PROGRESS: Add request
+			if pkgReq.Id, err = datastore.AddRequest(pkgReq); err != nil {
 				logger.Error.Printf("%s\n", err)
 				continue
 			}
@@ -154,23 +154,34 @@ func main() {
 				continue
 			}
 
-			buildIds := tBld.StartBuilds(DOCKER_URI)
-			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+			builds := tBld.StartBuilds(DOCKER_URI)
+			logger.Info.Printf("Containers started: %d\n", len(builds))
+			logger.Trace.Printf("Details: %s\n", builds)
 
-			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_HOST_PORT)
+			// TODO: should be an update
+			if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
+				logger.Error.Printf("%s\n", err)
+				continue
+			}
+			b, _ := json.MarshalIndent(tBld.BuildRequest, "", "  ")
+			logger.Trace.Printf("Updated request: %s\n", b)
+
+			bJob := tracker.NewBuildJob(&pkgReq, builds, DOCKER_HOST_PORT)
+
 			for i, _ := range bJob.Jobs {
-				bJob.Jobs[i].Status = "start"
+				bJob.Jobs[i].Status = "started"
 			}
 			// Add build job
-			if err = bJob.Record(datastore); err != nil {
+			if _, err = bJob.Record(datastore); err != nil {
 				logger.Error.Printf("%s\n", err)
 			}
 
-			b, _ := json.MarshalIndent(bJob, "", "  ")
-			logger.Trace.Printf("Wrote job: %s\n", b)
+			//	b, _ := json.MarshalIndent(bJob, "", "  ")
+			//	logger.Trace.Printf("Wrote job: %s\n", b)
+
 		}
 	} else {
-		logger.Warning.Printf("Job tracker DISABLED!\n")
+		logger.Warning.Printf("Tracker DISABLED!\n")
 
 		for {
 			pkgReq := <-pkgReqChan
@@ -184,13 +195,14 @@ func main() {
 				continue
 			}
 
-			buildIds := tBld.StartBuilds(DOCKER_URI)
-			logger.Info.Printf("Containers started: %d %s\n", len(buildIds), buildIds)
+			builds := tBld.StartBuilds(DOCKER_URI)
+			logger.Info.Printf("Containers started: %d\n", len(builds))
+			logger.Trace.Printf("Details: %s\n", builds)
 
-			bJob := tracker.NewBuildJob(&pkgReq, buildIds, DOCKER_HOST_PORT)
+			//bJob := tracker.NewBuildJob(&pkgReq, builds, DOCKER_HOST_PORT)
 
-			b, _ := json.MarshalIndent(bJob, "", "  ")
-			logger.Trace.Printf("Build job: %s\n", b)
+			//b, _ := json.MarshalIndent(bJob, "", "  ")
+			//logger.Trace.Printf("Build job: %s\n", b)
 		}
 	}
 }

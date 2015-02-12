@@ -118,5 +118,5 @@ func (l *JobsHandler) GET(w http.ResponseWriter, r *http.Request, args ...string
 		return nil, map[string]string{"error": err.Error()}, 400
 	}
 
-	return nil, bJobs, 200
+	return ALL_ORIGIN_ACL, bJobs, 200
 }

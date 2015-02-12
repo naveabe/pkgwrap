@@ -20,11 +20,15 @@ func NewEssJobstore(cfg *config.DatastoreConfig, logger *logging.Logger) (*EssJo
 	return &EssJobstore{EssDatastore: *eds}, nil
 }
 
-func (e *EssJobstore) AddRequest(pkgReq specer.PackageRequest) error {
+func (e *EssJobstore) AddRequest(pkgReq specer.PackageRequest) (string, error) {
 	return e.Add("pkgreq", pkgReq)
 }
 
-func (e *EssJobstore) AddJob(job BuildJob) error {
+func (e *EssJobstore) UpdateRequest(id string, pkgReq specer.PackageRequest) error {
+	return e.Update("pkgreq", id, pkgReq)
+}
+
+func (e *EssJobstore) AddJob(job BuildJob) (string, error) {
 	return e.Add("job", job)
 }
 

@@ -76,16 +76,17 @@ func (e *EssDatastore) initializeIndex(mappingFile string) error {
 	return nil
 }
 
-func (e *EssDatastore) Add(docType string, data interface{}) error {
+func (e *EssDatastore) Add(docType string, data interface{}) (string, error) {
 	resp, err := e.conn.Index(e.index, docType, "", nil, data)
 	if err != nil {
 		e.logger.Trace.Printf("%s\n", err)
-		return err
+		return "", err
 	}
 	if !resp.Created {
-		return fmt.Errorf("Failed to record job: %s", resp)
+		return "", fmt.Errorf("Failed to record job: %s", resp)
 	}
-	return nil
+
+	return resp.Id, nil
 }
 
 func (e *EssDatastore) Update(docType, id string, data interface{}) error {

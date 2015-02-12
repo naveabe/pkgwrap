@@ -2,6 +2,8 @@ package tracker
 
 import (
 	"fmt"
+	//"github.com/naveabe/pkgwrap/pkgwrap/builder"
+	//"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"strings"
 	"time"
@@ -11,6 +13,7 @@ type BuildJobId struct {
 	Id     string `json:"id"`
 	Uri    string `json:"uri"`
 	Status string `json:"status"`
+	Label  string `json:"label"`
 }
 
 func NewBuildJobId(id, uri string) *BuildJobId {
@@ -47,8 +50,8 @@ type BuildJob struct {
 	Jobs      []BuildJobId `json:"jobs"`
 }
 
-func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *BuildJob {
-
+//func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *BuildJob {
+func NewBuildJob(pkgReq *specer.PackageRequest, builds []map[string]string, uri string) *BuildJob {
 	bj := BuildJob{
 		Timestamp: float64(time.Now().UnixNano()) / 1000000000,
 		Username:  pkgReq.Package.Packager,
@@ -56,11 +59,13 @@ func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *
 		Project:   pkgReq.Package.Name,
 		TagBranch: pkgReq.Package.TagBranch,
 		Version:   pkgReq.Package.Version,
-		Jobs:      make([]BuildJobId, len(buildIds)),
+		Jobs:      make([]BuildJobId, len(builds)),
 	}
 
-	for i, v := range buildIds {
-		jid, _ := NewBuildJobIdFromString(v + "@" + uri)
+	//for _, v := range tbldr.DistroContainers {
+	for i, v := range builds {
+		jid, _ := NewBuildJobIdFromString(v["id"] + "@" + uri)
+		jid.Label = v["label"]
 		bj.Jobs[i] = *jid
 	}
 
@@ -70,7 +75,7 @@ func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *
 /*
 	Add BuildJob to datastore
 */
-func (b *BuildJob) Record(ds IJobstore) error {
+func (b *BuildJob) Record(ds IJobstore) (string, error) {
 	return ds.AddJob(*b)
 }
 

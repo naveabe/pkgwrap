@@ -2,6 +2,7 @@ package specer
 
 import (
 	"fmt"
+	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 )
 
 /* Todo: this should come from config */
@@ -89,6 +90,11 @@ type Distribution struct {
 	PreUninstall  []string `json:"pre_uninstall,omitempty" yaml:"pre_uninstall"`
 	PostUninstall []string `json:"post_uninstall,omitempty" yaml:"post_uninstall"`
 
+	// Holds container id once started.
+	Id string `json:"id,omitempty"`
+	// Package release
+	PkgRelease int64 `json:"pkg_release,omitempty"`
+
 	buildDir string
 }
 
@@ -117,6 +123,13 @@ func (d *Distribution) Label() string {
 		return fmt.Sprintf("%s", d.Name)
 	} else {
 		return fmt.Sprintf("%s-%s", d.Name, d.Release)
+	}
+}
+
+func (d *Distribution) AutoSetRelease(repo repository.BuildRepository, pkg *UserPackage) {
+	nextRelease := repo.NextRelease(pkg.Packager, pkg.Name, pkg.Version, d.Label())
+	if nextRelease > d.PkgRelease {
+		d.PkgRelease = nextRelease
 	}
 }
 
