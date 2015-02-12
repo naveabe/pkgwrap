@@ -43,13 +43,11 @@ type UserPackage struct {
 
 	FileList []string `json:"files,omitempty"`
 
-	URL string `json:"url" yaml:"url"`
+	URL       string `json:"url" yaml:"url"`
+	TagBranch string `json:"tagbranch" yaml:"tagbranch"` // git tag/branch to checkout //
 
 	BuildEnv  string       `json:"build_env" yaml:"build_env"`
 	BuildType PkgBuildType `json:"build_type"`
-
-	// git tag/branch to checkout //
-	TagBranch string `json:"tagbranch" yaml:"tagbranch"`
 }
 
 func NewUserPackageWithName(name string) *UserPackage {

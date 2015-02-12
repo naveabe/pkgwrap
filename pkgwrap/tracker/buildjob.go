@@ -71,7 +71,7 @@ func NewBuildJob(pkgReq *specer.PackageRequest, buildIds []string, uri string) *
 	Add BuildJob to datastore
 */
 func (b *BuildJob) Record(ds IJobstore) error {
-	return ds.Add(*b)
+	return ds.AddJob(*b)
 }
 
 func (b *BuildJob) GetSubJob(id string) (BuildJobId, error) {
@@ -81,4 +81,14 @@ func (b *BuildJob) GetSubJob(id string) (BuildJobId, error) {
 		}
 	}
 	return BuildJobId{}, fmt.Errorf("Not found")
+}
+
+func (b *BuildJob) SetJobStatus(id, status string) bool {
+	for i, j := range b.Jobs {
+		if j.Id == id {
+			b.Jobs[i].Status = status
+			return true
+		}
+	}
+	return false
 }

@@ -106,7 +106,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		}
 	} else {
 		// Git clone if source
-		// TODO: After reading reading config check tagbranch and checkout.
+		// TODO: After reading config check tagbranch and checkout.
 		if err = b.BuildRequest.Package.CloneRepo(b.Repository); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
@@ -117,8 +117,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 			return err
 		}
 	}
-	b.logger.Trace.Printf("%v\n", b.BuildRequest.Package)
-
+	//b.logger.Trace.Printf("%v\n", b.BuildRequest.Package)
 	if err = b.prepPerDistroBuilds(tmplMgr); err != nil {
 		return err
 	}

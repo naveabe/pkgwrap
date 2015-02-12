@@ -61,7 +61,7 @@ if [ "$BUILD_TYPE" == "source" ]; then
         *)
             su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/"
             PROJECT_PATH="$BUILD_HOME_DIR/$PROJECT"
-            echo "* No build environment selected using defaults!"        
+            echo "    ** No build environment selected using defaults! **"
             ;;
     esac
 fi

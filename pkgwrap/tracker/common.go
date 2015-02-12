@@ -1,5 +1,5 @@
 package tracker
 
 type IJobstore interface {
-	Add(BuildJob) error
+	AddJob(BuildJob) error
 }

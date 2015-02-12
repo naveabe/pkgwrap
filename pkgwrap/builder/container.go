@@ -10,6 +10,29 @@ import (
 	"strings"
 )
 
+/*
+type BuildContainer struct {
+	URI string
+
+	client *docker.Client
+}
+
+func NewBuildContainer(uri string) (*BuildContainer, error) {
+	var (
+		bc  = BuildContainer{}
+		err error
+	)
+
+	if bc.client, err = docker.NewClient(uri); err != nil {
+		return &bc, err
+	}
+	return nil
+}
+
+func (b *BuildContainer) Info(id string) (*docker.Container, error) {
+	return bc.client.InspectContainer(id)
+}
+*/
 type ContainerRunner struct {
 	Distro     specer.Distribution
 	Package    *specer.UserPackage

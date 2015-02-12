@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
+	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 )
 
 type EssJobstore struct {
@@ -19,19 +20,12 @@ func NewEssJobstore(cfg *config.DatastoreConfig, logger *logging.Logger) (*EssJo
 	return &EssJobstore{EssDatastore: *eds}, nil
 }
 
-func (e *EssJobstore) Add(job BuildJob) error {
-	resp, err := e.conn.Index(e.index, "job", "", nil, job)
-	//e.conn.Flush()
-	if err != nil {
-		e.logger.Trace.Printf("%s\n", err)
-		return err
-	}
+func (e *EssJobstore) AddRequest(pkgReq specer.PackageRequest) error {
+	return e.Add("pkgreq", pkgReq)
+}
 
-	if !resp.Created {
-		return fmt.Errorf("Failed to record job: %s", resp)
-	}
-
-	return nil
+func (e *EssJobstore) AddJob(job BuildJob) error {
+	return e.Add("job", job)
 }
 
 func (e *EssJobstore) performQuery(terms map[string]interface{}) ([]BuildJob, error) {

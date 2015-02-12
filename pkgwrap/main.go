@@ -80,8 +80,12 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 }
 
-func StartEventMonitor(dstore *tracker.EssJobstore, logger *logging.Logger) {
-	dem := tracker.NewDockerEventMonitor("http://localhost:5555", dstore, logger)
+func StartEventMonitor(dockerUri string, dstore *tracker.EssJobstore, logger *logging.Logger) {
+	dem, err := tracker.NewDockerEventMonitor("http://localhost:5555", dockerUri, dstore, logger)
+	if err != nil {
+		logger.Error.Fatalf("%s\n", err)
+	}
+
 	if err := dem.Start(); err != nil {
 		logger.Error.Fatalf("%s\n", err)
 	}
@@ -108,11 +112,11 @@ func main() {
 	repo := repository.BuildRepository{cfg.Repository}
 	tmplMgr := templater.TemplatesManager{cfg.TemplatesDir()}
 
-	if cfg.JobTracker.Enabled {
-		logger.Warning.Printf("Job tracker ENABLED!\n")
+	if cfg.Tracker.Enabled {
+		logger.Warning.Printf("Tracker ENABLED!\n")
 
-		//datastore, err = tracker.NewEssDatastore(&cfg.JobTracker.Datastore, logger)
-		datastore, err = tracker.NewEssJobstore(&cfg.JobTracker.Datastore, logger)
+		//datastore, err = tracker.NewEssDatastore(&cfg.Tracker.Datastore, logger)
+		datastore, err = tracker.NewEssJobstore(&cfg.Tracker.Datastore, logger)
 		if err != nil {
 			logger.Error.Printf("Failed to init datastore: %s\n", err)
 			os.Exit(2)
@@ -127,15 +131,22 @@ func main() {
 	go StartWebServices(cfg, repo, logger, pkgReqChan)
 
 	// Avoid extra if statement in busy loop
-	if cfg.JobTracker.Enabled {
+	if cfg.Tracker.Enabled {
 		// Used for updating state changes.
-		go StartEventMonitor(datastore, logger)
+		go StartEventMonitor(DOCKER_URI, datastore, logger)
 
 		for {
 			pkgReq := <-pkgReqChan
 
 			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
 				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
+
+			// Add request
+			if err = datastore.AddRequest(pkgReq); err != nil {
+				logger.Error.Printf("%s\n", err)
+				continue
+			}
+			logger.Debug.Printf("Tracking request: %s\n", pkgReq)
 
 			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
 			if err != nil {
@@ -150,7 +161,7 @@ func main() {
 			for i, _ := range bJob.Jobs {
 				bJob.Jobs[i].Status = "start"
 			}
-
+			// Add build job
 			if err = bJob.Record(datastore); err != nil {
 				logger.Error.Printf("%s\n", err)
 			}

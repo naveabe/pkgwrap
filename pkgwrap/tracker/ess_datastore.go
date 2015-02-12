@@ -75,3 +75,30 @@ func (e *EssDatastore) initializeIndex(mappingFile string) error {
 	e.logger.Warning.Printf("Updated _default_ mapping for %s: %s\n", e.index, b)
 	return nil
 }
+
+func (e *EssDatastore) Add(docType string, data interface{}) error {
+	resp, err := e.conn.Index(e.index, docType, "", nil, data)
+	if err != nil {
+		e.logger.Trace.Printf("%s\n", err)
+		return err
+	}
+	if !resp.Created {
+		return fmt.Errorf("Failed to record job: %s", resp)
+	}
+	return nil
+}
+
+func (e *EssDatastore) Update(docType, id string, data interface{}) error {
+	resp, err := e.conn.Index(e.index, docType, id, nil, data)
+	if err != nil {
+		e.logger.Trace.Printf("%s\n", err)
+		return err
+	}
+	e.logger.Trace.Printf("%s\n", resp)
+	/*
+		if !resp.Created {
+			return fmt.Errorf("Failed to record job: %s", resp)
+		}
+	*/
+	return nil
+}

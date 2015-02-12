@@ -19,7 +19,7 @@
             "mount_point": "/opt/pkgwrap/repo"
         }
     },
-    "job_tracker": {
+    "tracker": {
         "enabled": false,
         "datastore": {
             "host": "localhost",

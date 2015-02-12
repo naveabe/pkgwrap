@@ -127,7 +127,11 @@ func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, 
 		b, _ = data.([]byte)
 		break
 	default:
-		b, _ = json.Marshal(&data)
+		if _, ok := r.URL.Query()["pretty"]; ok {
+			b, _ = json.MarshalIndent(&data, "", "  ")
+		} else {
+			b, _ = json.Marshal(&data)
+		}
 		break
 	}
 
