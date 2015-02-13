@@ -100,7 +100,7 @@ func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	g.Logger.Debug.Printf("Queueing request: %#v ...\n", pkgReq)
-	g.RequestChan <- *pkgReq
+	//g.RequestChan <- *pkgReq
 
 	rslt, _ := json.MarshalIndent(pkgReq, "", "  ")
 	g.Logger.Trace.Printf("%s\n", rslt)
