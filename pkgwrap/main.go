@@ -130,7 +130,7 @@ func main() {
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan)
 
-	// Avoid extra if statement in busy loop
+	// Avoid if statement in busy loop
 	if cfg.Tracker.Enabled {
 		// Used for updating state changes.
 		go StartEventMonitor(DOCKER_URI, datastore, logger)
@@ -141,12 +141,11 @@ func main() {
 			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
 				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
 
-			// IN PROGRESS: Add request
 			if pkgReq.Id, err = datastore.AddRequest(pkgReq); err != nil {
 				logger.Error.Printf("%s\n", err)
 				continue
 			}
-			logger.Debug.Printf("Tracking request: %s\n", pkgReq)
+			logger.Trace.Printf("Request added: %s\n", pkgReq)
 
 			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
 			if err != nil {
@@ -156,9 +155,8 @@ func main() {
 
 			builds := tBld.StartBuilds(DOCKER_URI)
 			logger.Info.Printf("Containers started: %d\n", len(builds))
-			logger.Trace.Printf("Details: %s\n", builds)
+			logger.Trace.Printf("Containers details: %s\n", builds)
 
-			// TODO: should be an update
 			if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
 				logger.Error.Printf("%s\n", err)
 				continue
@@ -175,10 +173,6 @@ func main() {
 			if _, err = bJob.Record(datastore); err != nil {
 				logger.Error.Printf("%s\n", err)
 			}
-
-			//	b, _ := json.MarshalIndent(bJob, "", "  ")
-			//	logger.Trace.Printf("Wrote job: %s\n", b)
-
 		}
 	} else {
 		logger.Warning.Printf("Tracker DISABLED!\n")
@@ -197,12 +191,7 @@ func main() {
 
 			builds := tBld.StartBuilds(DOCKER_URI)
 			logger.Info.Printf("Containers started: %d\n", len(builds))
-			logger.Trace.Printf("Details: %s\n", builds)
-
-			//bJob := tracker.NewBuildJob(&pkgReq, builds, DOCKER_HOST_PORT)
-
-			//b, _ := json.MarshalIndent(bJob, "", "  ")
-			//logger.Trace.Printf("Build job: %s\n", b)
+			logger.Trace.Printf("Containers details: %s\n", builds)
 		}
 	}
 }
