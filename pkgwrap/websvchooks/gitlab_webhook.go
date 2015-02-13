@@ -91,6 +91,7 @@ func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
+	g.Logger.Trace.Printf("Gitlab event: %s\n", b)
 
 	pkgReq, err := g.parseTagEvent(b)
 	if err != nil {
