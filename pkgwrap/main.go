@@ -73,15 +73,15 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
 	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 
-	logger.Warning.Printf("Starting service: http://0.0.0.0:%d\n", cfg.Port)
+	logger.Warning.Printf("Starting web service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {
 		logger.Error.Printf("%s\n", err)
 		os.Exit(2)
 	}
 }
 
-func StartEventMonitor(dockerUri string, dstore *tracker.EssJobstore, logger *logging.Logger) {
-	dem, err := tracker.NewDockerEventMonitor("http://localhost:5555", dockerUri, dstore, logger)
+func StartEventMonitor(dstore *tracker.EssJobstore, logger *logging.Logger) {
+	dem, err := tracker.NewDockerEventMonitor(DOCKER_URI, dstore, logger)
 	if err != nil {
 		logger.Error.Fatalf("%s\n", err)
 	}
@@ -124,7 +124,7 @@ func main() {
 
 		jobsHandle := websvc.NewJobsHandler(datastore, logger)
 		websvc.NewRestHandler(cfg.Endpoints.Jobs, jobsHandle, logger)
-		logger.Warning.Printf("Logs API: %s\n", cfg.Endpoints.Jobs)
+		logger.Warning.Printf("Jobs API: %s\n", cfg.Endpoints.Jobs)
 	}
 
 	// HTTP server /api/builder
@@ -133,7 +133,7 @@ func main() {
 	// Avoid if statement in busy loop
 	if cfg.Tracker.Enabled {
 		// Used for updating state changes.
-		go StartEventMonitor(DOCKER_URI, datastore, logger)
+		go StartEventMonitor(datastore, logger)
 
 		for {
 			pkgReq := <-pkgReqChan
