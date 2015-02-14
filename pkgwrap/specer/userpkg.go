@@ -111,15 +111,28 @@ func (u *UserPackage) PackagerFromURL() (string, error) {
 }
 
 func (u *UserPackage) CloneRepo(repo repository.BuildRepository) error {
-	repoUrl := u.URL + ".git"
-	//b.logger.Trace.Printf("Cloning: %s\n", repoUrl)
-	copts := git.CloneOptions{
-		CheckoutBranch: u.TagBranch,
-	}
-	_, err := git.Clone(repoUrl, repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name, &copts)
+	// Clone branch
+	gitRepo, err := git.Clone(u.URL+".git", repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name,
+		&git.CloneOptions{CheckoutBranch: u.TagBranch})
 	if err != nil {
-		return err
+		// Clone repo on branch failure
+		if gitRepo, err = git.Clone(u.URL+".git", repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name,
+			&git.CloneOptions{}); err != nil {
+
+			return err
+		}
+
+		ref, err := gitRepo.DwimReference(u.TagBranch)
+		if err != nil {
+			// Tag not found
+			return err
+		}
+
+		if err = gitRepo.SetHeadDetached(ref.Target(), nil, ""); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
@@ -128,13 +141,14 @@ func (u *UserPackage) CloneRepo(repo repository.BuildRepository) error {
 		repo : Repository
 		distroLabel : e.g. centos, centos-6, ubuntu-12.04 ...
 */
+/*
 func (u *UserPackage) AutoSetRelease(repo repository.BuildRepository, distroLabel string) {
 	nextRelease := repo.NextRelease(u.Packager, u.Name, u.Version, distroLabel)
 	if nextRelease > u.Release {
 		u.Release = nextRelease
 	}
 }
-
+*/
 func (u *UserPackage) Uncompress(repoBase string) error {
 	dst := filepath.Dir(repoBase + "/" + u.Packager + "/" + u.Path)
 
@@ -176,13 +190,13 @@ func (u *UserPackage) untar(r io.Reader, dst string) error {
 		} else if err != nil {
 			return err
 		}
-		// start writing out uncompressed tarball //
+		// Start writing out uncompressed tarball
 		if entry.FileInfo().IsDir() {
 			os.MkdirAll(dst+string(os.PathSeparator)+entry.Name, entry.FileInfo().Mode())
 		} else {
-			/* Remove pkg dirname from the prefix */
+			// Remove pkg dirname from the prefix
 			u.FileList = append(u.FileList, strings.TrimPrefix(entry.Name, u.Name))
-			/* Create file */
+			// Create file
 			fw, err := os.OpenFile(dst+string(os.PathSeparator)+entry.Name,
 				os.O_CREATE|os.O_WRONLY|os.O_TRUNC, entry.FileInfo().Mode())
 			if err != nil {

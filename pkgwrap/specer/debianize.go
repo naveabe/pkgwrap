@@ -214,7 +214,10 @@ func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, d
 	dspec.Arch = "amd64"
 	dspec.Packager = uPkg.Packager
 	dspec.Url = uPkg.URL
-	dspec.Release = uPkg.Release
+
+	//dspec.Release = uPkg.Release
+	dspec.Release = distro.PkgRelease
+
 	dspec.Description = uPkg.Description
 	dspec.Summary = uPkg.Name + " " + uPkg.Version
 	dspec.BuildDeps = strings.Join(distro.BuildDeps, ", ")

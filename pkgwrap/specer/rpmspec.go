@@ -100,7 +100,8 @@ func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, dist
 	spec.BuildRequires = strings.Join(distro.BuildDeps, " ")
 	spec.Requires = strings.Join(distro.Deps, " ")
 
-	spec.Release = pkgReq.Release
+	//spec.Release = pkgReq.Release
+	spec.Release = distro.PkgRelease
 
 	spec.Source = pkgReq.Name
 	spec.Url = pkgReq.URL

@@ -64,7 +64,6 @@ func (b *TargetedPackageBuild) buildDistroContainers() error {
 	Todo:
 	uri : should be a pool of docker uri's
 */
-//func (b *TargetedPackageBuild) StartBuilds(uri string) []string {
 func (b *TargetedPackageBuild) StartBuilds(uri string) []map[string]string {
 	cntInfo := make([]map[string]string, 0)
 
@@ -108,8 +107,8 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 			return err
 		}
 	} else {
-		// Git clone if source
-		// TODO: After reading config check tagbranch and checkout.
+		b.logger.Trace.Printf("Cloning: name: %s;  tagbranch: %s\n", b.BuildRequest.Name, b.BuildRequest.Package.TagBranch)
+		// Git clone if build type source
 		if err = b.BuildRequest.Package.CloneRepo(b.Repository); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
@@ -174,6 +173,7 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 	var ptype specer.OSPackageType
 
 	for i, distro := range b.BuildRequest.Distributions {
+		// Set auto release
 		b.BuildRequest.Distributions[i].AutoSetRelease(b.Repository, b.BuildRequest.Package)
 
 		ptype = distro.PackageType()
@@ -201,9 +201,6 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 	All pre-build setup before the .rpm build can start
 */
 func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
-	// Auto increment release if necessary
-	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
-	//b.BuildRequest.Package.Au toSetRelease(b.Repository, "rpm")
 	specDst := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
 		"/" + distro.Label()
 	// Write spec to repository
@@ -215,10 +212,6 @@ func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr
 	All pre-build setup before the .deb build can start
 */
 func (b *TargetedPackageBuild) setupDEBBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
-	b.logger.Warning.Printf("** Debian packaging in development! **")
-
-	b.BuildRequest.Package.AutoSetRelease(b.Repository, distro.Label())
-
 	dstDir := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
 		"/" + distro.Label()
 	return specer.BuildDebStructure(tmplMgr, b.BuildRequest.Package, distro, dstDir)
