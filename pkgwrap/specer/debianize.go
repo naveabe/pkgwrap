@@ -48,53 +48,16 @@ func NewDEBSpec(name, version string) *DEBSpec {
 }
 
 func (d *DEBSpec) WriteDirStructure(dstDir string) error {
-	var (
-		debDir = dstDir + "/" + "debian"
-		//err    error
-	)
+	debDir := dstDir + "/" + "debian"
 	os.MkdirAll(debDir, 0755)
-
-	//err = ioutil.WriteFile(debDir+"/postinst", data, 0755)
-
-	// debian compatibility version. should be 9 in almost all cases //
-	//if err = d.writeCompat(debDir, 9); err != nil {
-	//	return err
-	//}
 	return d.writeDebianBinary(debDir)
-	//; err != nil {
 
-	//os.MkdirAll(debDir+"/source", 0755)
-	//return ioutil.WriteFile(debDir+"/source/format", []byte("3.0 (quilt)"), 0775)
 }
 
-/*
-func (d *DEBSpec) writeCompat(dstDir string, version int) error {
-	return ioutil.WriteFile(dstDir+"/"+"compat",
-		[]byte(fmt.Sprintf("%d", version)), 0755)
-}
-*/
 func (d *DEBSpec) writeDebianBinary(dstDir string) error {
 	return ioutil.WriteFile(dstDir+"/"+"debian-binary",
 		[]byte(fmt.Sprintf("%s\n", DEB_BIN_VERSION)), 0755)
 }
-
-/*
-func WriteDebRulesFile(tmplMgr *templater.TemplatesManager, data interface{}, dstDir string) error {
-	bldr, err := tmplMgr.DebRulesTemplateBuilder("debian")
-	if err != nil {
-		return err
-	}
-
-	outFile := dstDir + "/rules"
-	fh, err := os.OpenFile(outFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
-	if err != nil {
-		return err
-	}
-	defer fh.Close()
-
-	return bldr.Build(data, fh)
-}
-*/
 
 func (d *DEBSpec) WriteScripts(tmplMgr *templater.TemplatesManager, dstDir string) ([]string, error) {
 	var (

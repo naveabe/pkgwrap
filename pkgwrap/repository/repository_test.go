@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"testing"
 )
 
@@ -11,13 +12,14 @@ var (
 	testPkgVersion  = "0.0.1"
 	testRepo        = BuildRepository{testRepoDir}
 	testDistroLabel = "centos-6"
+	testUsrPkg      = specer.NewUserPackageWithName(testPkgName)
 )
 
 func Test_LastRelease(t *testing.T) {
-	t.Logf("%d", testRepo.LastRelease(testPkgr, testPkgName, testPkgVersion, testDistroLabel))
+	t.Logf("%d", testRepo.LastRelease(testUsrPkg, testDistroLabel))
 }
 func Test_NextRelease(t *testing.T) {
-	t.Logf("%d", testRepo.NextRelease(testPkgr, testPkgName, testPkgVersion, testDistroLabel))
+	t.Logf("%d", testRepo.NextRelease(testUsrPkg, testDistroLabel))
 }
 
 func Test_ListPackages(t *testing.T) {

@@ -96,8 +96,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		return err
 	}
 
-	if err = b.Repository.Clean(b.BuildRequest.Package.Packager,
-		b.BuildRequest.Package.Name, b.BuildRequest.Package.Version); err != nil {
+	if err = b.Repository.Clean(b.BuildRequest.Package); err != nil {
 		return err
 	}
 
@@ -108,8 +107,11 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		}
 	} else {
 		b.logger.Trace.Printf("Cloning: name: %s;  tagbranch: %s\n", b.BuildRequest.Name, b.BuildRequest.Package.TagBranch)
+
 		// Git clone if build type source
-		if err = b.BuildRequest.Package.CloneRepo(b.Repository); err != nil {
+		dstDir := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + b.BuildRequest.Package.Name
+
+		if err = b.BuildRequest.Package.CloneRepo(dstDir); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
 		}
@@ -134,7 +136,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 func (b *TargetedPackageBuild) buildInitScript(tmplMgr *templater.TemplatesManager) error {
 	if b.BuildRequest.Package.InitScript != nil && b.BuildRequest.Package.InitScript.Runnable.Path != "" {
 		return initscript.BuildInitScript(tmplMgr, *b.BuildRequest.Package.InitScript,
-			b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version))
+			b.Repository.BuildDir(b.BuildRequest.Package))
 	} else {
 		b.logger.Info.Printf("Not creating startup script. No runnable path specified!\n")
 	}
@@ -146,7 +148,7 @@ func (b *TargetedPackageBuild) buildInitScript(tmplMgr *templater.TemplatesManag
 	distro containers.
 */
 func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
-	bldConf := b.Repository.BuildConfig(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version)
+	bldConf := b.Repository.BuildConfig(b.BuildRequest.Package)
 	b.logger.Trace.Printf("Reading project config: %s\n", bldConf)
 
 	cBytes, err := ioutil.ReadFile(bldConf)
@@ -173,12 +175,19 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 	var ptype specer.OSPackageType
 
 	for i, distro := range b.BuildRequest.Distributions {
-		// Set auto release
-		b.BuildRequest.Distributions[i].AutoSetRelease(b.Repository, b.BuildRequest.Package)
+		// Set next release
+		nextRelease := b.Repository.NextRelease(b.BuildRequest.Package, distro.Label())
+		if nextRelease < 0 {
+			b.BuildRequest.Distributions[i].PkgRelease = 1
+		} else if nextRelease > distro.PkgRelease {
+			b.BuildRequest.Distributions[i].PkgRelease = nextRelease
+		}
+		b.logger.Trace.Printf("Set distro (%s) release: %d\n",
+			distro.Label(), b.BuildRequest.Distributions[i].PkgRelease)
+		b.logger.Debug.Printf("Processing distro: %s", distro.Label())
 
+		// Process based on package type
 		ptype = distro.PackageType()
-
-		b.logger.Debug.Printf("Processing distro: %s", distro.Name)
 		switch ptype {
 		case specer.OS_PKG_TYPE_RPM:
 			if err := b.setupRPMBuild(distro, tmplMgr); err != nil {
@@ -201,8 +210,7 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 	All pre-build setup before the .rpm build can start
 */
 func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
-	specDst := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
-		"/" + distro.Label()
+	specDst := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + distro.Label()
 	// Write spec to repository
 	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro, specDst)
 	return err
@@ -212,14 +220,13 @@ func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr
 	All pre-build setup before the .deb build can start
 */
 func (b *TargetedPackageBuild) setupDEBBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
-	dstDir := b.Repository.BuildDir(b.BuildRequest.Package.Packager, b.BuildRequest.Name, b.BuildRequest.Version) +
-		"/" + distro.Label()
+	dstDir := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + distro.Label()
 	return specer.BuildDebStructure(tmplMgr, b.BuildRequest.Package, distro, dstDir)
 }
 
 func (b *TargetedPackageBuild) Add(distro specer.Distribution, pkg *specer.UserPackage) error {
 
-	cRunner, err := NewContainerRunner(b.cfg, distro, pkg, b.Repository)
+	cRunner, err := NewContainerRunner(b.cfg, distro, pkg)
 	if err != nil {
 		return err
 	}

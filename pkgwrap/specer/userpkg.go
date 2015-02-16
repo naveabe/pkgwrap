@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/libgit2/git2go"
 	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
-	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"io"
 	"os"
 	"path/filepath"
@@ -43,8 +42,9 @@ type UserPackage struct {
 
 	FileList []string `json:"files,omitempty"`
 
-	URL       string `json:"url" yaml:"url"`
-	TagBranch string `json:"tagbranch" yaml:"tagbranch"` // git tag/branch to checkout //
+	URL string `json:"url" yaml:"url"`
+	// git tag/branch to checkout //
+	TagBranch string `json:"tagbranch" yaml:"tagbranch"`
 
 	BuildEnv  string       `json:"build_env" yaml:"build_env"`
 	BuildType PkgBuildType `json:"build_type"`
@@ -93,6 +93,33 @@ func NewUserPackage(name, version, pkgpath string, runnable initscript.BasicRunn
 	return &uPkg, nil
 }
 
+func NewUserPackageFromURL(url string) (*UserPackage, error) {
+	var (
+		upkg = UserPackage{
+			PackageMetadata: PackageMetadata{
+				Release: DEFAULT_RELEASE,
+			},
+			URL:       url,
+			TagBranch: "master",
+			BuildType: BUILDTYPE_SOURCE,
+		}
+		err error
+	)
+
+	parts := strings.Split(upkg.URL, "/")
+	if len(parts) < 5 {
+		return &upkg, fmt.Errorf("Invalid URL: %s", upkg.URL)
+	}
+	upkg.Name = parts[4]
+	upkg.Packager = parts[3]
+
+	if upkg.InitScript, err = initscript.NewBasicInitScript(upkg.Name); err != nil {
+		return &upkg, err
+	}
+
+	return &upkg, nil
+}
+
 func (u *UserPackage) SourceRepoName() (string, error) {
 	p := strings.Split(u.URL, "/")
 	if len(p) < 3 {
@@ -110,15 +137,17 @@ func (u *UserPackage) PackagerFromURL() (string, error) {
 	}
 }
 
-func (u *UserPackage) CloneRepo(repo repository.BuildRepository) error {
+func (u *UserPackage) VersionBaseDir() string {
+	repoName, _ := u.SourceRepoName()
+	return fmt.Sprintf("%s/%s/%s/%s", repoName, u.Packager, u.Name, u.Version)
+}
+
+func (u *UserPackage) CloneRepo(dstDir string) error {
 	// Clone branch
-	gitRepo, err := git.Clone(u.URL+".git", repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name,
-		&git.CloneOptions{CheckoutBranch: u.TagBranch})
+	gitRepo, err := git.Clone(u.URL+".git", dstDir, &git.CloneOptions{CheckoutBranch: u.TagBranch})
 	if err != nil {
 		// Clone repo on branch failure
-		if gitRepo, err = git.Clone(u.URL+".git", repo.BuildDir(u.Packager, u.Name, u.Version)+"/"+u.Name,
-			&git.CloneOptions{}); err != nil {
-
+		if gitRepo, err = git.Clone(u.URL+".git", dstDir, &git.CloneOptions{}); err != nil {
 			return err
 		}
 
@@ -136,29 +165,17 @@ func (u *UserPackage) CloneRepo(repo repository.BuildRepository) error {
 	return nil
 }
 
-/*
-	Params:
-		repo : Repository
-		distroLabel : e.g. centos, centos-6, ubuntu-12.04 ...
-*/
-/*
-func (u *UserPackage) AutoSetRelease(repo repository.BuildRepository, distroLabel string) {
-	nextRelease := repo.NextRelease(u.Packager, u.Name, u.Version, distroLabel)
-	if nextRelease > u.Release {
-		u.Release = nextRelease
-	}
-}
-*/
 func (u *UserPackage) Uncompress(repoBase string) error {
-	dst := filepath.Dir(repoBase + "/" + u.Packager + "/" + u.Path)
+	src := repoBase + "/" + u.Packager + "/" + u.Path
+	dst := filepath.Dir(src)
 
-	if strings.HasSuffix(u.Path, ".tgz") || strings.HasSuffix(u.Path, ".tar.gz") {
+	if strings.HasSuffix(src, ".tgz") || strings.HasSuffix(src, ".tar.gz") {
 		// Gzip tarball //
-		return u.unGzipTar(repoBase, dst)
-	} else if strings.HasSuffix(u.Path, ".tbz2") || strings.HasSuffix(u.Path, ".tar.bz2") {
+		return u.unGzipTar(src, dst)
+	} else if strings.HasSuffix(src, ".tbz2") || strings.HasSuffix(src, ".tar.bz2") {
 		//  Bzip tarball //
 		return fmt.Errorf("Compression not yet supported: %s", u.Path)
-	} else if strings.HasSuffix(u.Path, ".zip") {
+	} else if strings.HasSuffix(src, ".zip") {
 		// Zip file //
 		return fmt.Errorf("Compression not yet supported: %s", u.Path)
 	} else {
@@ -166,8 +183,8 @@ func (u *UserPackage) Uncompress(repoBase string) error {
 	}
 }
 
-func (u *UserPackage) unGzipTar(repoBase, dstDir string) error {
-	irdr, err := os.Open(repoBase + "/" + u.Packager + "/" + u.Path)
+func (u *UserPackage) unGzipTar(srcTarGz, dstDir string) error {
+	irdr, err := os.Open(srcTarGz)
 	if err != nil {
 		return err
 	}

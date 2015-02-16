@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
 	"testing"
@@ -12,7 +13,8 @@ var (
 		Package:       testUserPkg,
 		Distributions: []specer.Distribution{testDistro, testDistro2},
 	}
-	testTmplMgr = templater.TemplatesManager{testConfig.TemplatesDir()}
+	testBuildRepo = repository.BuildRepository{testRepoDir}
+	testTmplMgr   = templater.TemplatesManager{testConfig.TemplatesDir()}
 )
 
 func Test_NewTargetedPackageBuild_Source(t *testing.T) {

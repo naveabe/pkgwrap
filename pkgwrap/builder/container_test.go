@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
 	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
-	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"testing"
 )
@@ -23,16 +22,14 @@ var (
 	}
 	testDistro, _  = specer.NewDistribution(specer.DISTRO_CENTOS, "")
 	testUserPkg, _ = specer.NewUserPackage(testPkgName, testPkgVersion, testPkgPath, testRunnable)
-	testBuildRepo  = repository.BuildRepository{testRepoDir}
 	testConfig, _  = config.LoadConfigFromFile(testCfgFile)
 )
 
 func Test_ContainerRunner(t *testing.T) {
 
 	testContRun = ContainerRunner{
-		Distro:     testDistro,
-		Package:    testUserPkg,
-		Repository: testBuildRepo,
+		Distro:  testDistro,
+		Package: testUserPkg,
 	}
 	testContRun.ContainerConfig = testContRun.initContainerConfig()
 
@@ -48,7 +45,7 @@ func Test_NewContainerRunner(t *testing.T) {
 	testDistro2.UserBuildCmd = []string{"make install"}
 	testDistro2.BuildDeps = []string{"gcc-c++", "gcc"}
 
-	cntr, err := NewContainerRunner(testConfig.Builder, testDistro2, testUserPkg, testBuildRepo)
+	cntr, err := NewContainerRunner(testConfig.Builder, testDistro2, testUserPkg)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}

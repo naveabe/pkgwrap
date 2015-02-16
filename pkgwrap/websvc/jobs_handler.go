@@ -43,6 +43,9 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 	if _, ok := r.URL.Query()["follow"]; ok {
 		logUrl += "&follow=1"
 	}
+	if _, ok := r.URL.Query()["timestamps"]; ok {
+		logUrl += "&timestamps=1"
+	}
 
 	resp, err := http.Get(logUrl)
 	if err != nil {
@@ -56,8 +59,10 @@ func (l *JobsHandler) proxyLogStream(w http.ResponseWriter, r *http.Request, id 
 
 	defer resp.Body.Close()
 
-	l.logger.Trace.Printf("Tailing log: %s...\n", id)
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	l.logger.Trace.Printf("Tailing log: %s...\n", id)
+
 	for {
 		lineBytes, err := bRdr.ReadBytes('\n')
 		if err != nil {
@@ -115,7 +120,7 @@ func (l *JobsHandler) GET(w http.ResponseWriter, r *http.Request, args ...string
 	}
 
 	if err != nil {
-		return nil, map[string]string{"error": err.Error()}, 400
+		return ALL_ORIGIN_ACL, map[string]string{"error": err.Error()}, 400
 	}
 
 	return ALL_ORIGIN_ACL, bJobs, 200

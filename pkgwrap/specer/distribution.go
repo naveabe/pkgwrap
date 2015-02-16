@@ -2,7 +2,6 @@ package specer
 
 import (
 	"fmt"
-	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 )
 
 /* Todo: this should come from config */
@@ -107,8 +106,9 @@ func NewDistribution(name OSDistro, release string) (Distribution, error) {
 	// implied latest
 	if release == "" || ok {
 		d = Distribution{
-			Name:    name,
-			Release: release,
+			Name:       name,
+			Release:    release,
+			PkgRelease: DEFAULT_RELEASE,
 		}
 		d.buildDir = DISTRO_BUILD_DIRS[d.Name]
 	} else {
@@ -123,13 +123,6 @@ func (d *Distribution) Label() string {
 		return fmt.Sprintf("%s", d.Name)
 	} else {
 		return fmt.Sprintf("%s-%s", d.Name, d.Release)
-	}
-}
-
-func (d *Distribution) AutoSetRelease(repo repository.BuildRepository, pkg *UserPackage) {
-	nextRelease := repo.NextRelease(pkg.Packager, pkg.Name, pkg.Version, d.Label())
-	if nextRelease > d.PkgRelease {
-		d.PkgRelease = nextRelease
 	}
 }
 

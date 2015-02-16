@@ -6,6 +6,7 @@ import (
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
+	"strings"
 )
 
 type EssJobstore struct {
@@ -62,8 +63,8 @@ func (e *EssJobstore) performQuery(terms map[string]interface{}) ([]BuildJob, er
 
 func (e *EssJobstore) GetBuildsForPackageVersion(pkgr, name, version string) ([]BuildJob, error) {
 	terms := map[string]interface{}{
-		"username": pkgr,
-		"project":  name,
+		"username": strings.ToLower(pkgr),
+		"project":  strings.ToLower(name),
 		"version":  version,
 	}
 
@@ -72,15 +73,15 @@ func (e *EssJobstore) GetBuildsForPackageVersion(pkgr, name, version string) ([]
 
 func (e *EssJobstore) GetBuildsForPackage(pkgr, name string) ([]BuildJob, error) {
 	terms := map[string]interface{}{
-		"username": pkgr,
-		"project":  name,
+		"username": strings.ToLower(pkgr),
+		"project":  strings.ToLower(name),
 	}
 	return e.performQuery(terms)
 }
 
 func (e *EssJobstore) GetBuildsForUser(pkgr string) ([]BuildJob, error) {
 	terms := map[string]interface{}{
-		"username": pkgr,
+		"username": strings.ToLower(pkgr),
 	}
 	return e.performQuery(terms)
 }
