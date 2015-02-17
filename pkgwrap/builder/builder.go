@@ -190,12 +190,12 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 		ptype = distro.PackageType()
 		switch ptype {
 		case specer.OS_PKG_TYPE_RPM:
-			if err := b.setupRPMBuild(distro, tmplMgr); err != nil {
+			if err := b.setupRPMBuild(b.BuildRequest.Distributions[i], tmplMgr); err != nil {
 				return err
 			}
 			break
 		case specer.OS_PKG_TYPE_DEB:
-			if err := b.setupDEBBuild(distro, tmplMgr); err != nil {
+			if err := b.setupDEBBuild(b.BuildRequest.Distributions[i], tmplMgr); err != nil {
 				return err
 			}
 			break
