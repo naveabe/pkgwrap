@@ -1,7 +1,7 @@
 angular.module('ipkg.user', [])
 .controller('userController', [ 
-    '$scope', '$routeParams', 'Authenticator', 'GithubRepo', 'PkgWrapRepo',
-    function($scope, $routeParams, Authenticator, GithubRepo, PkgWrapRepo) {
+    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo',
+    function($scope, $routeParams, Authenticator, PkgWrapRepo) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username);
         
@@ -27,33 +27,6 @@ angular.module('ipkg.user', [])
             }
         }
 
-        function loadGithubUserProjects() {
-            GithubRepo.userRepos({
-                "username": $scope.username
-            }, 
-            function(rslt) { 
-                
-                for( var g=0; g < rslt.length; g++ ) {
-                    rslt.pkgwrapd = false;
-                }
-                $scope.userRepos = rslt;
-            
-                PkgWrapRepo.listUserProjects({
-                    "repo": $scope.repository,
-                    "username": $scope.username
-                },
-                function(rslt) { 
-                    setActiveProjects(rslt);
-                }, 
-                function(err) { 
-                    console.log(err); 
-                });
-
-            }, 
-            function(err) { console.log(err); });
-        }
-
-
         $scope.projectActivationChanged = function(usrRepo) {
             if(usrRepo.pkgwrapd === true) {
                 console.log('Activate');
@@ -63,10 +36,9 @@ angular.module('ipkg.user', [])
         }
 
         function init() {
-            if($scope.repository == 'github.com') {
-                loadGithubUserProjects();
-            }
+
         }
+
         init();
     }
 ]);

@@ -1,13 +1,4 @@
 angular.module('appServices', [])
-.factory('GithubRepo', ['$resource', function($resource) {
-    return $resource('https://api.github.com/users/:username/:qtype', {}, {
-        userRepos: {
-            params: {"username": "@username", "qtype": "repos"},
-            method: 'GET',
-            isArray: true
-        }
-    });
-}])
 .factory('PkgWrapRepo', ['$resource', 'Configuration', function($resource, Configuration) {
     return $resource('/api/repo/:repo/:username/:project/:version/:distro', {}, {
         listUserProjects: {

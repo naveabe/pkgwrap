@@ -6,34 +6,9 @@ angular.module('ipkg.logviewer', [])
         templateUrl: 'app/logviewer/log-viewer.html',
         link: function(scope, elem, attrs, ctrl) {
             if(!ctrl) return;
-
+            /*
             var logContent;
 
-/*
-            var oReq = new XMLHttpRequest();
-
-            function getLogUrl(id) { 
-                console.log(Configuration.pkgwrap.url+'/api/jobs/' +
-                    scope.username+'/'+scope.project+'/'+scope.version+'/'+id+'/log');
-                return Configuration.pkgwrap.url+'/api/jobs/' +
-                    scope.username+'/'+scope.project+'/'+scope.version+'/'+id+'/log';
-            }
-
-            function updateProgress(evt) {
-                scope.$apply(function() {
-                    ctrl.$modelValue.logContent += evt.target.responseText;
-                });
-            }
-            function transferComplete(evt) {
-                console.log(evt);
-            }
-            function transferFailed(evt) {
-                console.log(evt);
-            }
-            function transferCanceled(evt) {
-                console.log(evt);
-            }
-*/
             function init() {
                 scope.$watch(
                     function() { return ctrl.$modelValue.id },
@@ -51,7 +26,7 @@ angular.module('ipkg.logviewer', [])
             }
 
             init();
-
+            */
         }
     }
 }]);
