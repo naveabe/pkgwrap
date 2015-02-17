@@ -177,7 +177,7 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 	for i, distro := range b.BuildRequest.Distributions {
 		// Set next release
 		nextRelease := b.Repository.NextRelease(b.BuildRequest.Package, distro.Label())
-		if nextRelease < 0 {
+		if nextRelease < 1 {
 			b.BuildRequest.Distributions[i].PkgRelease = 1
 		} else if nextRelease > distro.PkgRelease {
 			b.BuildRequest.Distributions[i].PkgRelease = nextRelease

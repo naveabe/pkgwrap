@@ -111,7 +111,6 @@ func NewDistribution(name OSDistro, release string) (Distribution, error) {
 			Name:       name,
 			Release:    release,
 			PkgRelease: DEFAULT_RELEASE,
-			//AugmentableProperties: AugmentableProperties{BuildDeps: make([]string, 0)},
 		}
 		d.buildDir = DISTRO_BUILD_DIRS[d.Name]
 	} else {
