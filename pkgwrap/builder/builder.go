@@ -174,6 +174,7 @@ func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
 func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesManager) error {
 	var ptype specer.OSPackageType
 
+	// 'distro' is by value
 	for i, distro := range b.BuildRequest.Distributions {
 		// Set next release
 		nextRelease := b.Repository.NextRelease(b.BuildRequest.Package, distro.Label())
