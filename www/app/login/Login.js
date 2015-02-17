@@ -38,8 +38,8 @@ angular.module('ipkg.login', [])
         checkAuthOrRedirect   : function(redirectTo) {
             
             if(!_sessionIsAuthenticated()){
-                if(redirectTo) $location.url("/login?redirect="+redirectTo);   
-                else $location.url("/login");
+            //    if(redirectTo) $location.url("/login?redirect="+redirectTo);   
+            //    else $location.url("/login");
             }
         }
     };
