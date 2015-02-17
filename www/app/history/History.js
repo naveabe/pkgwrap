@@ -1,7 +1,7 @@
 angular.module('ipkg.history', [])
 .controller('historyController', [ 
-    '$scope', '$location', '$routeParams', '$http', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs', 'Configuration',
-    function($scope, $location, $routeParams, $http, Authenticator, PkgWrapRepo, PkgWrapJobs, Configuration) {
+    '$scope', '$location', '$routeParams', '$http', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs',
+    function($scope, $location, $routeParams, $http, Authenticator, PkgWrapRepo, PkgWrapJobs) {
 
         $scope.historyHtml = "/app/history/history.html";
 
@@ -10,13 +10,12 @@ angular.module('ipkg.history', [])
         $scope.buildHistory = [];
 
         function getLogUrl(id, follow) { 
-            //console.log(Configuration.pkgwrap.url+'/api/jobs/' +
-            //    $scope.username+'/'+$scope.project+'/'+$scope.version+'/'+id+'/log');
+           
             if(follow) {
-                return Configuration.pkgwrap.url+'/api/jobs/' +
+                return '/api/jobs/' +
                     $scope.username+'/'+$scope.project+'/'+$scope.version+'/'+id+'/log?follow=1';
             } else {
-                return Configuration.pkgwrap.url+'/api/jobs/' +
+                return '/api/jobs/' +
                     $scope.username+'/'+$scope.project+'/'+$scope.version+'/'+id+'/log';
             }
         }

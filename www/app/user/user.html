@@ -5,10 +5,7 @@
         <div>
             <ul class="list-group list-group-sm">
                 <li class="list-group-item" ng-repeat="repo in userRepos">
-                    <a href="#/{{repository}}/{{username}}/{{repo.name}}">{{repo.name}}</a>
-                    <span class="pull-right">
-                        <input type="checkbox" ng-model="repo.pkgwrapd" ng-change="projectActivationChanged(repo)">
-                    </span>
+                    <a href="#/{{repository}}/{{username}}/{{repo.name}}"><b>{{repo.name}}</b></a>
                 </li>
             </ul>
         </div>

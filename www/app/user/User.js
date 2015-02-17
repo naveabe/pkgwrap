@@ -1,3 +1,5 @@
+"use strict;"
+
 angular.module('ipkg.user', [])
 .controller('userController', [ 
     '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo',
@@ -36,7 +38,22 @@ angular.module('ipkg.user', [])
         }
 
         function init() {
+            PkgWrapRepo.listUserProjects({
+                    "repo": $scope.repository,
+                    "username": $scope.username
+                },
+                function(rslt) {
+                    var out = []; 
+                    for( var g=0; g < rslt.length; g++ ) {
+                        
+                        out.push({"name": rslt[g]});
+                    }
 
+                    $scope.userRepos = out;
+                }, 
+                function(err) { 
+                    console.log(err); 
+                });
         }
 
         init();
