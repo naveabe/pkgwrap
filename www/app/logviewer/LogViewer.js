@@ -6,27 +6,29 @@ angular.module('ipkg.logviewer', [])
         templateUrl: 'app/logviewer/log-viewer.html',
         link: function(scope, elem, attrs, ctrl) {
             if(!ctrl) return;
-            /*
-            var logContent;
+
+            var jElem = $(elem[0]);
+            var contentElem;
 
             function init() {
                 scope.$watch(
                     function() { return ctrl.$modelValue.id },
                     function(newVal, oldVal) {
-                        logContent = $('[data-log-id='+newVal+'] .log-content')[0];
-                        //$('[data-log-id='+ctrl.$modelValue.id+']').collapse({toggle:false});
-                        //console.log(logContent);
+                         contentElem = $(jElem.find('[data-log-content='+newVal+']')[0]);
+
                     }, true);
 
                 scope.$watch(
                     function() { return ctrl.$modelValue.logContent },
                     function(newVal, oldVal) {
-                        //logContent. scroll down
+                        if(!newVal) return;
+
+                        contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
                     }, true);
             }
 
             init();
-            */
+
         }
     }
 }]);
