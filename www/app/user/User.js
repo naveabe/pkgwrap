@@ -2,8 +2,8 @@
 
 angular.module('ipkg.user', [])
 .controller('userController', [ 
-    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo',
-    function($scope, $routeParams, Authenticator, PkgWrapRepo) {
+    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubRepo',
+    function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username);
         
@@ -13,20 +13,52 @@ angular.module('ipkg.user', [])
         $scope.username = $routeParams.username;
 
         $scope.userRepos = [];
-        $scope.userOrgs = [];
 
+        function setActiveProjects(ghlist) {
+            var out = [];
+            
+            for( var g=0; g < ghlist.length; g++ ) {
+                
+                var found = false;
+                for( var p=0; p < $scope.userRepos.length; p++ ) {
+                
 
-        function setActiveProjects(projList) {
-            for( var p=0; p < projList.length; p++ ) {
-
-                for( var g=0; g < $scope.userRepos.length; g++ ) {
-
-                    if(projList[p] === $scope.userRepos[g].name) {
-                        $scope.userRepos[g].pkgwrapd = true;
+                    if(ghlist[g].name === $scope.userRepos[p].name) {
+                        ghlist[g].pkgwrapd = true;
+                        found = true;
                         break;
                     }
+                    //out.push(ghlist[g]);
                 }
+
             }
+            return out;
+        }
+
+        function loadGithubUserProjects() {
+            GithubRepo.userRepos({
+                "username": $scope.username
+            }, 
+            function(rslt) { 
+                
+                for( var g=0; g < rslt.length; g++ ) {
+                    rslt.pkgwrapd = false;
+                }
+                $scope.userRepos = rslt;
+            
+                PkgWrapRepo.listUserProjects({
+                    "repo": $scope.repository,
+                    "username": $scope.username
+                },
+                function(rslt) { 
+                    setActiveProjects(rslt);
+                }, 
+                function(err) { 
+                    console.log(err); 
+                });
+
+            }, 
+            function(err) { console.log(err); });
         }
 
         $scope.projectActivationChanged = function(usrRepo) {
@@ -38,22 +70,13 @@ angular.module('ipkg.user', [])
         }
 
         function init() {
-            PkgWrapRepo.listUserProjects({
-                    "repo": $scope.repository,
-                    "username": $scope.username
-                },
-                function(rslt) {
-                    var out = []; 
-                    for( var g=0; g < rslt.length; g++ ) {
-                        
-                        out.push({"name": rslt[g]});
-                    }
-
-                    $scope.userRepos = out;
-                }, 
-                function(err) { 
-                    console.log(err); 
-                });
+            switch($scope.repository) {
+                case "github.com":
+                    loadGithubUserProjects()
+                    break;
+                default:
+                    break;
+            }
         }
 
         init();

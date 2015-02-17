@@ -78,4 +78,13 @@ angular.module('appServices', [])
             isArray: true
         }
     });
+}])
+.factory('GithubRepo', ['$resource', function($resource) {
+    return $resource('https://api.github.com/users/:username/:qtype', {}, {
+        userRepos: {
+            params: {"username": "@username", "qtype": "repos"},
+            method: 'GET',
+            isArray: true
+        }
+    });
 }]);
