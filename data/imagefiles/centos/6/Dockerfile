@@ -7,6 +7,7 @@ FROM centos:6
 MAINTAINER pkgwrap
 
 RUN rpm -qa | grep epel || yum -y install "http://mirror.pnl.gov/epel/6/i386/epel-release-6-8.noarch.rpm"
+RUN rpm -qa | grep rpmforge || yum -y install "http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm"
 
 RUN yum clean all
 RUN yum -y update
