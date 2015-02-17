@@ -17,6 +17,19 @@ const (
 	DEFAULT_RELEASE  = 1
 )
 
+/*
+type AugmentableProperties struct {
+	BuildDeps []string `json:"build_deps" yaml:"build_deps"`
+	Deps      []string `json:"deps"`
+
+	BuildCmd []string `json:"build_cmd" yaml:"build_cmd"`
+
+	PreInstall    []string `json:"pre_install,omitempty" yaml:"pre_install"`
+	PostInstall   []string `json:"post_install,omitempty" yaml:"post_install"`
+	PreUninstall  []string `json:"pre_uninstall,omitempty" yaml:"pre_uninstall"`
+	PostUninstall []string `json:"post_uninstall,omitempty" yaml:"post_uninstall"`
+}
+*/
 type PkgBuildType string
 
 const (
@@ -48,6 +61,17 @@ type UserPackage struct {
 
 	BuildEnv  string       `json:"build_env" yaml:"build_env"`
 	BuildType PkgBuildType `json:"build_type"`
+
+	//Augmentable Properties
+	BuildDeps []string `json:"build_deps,omitempty" yaml:"build_deps"`
+	Deps      []string `json:"deps,omitempty"`
+
+	BuildCmd []string `json:"build_cmd" yaml:"build_cmd"`
+
+	PreInstall    []string `json:"pre_install,omitempty" yaml:"pre_install"`
+	PostInstall   []string `json:"post_install,omitempty" yaml:"post_install"`
+	PreUninstall  []string `json:"pre_uninstall,omitempty" yaml:"pre_uninstall"`
+	PostUninstall []string `json:"post_uninstall,omitempty" yaml:"post_uninstall"`
 }
 
 func NewUserPackageWithName(name string) *UserPackage {
@@ -58,6 +82,7 @@ func NewUserPackageWithName(name string) *UserPackage {
 			Packager: DEFAULT_PACKAGER,
 		},
 		TagBranch: "master",
+		//AugmentableProperties: AugmentableProperties{},
 	}
 	uPkg.InitScript, _ = initscript.NewBasicInitScript(uPkg.Name)
 
@@ -76,6 +101,7 @@ func NewUserPackage(name, version, pkgpath string, runnable initscript.BasicRunn
 			TagBranch: "master",
 			Path:      pkgpath,
 			BuildType: BUILDTYPE_BIN,
+			//AugmentableProperties: AugmentableProperties{},
 		}
 		err error
 	)
@@ -102,6 +128,7 @@ func NewUserPackageFromURL(url string) (*UserPackage, error) {
 			URL:       url,
 			TagBranch: "master",
 			BuildType: BUILDTYPE_SOURCE,
+			//AugmentableProperties: AugmentableProperties{},
 		}
 		err error
 	)

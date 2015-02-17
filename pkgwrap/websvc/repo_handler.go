@@ -50,34 +50,34 @@ func (rh *RepoHandler) GET(w http.ResponseWriter, r *http.Request, args ...strin
 	case 3:
 		list, err := rh.Repository.ListPackageVersions(args[0], args[1], args[2])
 		if err != nil {
-			return nil, map[string]string{"error": err.Error()}, 400
+			return ALL_ORIGIN_ACL, map[string]string{"error": err.Error()}, 400
 		}
 		return ALL_ORIGIN_ACL, list, 200
 	case 4:
 		list, err := rh.Repository.ListPackageDistros(args[0], args[1], args[2], args[3])
 		if err != nil {
-			return nil, map[string]string{"error": err.Error()}, 400
+			return ALL_ORIGIN_ACL, map[string]string{"error": err.Error()}, 400
 		}
 		return ALL_ORIGIN_ACL, list, 200
 	case 5:
 		//rh.logger.Trace.Printf("Path - %v\n", args)
 		list, err := rh.Repository.ListPackages(args[0], args[1], args[2], args[3], args[4])
 		if err != nil {
-			return nil, map[string]string{"error": err.Error()}, 400
+			return ALL_ORIGIN_ACL, map[string]string{"error": err.Error()}, 400
 		}
 		return ALL_ORIGIN_ACL, list, 200
 	case 6:
 		// Send package to client
 		pkgPath, err := rh.Repository.GetPackagePathForDistro(args[0], args[1], args[2], args[3], args[4], args[5])
 		if err != nil {
-			return nil, map[string]string{"error": err.Error()}, 400
+			return ALL_ORIGIN_ACL, map[string]string{"error": err.Error()}, 400
 		}
 		http.ServeFile(w, r, pkgPath)
 		// Tells parent not to send default response as we will be sending it here.
-		return nil, nil, -1
+		return ALL_ORIGIN_ACL, nil, -1
 	default:
 		//return header, data, code
 		//break
-		return nil, map[string]string{"error": "Invalid path"}, 400
+		return ALL_ORIGIN_ACL, map[string]string{"error": "Invalid path"}, 400
 	}
 }

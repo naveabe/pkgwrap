@@ -82,12 +82,14 @@ type Distribution struct {
 	Deps      []string `json:"deps"`
 
 	// Only used if source is built/compiled
-	UserBuildCmd []string `json:"build_cmd" yaml:"build_cmd"`
+	BuildCmd []string `json:"build_cmd" yaml:"build_cmd"`
 
 	PreInstall    []string `json:"pre_install,omitempty" yaml:"pre_install"`
 	PostInstall   []string `json:"post_install,omitempty" yaml:"post_install"`
 	PreUninstall  []string `json:"pre_uninstall,omitempty" yaml:"pre_uninstall"`
 	PostUninstall []string `json:"post_uninstall,omitempty" yaml:"post_uninstall"`
+
+	//AugmentableProperties
 
 	// Holds container id once started.
 	Id string `json:"id,omitempty"`
@@ -109,6 +111,7 @@ func NewDistribution(name OSDistro, release string) (Distribution, error) {
 			Name:       name,
 			Release:    release,
 			PkgRelease: DEFAULT_RELEASE,
+			//AugmentableProperties: AugmentableProperties{BuildDeps: make([]string, 0)},
 		}
 		d.buildDir = DISTRO_BUILD_DIRS[d.Name]
 	} else {

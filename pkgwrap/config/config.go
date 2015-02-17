@@ -45,15 +45,13 @@ type HttpEndpointsConfig struct {
 }
 
 type AppConfig struct {
-	//Templates  string              `json:"templates"`
-	//ImageFiles string              `json:"imagefiles"`
 	Repository string              `json:"repository"`
 	DataDir    string              `json:"data_dir"`
 	Port       int                 `json:"port"`
 	Endpoints  HttpEndpointsConfig `json:"endpoints"`
 	Builder    BuilderConfig       `json:"builder"`
 	Tracker    TrackerConfig       `json:"tracker"`
-	//JobTracker BuildJobTracker     `json:"tracker"`
+	Webroot    string              `json:"webroot"`
 }
 
 func (a *AppConfig) TemplatesDir() string {
