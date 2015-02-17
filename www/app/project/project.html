@@ -1,18 +1,20 @@
-<h4>{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}} / 
-    <span class="dropdown">
-        <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-            <span>{{selectedVersion.version}} <span class="caret"></span></span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="version-dropdown" role="menu">
-            <li ng-repeat="projVersion in projectVersions" role="presentation">
-                <a role="menuitem" tabindex="-1" href="#/{{repository}}/{{username}}/{{project}}/{{projVersion.version}}">{{projVersion.version}}</a>
-            </li>    
-        </ul>
-    </span>
-</h4>
-<div class="row">
-    <div class="col-md-5">
-        <h4>Packages</h4>
+<div style="padding-top:10px">
+    <h4>{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}} / 
+        <span class="dropdown">
+            <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                <span>{{selectedVersion.version}} <span class="caret"></span></span>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="version-dropdown" role="menu">
+                <li ng-repeat="projVersion in projectVersions" role="presentation">
+                    <a role="menuitem" tabindex="-1" href="#/{{repository}}/{{username}}/{{project}}/{{projVersion.version}}">{{projVersion.version}}</a>
+                </li>    
+            </ul>
+        </span>
+    </h4>
+</div>
+<div class="row" style="margin:0;">
+    <div class="col-md-5" style="padding-left:0">
+        <h4 class="text-right">Packages</h4>
         <ul class="list-group">
             <li class="list-group-item" ng-repeat="distro in selectedVersion.distros">
                 <table style="width:100%;color:#888">
@@ -25,8 +27,8 @@
                         </td>
                         <td style="text-align:right">
                             <a href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{distro.packages[distro.packages.length-1].name}}">
-                                <div style="font-size:12px">{{distro.packages[distro.packages.length-1].name}}</div>
-                                <div style="padding-top:3px;font-size:10px;">
+                                <div style="font-size:12px;display:inline-block">{{distro.packages[distro.packages.length-1].name}}</div><br/>
+                                <div style="padding-top:3px;font-size:10px;display:inline-block">
                                     {{distro.packages[distro.packages.length-1].size|valueUnit}}
                                 </div>
                             </a>
@@ -54,7 +56,7 @@
             </li>
         </ul>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-7" style="border-left:1px solid #eee;padding-right:0">
         <ng-include ng-controller="historyController" src="historyHtml"></ng-include> 
     </div>
 </div>

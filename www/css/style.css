@@ -69,11 +69,16 @@ select.form-control.repo-select {
 }
 
 #page-header {
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 10px 20px;
+	background: #505050;
 }
 
 #page-header,
+#page-header span.glyphicon {
+	color: #ccc !important;
+}
+
+/*#page-header,*/
 .ng-view-content {
 	width: 96%;
 	margin-left: auto;
