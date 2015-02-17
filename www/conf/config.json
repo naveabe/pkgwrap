@@ -6,7 +6,7 @@
             "repo": "github.com",
             "type": "github"
         },{
-            "name": "Gitlab Test",
+            "name": "My Gitlab Server",
             "url" : "https://gitlab.local",
             "repo": "gitlab.local",
             "type": "gitlab"

@@ -73,8 +73,12 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
 	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 
-	logger.Warning.Printf("HTTP root directory: %s\n", cfg.Webroot)
-	http.Handle("/", http.FileServer(http.Dir(cfg.Webroot)))
+	if cfg.Webroot != "" {
+		logger.Warning.Printf("HTTP root directory: %s\n", cfg.Webroot)
+		http.Handle("/", http.FileServer(http.Dir(cfg.Webroot)))
+	} else {
+		logger.Warning.Printf("Web UI disabled!\n")
+	}
 
 	logger.Warning.Printf("Starting web service: http://0.0.0.0:%d\n", cfg.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {

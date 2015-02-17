@@ -28,5 +28,5 @@
             "mapping_file": "/etc/pkgwrap/ess_mapping.json"
         }
     },
-    "webroot": "/opt/pkgwrap/www"
+    "webroot": ""
 }
