@@ -1,4 +1,9 @@
-<h4>History</h4>
+<h4>
+    <span>History</span>
+    <span class="pull-right" style="font-size:13px;padding-right:5px;" title="Refresh history">
+        <a href="javascript:void(0)" ng-click="refreshHistory()"><span class="glyphicon glyphicon-refresh"></span></a>
+    </span>
+</h4>
 <ul class="list-group">
     <li ng-repeat="build in buildHistory" class="list-group-item">
         <div style="padding-bottom:10px">

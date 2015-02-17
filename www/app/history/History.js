@@ -44,7 +44,7 @@ angular.module('ipkg.history', [])
             oReq.send();
         }
 
-        function init() {
+        function loadJobsForProject() {
             PkgWrapJobs.listJobsForProject({
                 username: $scope.username,
                 project: $scope.project
@@ -53,6 +53,10 @@ angular.module('ipkg.history', [])
                 $scope.buildHistory = rslt;
             },
             function(err) { console.log(err); });
+        }
+
+        $scope.refreshHistory = function() {
+            loadJobsForProject();
         }
 
         $scope.loadBuildLog = function(bJob) {
@@ -77,6 +81,10 @@ angular.module('ipkg.history', [])
                         });
                 }
             }
+        }
+
+        function init() {
+            loadJobsForProject();
         }
 
         init();
