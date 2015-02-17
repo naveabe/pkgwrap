@@ -14,25 +14,17 @@ angular.module('ipkg.user', [])
 
         $scope.userRepos = [];
 
-        function setActiveProjects(ghlist) {
-            var out = [];
-            
-            for( var g=0; g < ghlist.length; g++ ) {
-                
-                var found = false;
-                for( var p=0; p < $scope.userRepos.length; p++ ) {
-                
+        function setActiveProjects(projList) {
+            for( var p=0; p < projList.length; p++ ) {
 
-                    if(ghlist[g].name === $scope.userRepos[p].name) {
-                        ghlist[g].pkgwrapd = true;
-                        found = true;
+                for( var g=0; g < $scope.userRepos.length; g++ ) {
+
+                    if(projList[p] === $scope.userRepos[g].name) {
+                        $scope.userRepos[g].pkgwrapd = true;
                         break;
                     }
-                    //out.push(ghlist[g]);
                 }
-
             }
-            return out;
         }
 
         function loadGithubUserProjects() {
@@ -61,6 +53,22 @@ angular.module('ipkg.user', [])
             function(err) { console.log(err); });
         }
 
+        function loadPkgwrapProjects() {
+            PkgWrapRepo.listUserProjects(
+                {
+                    "repo": $scope.repository,
+                    "username": $scope.username
+                }, function(rslt) { 
+                    for(var i=0; i< rslt.length; i++) {
+                        rslt[i] = {name: rslt[i]};
+                    }
+                    $scope.userRepos = rslt;
+                }, function(err) { 
+                    console.log(err); 
+                }
+            );
+        }
+
         $scope.projectActivationChanged = function(usrRepo) {
             if(usrRepo.pkgwrapd === true) {
                 console.log('Activate');
@@ -75,6 +83,7 @@ angular.module('ipkg.user', [])
                     loadGithubUserProjects()
                     break;
                 default:
+                    loadPkgwrapProjects();
                     break;
             }
         }

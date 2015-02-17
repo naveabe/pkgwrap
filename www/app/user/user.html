@@ -8,6 +8,7 @@
             <ul class="list-group list-group-sm">
                 <li class="list-group-item" ng-repeat="repo in userRepos">
                     <a href="#/{{repository}}/{{username}}/{{repo.name}}"><b>{{repo.name}}</b></a>
+                    <input type="checkbox" ng-model="repo.pkgwrapd" class="pull-right">
                 </li>
             </ul>
         </div>
