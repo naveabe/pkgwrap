@@ -1,0 +1,25 @@
+<h4>History</h4>
+<ul class="list-group">
+    <li ng-repeat="build in buildHistory" class="list-group-item">
+        <div style="padding-bottom:10px">
+            <div>
+                <span style="padding-right:5px;">Project: <b>{{build.project}}</b></span>
+                <span style="padding-right:5px;">Ref: <b>{{build.tagbranch}}</b></span>
+                <span style="padding-right:5px;">Version: <b>{{build.version}}</b></span>
+                <span class="pull-right small">{{build.timestamp*1000|date:'medium'}}</span>
+            </div>
+            <div class="small" style="color:#aaa;padding-top:3px;"><span class="small">{{build._id}}</span></div>
+        </div>
+        <div class="distro-job-list">
+            <div class="distro-job" ng-repeat="job in build.jobs">
+                <a href="javascript:void(0)" ng-click="loadBuildLog(job)" data-target="[data-log-id={{job.id}}]" data-toggle="collapse">
+                    <div>
+                        <img ng-src="imgs/{{job.label}}.png" width="16" height="16" style="opacity:0.6"> <b>{{job.label}}</b>
+                        <span class="pull-right badge {{job.status}}">{{job.status}}</span>
+                    </div>
+                </a>
+                <div ng-model="job" class="collapse" data-log-id="{{job.id}}" log-tailer></div>
+            </div>
+        </div>
+    </li>
+</ul>

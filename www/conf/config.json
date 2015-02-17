@@ -1,0 +1,15 @@
+{
+    "repos": [
+        {
+            "name":"Github",
+            "url" : "https://github.com",
+            "repo": "github.com",
+            "type": "github"
+        },{
+            "name": "Gitlab Test",
+            "url" : "https://gitlab.local",
+            "repo": "gitlab.local",
+            "type": "gitlab"
+        }
+    ]
+}

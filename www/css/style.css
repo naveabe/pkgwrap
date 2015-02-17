@@ -1,0 +1,138 @@
+ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 10px;
+}
+#stage {
+	style="border: 1px solid #ddd;
+	overflow-x:hidden;
+	transition: all 0.35s ease;
+}
+#stage,
+#stage .table {
+	color: #888;
+	font-size: 14px;
+}
+#stage a {
+	text-decoration: none;
+}
+
+select.form-control.repo-select {
+	appearance:none;
+	-webkit-appearance:none;
+	-moz-appearnace:none;
+	border-radius: 2px;
+	font-weight: bold;
+	padding-left:0;
+}
+
+#login-window-container {
+	width: 100%;
+	height: 100%;
+}
+#login-window {
+	padding: 10px;
+	width: 320px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+}
+#login-window-header {
+	height: 22px;
+}
+#login-window-body>.input-group>.input-group-addon {
+	background: none;
+	color: #bbb;
+	/*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+}
+#login-window-body>.input-group>.form-control {
+	border-left: none;
+	box-shadow: none;
+}
+#login-window-body>.input-group>.form-control:focus {
+	border-color: #ccc;
+}
+#login-window-footer {
+	text-align: right;
+	padding-top: 10px;
+}
+#logout-btn {
+	color: #888;
+}
+#logout-btn:hover {
+	color: #428bca
+}
+.view-defaults {
+	width: 94%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#page-header {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+#page-header,
+.ng-view-content {
+	width: 96%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.code-block {
+	font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+	color: #428bca;
+	padding: 10px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+.code-block.details {
+	width:100%;
+	height:100%;
+	border-left: none;
+	border-radius: 0 3px 3px 0;
+}
+
+a.succeeded {
+	color: #76A646;
+}
+a.failed {
+	color: #D94A56;
+}
+a.started {
+	color: #377BA6;
+}
+/*
+.created {
+	color: #D99E30;
+}
+*/
+.badge.succeeded {
+	background: #76A646;
+}
+.badge.failed {
+	background: #D94A56;
+}
+.badge.started {
+	background: #377BA6;
+}
+
+pre.log-content {
+	font-size: 11px;
+	max-height: 500px;
+	overflow-y: scroll;
+	margin: 0;
+	border-radius: 2px;
+	border: 1px solid #ccc;
+	background:#444;
+	color: #eee; 
+}
+.distro-job-list > .distro-job:last-child {
+	padding-bottom: 0;
+}
+.distro-job {
+	padding-top:10px;
+	padding-bottom:10px;
+	border-top:1px solid #eee;
+}

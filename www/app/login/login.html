@@ -1,0 +1,32 @@
+<table id="login-window-container"><tr><td align="center">
+	<div id="login-window">
+		<div id="login-window-header" class="text-danger"></div>
+		<div id="login-window-body">
+			<div class="input-group input-group-sm">
+				<div class="input-group-addon">
+					<img src="imgs/{{selectedRepo.type}}.png" width="18" height="18">
+				</div>
+				<select class="form-control repo-select" ng-model="selectedRepo" ng-options="repo as repo.name for repo in supportedRepos"></select>
+			</div>
+			<div style="padding:5px"></div>
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">
+					<span class="glyphicon glyphicon-user" style="position:relative;left:3px;"></span>
+				</span>
+				<input type="text" class="form-control" ng-model="credentials.username">
+			</div>
+			<!--
+			<div style="padding:5px"></div>
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">
+					<span class="glyphicon glyphicon-lock" style="position:relative;left:3px;"></span>
+				</span>
+				<input type="password" class="form-control" ng-model="credentials.password">
+			</div>
+			-->
+		</div>
+		<div id="login-window-footer">
+			<button class="btn btn-default btn-sm" ng-click="attemptLogin()"><b>Login</b></button>
+		</div>
+	</div>
+</td></tr></table>

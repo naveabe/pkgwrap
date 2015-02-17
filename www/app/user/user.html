@@ -1,0 +1,19 @@
+<h4>{{repository}} / {{username}}</h4>
+<div class="row">
+    <div class="col-md-4">
+        <h4>Projects</h4>
+        <div>
+            <ul class="list-group list-group-sm">
+                <li class="list-group-item" ng-repeat="repo in userRepos">
+                    <a href="#/{{repository}}/{{username}}/{{repo.name}}">{{repo.name}}</a>
+                    <span class="pull-right">
+                        <input type="checkbox" ng-model="repo.pkgwrapd" ng-change="projectActivationChanged(repo)">
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <ng-include ng-controller="historyController" src="historyHtml"></ng-include> 
+    </div>
+</div>

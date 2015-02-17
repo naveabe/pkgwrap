@@ -1,0 +1,40 @@
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+      
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+
+      <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular.min.js"></script>
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular-route.min.js"></script>
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular-resource.min.js"></script>
+
+      <script type="text/javascript" src="libs/ngStorage.min.js"></script>
+      
+      <script type="text/javascript" src="app/oauth/oauth-ng.js"></script>
+
+      <script type="text/javascript" src="app/app.js"></script>
+      <script type="text/javascript" src="app/directives.js"></script>
+      <script type="text/javascript" src="app/controllers.js"></script>
+      <script type="text/javascript" src="app/services.js"></script>
+
+      <script type="text/javascript" src="app/login/Login.js"></script>
+      <script type="text/javascript" src="app/user/User.js"></script>
+      <script type="text/javascript" src="app/project/Project.js"></script>
+      <script type="text/javascript" src="app/logviewer/LogViewer.js"></script>
+      <script type="text/javascript" src="app/history/History.js"></script>
+
+  </head>
+  <body>
+      <div id="stage" ng-controller="defaultController">
+          <ng-include src="pageHeaderHtml"></ng-include>
+          <div style="overflow-y:scroll">
+              <div class="ng-view-content" ng-view></div>
+          </div>
+      </div>
+  </body>
+</html>
