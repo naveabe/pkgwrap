@@ -85,6 +85,8 @@ func (d *DockerEventMonitor) Start() error {
 			continue
 		}
 		d.logger.Debug.Printf("Updated build job: %s\n", bldJob)
+		// TODO: event
+		// TODO: add end timestamp
 	}
 
 	return nil

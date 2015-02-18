@@ -12,6 +12,10 @@ angular.module('ipkg.project', [])
         $scope.project = $routeParams.project;
         $scope.version = $routeParams.version;
 
+
+        // TODO: Load repository
+        // $scope.repositoryDetails = SupportedVCs.getRepoDetails($scope.repository);
+
         $scope.projectVersions = [];
 
         $scope.selectedVersion = {};
@@ -30,6 +34,7 @@ angular.module('ipkg.project', [])
                 //console.log(distros);
                 for(var i=0; i < $scope.projectVersions.length; i++) {
                     if($scope.projectVersions[i].version == version) {
+                        
                         $scope.selectedVersion = $scope.projectVersions[i];
                         $scope.selectedVersion.distros = [];
                         for(var d=0; d< distros.length; d++) {

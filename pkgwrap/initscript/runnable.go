@@ -5,9 +5,9 @@ import (
 )
 
 type BasicRunnable struct {
-	Path string            `json:"path"`
-	Args string            `json:"args"`
-	Env  map[string]string `json:"env"`
+	Path string            `json:"path" yaml:"path"`
+	Args string            `json:"args" yaml:"args"`
+	Env  map[string]string `json:"env" yaml:"env"`
 }
 
 func (b *BasicRunnable) Command() string {

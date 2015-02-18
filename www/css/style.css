@@ -108,11 +108,7 @@ a.failed {
 a.started {
 	color: #377BA6;
 }
-/*
-.created {
-	color: #D99E30;
-}
-*/
+
 .badge.succeeded {
 	background: #76A646;
 }

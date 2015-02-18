@@ -51,7 +51,7 @@ type UserPackage struct {
 
 	Path string `json:"path"`
 
-	InitScript *initscript.BasicInitScript `json:"init_script,omitempty"`
+	InitScript *initscript.BasicInitScript `json:"init_script,omitempty" yaml:"init_script,omitempty"`
 
 	FileList []string `json:"files,omitempty"`
 

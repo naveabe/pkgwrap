@@ -92,10 +92,6 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		err error = nil
 	)
 
-	if err = b.buildInitScript(tmplMgr); err != nil {
-		return err
-	}
-
 	if err = b.Repository.Clean(b.BuildRequest.Package); err != nil {
 		return err
 	}
@@ -121,6 +117,10 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 			return err
 		}
 	}
+
+	if err = b.buildInitScript(tmplMgr); err != nil {
+		return err
+	}
 	//b.logger.Trace.Printf("%v\n", b.BuildRequest.Package)
 	if err = b.prepPerDistroBuilds(tmplMgr); err != nil {
 		return err
@@ -135,10 +135,11 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 
 func (b *TargetedPackageBuild) buildInitScript(tmplMgr *templater.TemplatesManager) error {
 	if b.BuildRequest.Package.InitScript != nil && b.BuildRequest.Package.InitScript.Runnable.Path != "" {
+		b.logger.Trace.Printf("Generating init script: %s %s\n", b.BuildRequest.Name, b.BuildRequest.Version)
 		return initscript.BuildInitScript(tmplMgr, *b.BuildRequest.Package.InitScript,
 			b.Repository.BuildDir(b.BuildRequest.Package))
 	} else {
-		b.logger.Info.Printf("Not creating startup script. No runnable path specified!\n")
+		b.logger.Info.Printf("Not creating startup script. No runnable path or initscript options specified!\n")
 	}
 	return nil
 }

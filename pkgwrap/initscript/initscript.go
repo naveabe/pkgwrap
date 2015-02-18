@@ -17,7 +17,7 @@ type InitScriptTemplateData struct {
 
 type BasicInitScript struct {
 	Name     string        `json:"name"`
-	Runnable BasicRunnable `json:"runnable"`
+	Runnable BasicRunnable `json:"runnable" yaml:"runnable"`
 	Logfile  string        `json:"logfile"`
 }
 

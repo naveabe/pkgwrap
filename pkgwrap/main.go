@@ -152,7 +152,9 @@ func main() {
 				logger.Error.Printf("%s\n", err)
 				continue
 			}
-			logger.Trace.Printf("Request added: %s\n", pkgReq)
+
+			pReqBytes, _ := json.MarshalIndent(pkgReq, "", "  ")
+			logger.Trace.Printf("Request added: %s\n", pReqBytes)
 
 			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
 			if err != nil {
