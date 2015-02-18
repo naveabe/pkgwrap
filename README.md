@@ -10,3 +10,18 @@ Client side config:
 Server side config:
 
 - etc/pkgwrapd.conf
+
+
+### Image defaults
+
+
+#### RHEL variants
+
+- epel
+- repoforge
+
+
+#### Ubuntu
+
+
+
