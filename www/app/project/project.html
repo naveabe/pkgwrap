@@ -42,7 +42,7 @@
                 </table>
                 <div class="collapse" data-distro-name="{{distro.name|dotsToUnderscores}}">
                     <ul style="margin-top:10px;padding-left:0">
-                        <a ng-repeat="package in distro.packages|orderBy:'name':true" href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{package.name}}">
+                        <a ng-repeat="package in distro.packages|orderBy:'mtime':true" href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{package.name}}">
                             <div style="padding-top:5px;padding-bottom:5px;border-top:1px solid #eee;padding-left:8px">
                                 <div><img ng-src="imgs/package.png" width="16" height="16"> {{package.name}}</div>
                                 <div class="small" style="padding-top:1px;">

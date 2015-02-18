@@ -45,6 +45,12 @@ angular.module('ipkg.project', [])
             function(err) { console.log(err) });
         }
 
+        function pkgsSort(a, b) {
+            if (a.mtime < b.mtime) return -1;
+            if (a.mtime > b.mtime) return 1;
+            return 0;
+        }
+
         $scope.loadDistroPkgs = function(distro) {
             //$scope.selectedDistro = distro;
 
@@ -58,7 +64,7 @@ angular.module('ipkg.project', [])
             function(pkgs) {
                 for(var i=0; i < $scope.selectedVersion.distros.length; i++) {
                     if($scope.selectedVersion.distros[i].name == distro.name) {
-                        $scope.selectedVersion.distros[i].packages = pkgs;
+                        $scope.selectedVersion.distros[i].packages = pkgs.sort(pkgsSort);
                         break;
                     }
                 }
