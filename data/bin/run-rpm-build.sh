@@ -17,6 +17,9 @@ if [ "$BUILD_TYPE" == "source" ]; then
         su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || exit 3
         # Copy package data to rpm SOURCES destination
         su - $BUILD_USER -c "cp -a $PROJECT_PATH/build/$PROJECT ~/rpmbuild/SOURCES/" || exit 4
+        
+        copy_startup "$BUILD_HOME_DIR/rpmbuild/SOURCES/$PROJECT"
+        
         # Write file list to spec when being built.
         su - $BUILD_USER -c "cd ~/rpmbuild/SOURCES/$PROJECT && ( find . -type f | sed s/^\.//g >> ~/rpmbuild/SPECS/$PROJECT.spec ) && cd -" || exit 5
         # Copy updated spec back to repo after file list update.
@@ -26,10 +29,11 @@ if [ "$BUILD_TYPE" == "source" ]; then
     fi
 else
   # Binary
+  copy_startup "$BUILD_HOME_DIR/rpmbuild/SOURCES/$PROJECT"
+  
   su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
 fi
 
-copy_startup "$BUILD_HOME_DIR/rpmbuild/SOURCES/$PROJECT"
 # Build spec
 # QA_RPATHS=$[ 0x0001|0x0010 ] : Ignore check-rpath warning 
 su - $BUILD_USER -c "QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -ba ~/rpmbuild/SPECS/$PROJECT.spec" || exit 6
