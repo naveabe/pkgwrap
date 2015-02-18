@@ -14,11 +14,14 @@ RUN mkdir -p /opt/pkgwrap/bin
 RUN apt-get -y install git-core
 
 RUN echo "ALL            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN sed -e -i "s/SHELL=.*/SHELL=\/bin\/bash/" /etc/default/useradd
 
 # Go
 RUN apt-get -y install golang mercurial
 RUN echo "export GOPATH=~/gopath:\$GOPATH" >> /etc/skel/.profile
 RUN echo "[ -e ~/gopath ] || mkdir -p ~/gopath/{src,bin,pkg}" >> /etc/skel/.profile
+RUN echo "export GOPATH=~/gopath:\$GOPATH" >> /etc/skel/.bashrc
+RUN echo "[ -e ~/gopath ] || mkdir -p ~/gopath/{src,bin,pkg}" >> /etc/skel/.bashrc
 
 # Python
 RUN apt-get -y install python-setuptools python-dev python-pip
