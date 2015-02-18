@@ -121,3 +121,14 @@ install_built_pkg() {
     echo "";
     # TODO: fire - installed-built-pkg event
 }
+
+copy_startup() {
+    DST="${1}/etc/init.d"
+
+    if [ -e "$REPO_LOCAL_PATH/${PROJECT}.service" ]; then
+        [ -d "$DST" ] || mkdir -p "${DST}"
+        ( cp $REPO_LOCAL_PATH/${PROJECT}.service ${DST}/${PROJECT} && chmod 755 ${DST}/${PROJECT} ) || {
+            echo "Failed to copy startup script: ${PROJECT}.service"
+        }
+    fi
+}

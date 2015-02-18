@@ -29,6 +29,7 @@ else
   su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
 fi
 
+copy_startup "$BUILD_HOME_DIR/rpmbuild/SOURCES/$PROJECT"
 # Build spec
 # QA_RPATHS=$[ 0x0001|0x0010 ] : Ignore check-rpath warning 
 su - $BUILD_USER -c "QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -ba ~/rpmbuild/SPECS/$PROJECT.spec" || exit 6

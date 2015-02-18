@@ -20,6 +20,8 @@ if [ "$BUILD_TYPE" == "source" ]; then
         su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || exit 3
         # TODO: fire - user-build-success event    
         
+        copy_startup "$PROJECT_PATH/build/$PROJECT"
+
         # Create data tarball
         su - $BUILD_USER -c "cd ~/debuild && tar zcvf data.tar.gz -C $PROJECT_PATH/build/$PROJECT ." || exit 4; 
     else
@@ -27,6 +29,8 @@ if [ "$BUILD_TYPE" == "source" ]; then
     fi
 else
     # Binary (pre-compiled)
+    copy_startup "$PROJECT_PATH"
+
     su - $BUILD_USER -c "cd ~/debuild && tar czvf data.tar.gz -C $PROJECT_PATH ." || exit 3;
 fi
 
