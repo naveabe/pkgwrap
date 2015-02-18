@@ -14,7 +14,7 @@ RUN mkdir -p /opt/pkgwrap/bin
 RUN apt-get -y install git-core
 
 RUN echo "ALL            ALL = (ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN sed -e -i "s/SHELL=.*/SHELL=\/bin\/bash/" /etc/default/useradd
+RUN sed -i -e "s/SHELL=.*/SHELL=\/bin\/bash/" /etc/default/useradd
 
 # Go
 RUN apt-get -y install golang mercurial
