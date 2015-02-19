@@ -49,10 +49,11 @@ angular.module('ipkg.builder', [])
                     scope.username,
                     scope.project,
                     scope.version, 
-                    tagbranch)
+                    scope.tagbranch)
                 .success(function(data, status, headers, config) {
                     // UI feedback
                     console.log(data);
+                    // Give time for the jobs to be registered.
                     setTimeout(function() { $rootScope.$broadcast('build:history:changed', data); }, 3000);
                     
                 })

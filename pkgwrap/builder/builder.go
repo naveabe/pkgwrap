@@ -107,6 +107,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		// Git clone if build type source
 		dstDir := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + b.BuildRequest.Package.Name
 
+		//b.logger.Trace.Printf("Cloning %s\n", b.BuildRequest.Package.TagBranch)
 		if err = b.BuildRequest.Package.CloneRepo(dstDir); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
