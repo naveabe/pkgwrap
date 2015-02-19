@@ -53,8 +53,8 @@ angular.module('ipkg.builder', [])
                 .success(function(data, status, headers, config) {
                     // UI feedback
                     console.log(data);
-                    //setTimeout(function() { $window.location.reload(); }, 3000);
-                    $rootScope.$broadcast('build:history:changed', data);
+                    setTimeout(function() { $rootScope.$broadcast('build:history:changed', data); }, 3000);
+                    
                 })
                 .error(function(data, status, headers, config) {
                     // UI feedback

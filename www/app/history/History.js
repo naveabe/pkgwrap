@@ -87,6 +87,7 @@ angular.module('ipkg.history', [])
             loadJobsForProject();
             
             $rootScope.$on('build:history:changed', function(evt, data) {
+                // Account for registration
                 setTimeout(loadJobsForProject, 2500);
             });
         }
