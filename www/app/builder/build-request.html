@@ -1,0 +1,33 @@
+<div class="modal fade" id="build-request-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title text-primary">New Packaging Request</h4>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:17px;margin-left:5px;margin-bottom:15px;">
+          {{project}} : 
+        </div>
+        <ul>
+          <li style="padding:5px">
+            <div class="input-group input-group-sm">
+              <span class="input-group-addon">Version</span>
+              <input type="text" class="form-control" ng-model="version" required>
+            </div>
+          </li>
+          <li style="padding:5px">
+            <div class="input-group input-group-sm">
+              <span class="input-group-addon">Tag/Branch</span>
+              <input type="text" class="form-control" ng-model="tagbranch">
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" ng-click="submitBuildRequest()">Submit Request</button>
+      </div>
+    </div>
+  </div>
+</div>

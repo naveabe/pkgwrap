@@ -12,10 +12,6 @@ angular.module('ipkg.project', [])
         $scope.project = $routeParams.project;
         $scope.version = $routeParams.version;
 
-
-        // TODO: Load repository
-        // $scope.repositoryDetails = SupportedVCs.getRepoDetails($scope.repository);
-
         $scope.projectVersions = [];
 
         $scope.selectedVersion = {};

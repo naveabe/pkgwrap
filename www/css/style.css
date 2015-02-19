@@ -75,7 +75,7 @@ select.form-control.repo-select {
 
 #page-header,
 #page-header span.glyphicon {
-	color: #ccc !important;
+	color: #ddd !important;
 }
 
 /*#page-header,*/
@@ -136,4 +136,25 @@ pre.log-content {
 	padding-top:10px;
 	padding-bottom:10px;
 	border-top:1px solid #eee;
+}
+
+.build-btn {
+	transition:all 0.25s ease;
+	color: #ccc;
+	cursor: pointer;
+}
+.build-btn:hover {
+	color: #428bca;
+}
+
+.breadcrumb-path,
+.project-pkgs {
+	color: #505050;
+}
+.project-pkgs:hover {
+	color: #428bca;
+}
+.repo-exists {
+	font-weight: bold;
+	color: #428bca;
 }

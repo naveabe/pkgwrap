@@ -9,7 +9,8 @@ var app = angular.module('app', [
 	'ipkg.user',
     'ipkg.project',
     'ipkg.history',
-    'ipkg.logviewer'
+    'ipkg.logviewer',
+    'ipkg.builder'
 ]);
 
 (function() {

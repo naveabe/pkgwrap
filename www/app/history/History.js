@@ -1,7 +1,7 @@
 angular.module('ipkg.history', [])
 .controller('historyController', [ 
-    '$scope', '$location', '$routeParams', '$http', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs',
-    function($scope, $location, $routeParams, $http, Authenticator, PkgWrapRepo, PkgWrapJobs) {
+    '$rootScope', '$scope', '$location', '$routeParams', '$http', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs',
+    function($rootScope, $scope, $location, $routeParams, $http, Authenticator, PkgWrapRepo, PkgWrapJobs) {
 
         $scope.historyHtml = "/app/history/history.html";
 
@@ -85,6 +85,10 @@ angular.module('ipkg.history', [])
 
         function init() {
             loadJobsForProject();
+            
+            $rootScope.$on('build:history:changed', function(evt, data) {
+                setTimeout(loadJobsForProject, 2500);
+            });
         }
 
         init();

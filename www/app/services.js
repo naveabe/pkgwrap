@@ -87,4 +87,22 @@ angular.module('appServices', [])
             isArray: true
         }
     });
+}])
+.factory('SupportedVCs', ['Configuration', function(Configuration) {
+    
+    var index = {};
+
+    var supportedVCs = {};
+
+    supportedVCs.getDetails = function(repo) {
+
+        if (Object.keys(index).length < 1) {
+            for( var i=0; i < Configuration.repos.length; i++ ) {
+                index[Configuration.repos[i].repo] = Configuration.repos[i];
+            }
+        }
+        return index[repo];
+    }
+
+    return supportedVCs;
 }]);

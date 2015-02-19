@@ -2,25 +2,29 @@
 
 angular.module('ipkg.user', [])
 .controller('userController', [ 
-    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubRepo',
-    function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo) {
+    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubRepo', 'SupportedVCs',
+    function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo, SupportedVCs) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username);
         
         $scope.pageHeaderHtml = "/partials/page-header.html";
+        $scope.buildRequestHtml = "app/builder/build-request.html";
 
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;
 
-        $scope.userRepos = [];
+        $scope.repositoryDetails = SupportedVCs.getDetails($scope.repository);
+
+        $scope.userProjects = [];
+
 
         function setActiveProjects(projList) {
             for( var p=0; p < projList.length; p++ ) {
 
-                for( var g=0; g < $scope.userRepos.length; g++ ) {
+                for( var g=0; g < $scope.userProjects.length; g++ ) {
 
-                    if(projList[p] === $scope.userRepos[g].name) {
-                        $scope.userRepos[g].pkgwrapd = true;
+                    if(projList[p] === $scope.userProjects[g].name) {
+                        $scope.userProjects[g].pkgwrapd = true;
                         break;
                     }
                 }
@@ -36,7 +40,7 @@ angular.module('ipkg.user', [])
                 for( var g=0; g < rslt.length; g++ ) {
                     rslt.pkgwrapd = false;
                 }
-                $scope.userRepos = rslt;
+                $scope.userProjects = rslt;
             
                 PkgWrapRepo.listUserProjects({
                     "repo": $scope.repository,
@@ -62,7 +66,7 @@ angular.module('ipkg.user', [])
                     for(var i=0; i< rslt.length; i++) {
                         rslt[i] = {name: rslt[i]};
                     }
-                    $scope.userRepos = rslt;
+                    $scope.userProjects = rslt;
                 }, function(err) { 
                     console.log(err); 
                 }
