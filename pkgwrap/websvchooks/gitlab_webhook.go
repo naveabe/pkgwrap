@@ -57,7 +57,8 @@ func (g *GitlabWebHook) parseTagEvent(payload []byte) (*specer.PackageRequest, e
 	// Version may be in build config
 	pkgReq.Version, err = GetVersionFromRef(glEvt.Ref)
 	if err != nil {
-		g.Logger.Error.Printf("%s\n", err)
+		pkgReq.Version = specer.DEFAULT_PKG_VERSION
+		g.Logger.Warning.Printf("Using default version - %s\n", err)
 	} else {
 		g.Logger.Debug.Printf("Using version (Gitlab): %s\n", pkgReq.Version)
 	}

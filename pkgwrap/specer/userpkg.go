@@ -161,7 +161,7 @@ func (u *UserPackage) Validate() error {
 
 	if u.InitScript != nil && u.InitScript.Runnable.Path != "" {
 		if u.InitScript.Name == "" {
-			u.InitScript.Name = u.Name
+			u.InitScript.SetName(u.Name)
 		}
 	}
 

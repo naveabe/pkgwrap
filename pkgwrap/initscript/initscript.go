@@ -21,16 +21,14 @@ type BasicInitScript struct {
 	Logfile  string        `json:"logfile"`
 }
 
-func NewBasicInitScript(name string) (*BasicInitScript, error) {
-	var (
-		//err error
-		bis = BasicInitScript{
-			Name:     name,
-			Runnable: BasicRunnable{},
-		}
-	)
-	bis.Logfile = DEFAULT_LOG_DIR + "/" + bis.Name + ".log"
+func (b *BasicInitScript) SetName(name string) {
+	b.Name = name
+	b.Logfile = DEFAULT_LOG_DIR + "/" + b.Name + ".log"
+}
 
+func NewBasicInitScript(name string) (*BasicInitScript, error) {
+	bis := BasicInitScript{Runnable: BasicRunnable{}}
+	bis.SetName(name)
 	return &bis, nil
 }
 
