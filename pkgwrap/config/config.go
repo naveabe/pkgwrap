@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -10,12 +11,15 @@ type TrackerConfig struct {
 	Datastore DatastoreConfig `json:"datastore"`
 }
 
-/*
-type BuildJobTracker struct {
-	Enabled   bool
-	Datastore DatastoreConfig `json:"datastore"`
+type DockerConfig struct {
+	Host     string `json:"host"`
+	Port     int64  `json:"port"`
+	Protocol string `json:"protocol"`
 }
-*/
+
+func (d *DockerConfig) URI() string {
+	return fmt.Sprintf("%s://%s:%d", d.Protocol, d.Host, d.Port)
+}
 
 type DatastoreConfig struct {
 	Host        string `json:"host"`
@@ -52,6 +56,7 @@ type AppConfig struct {
 	Builder    BuilderConfig       `json:"builder"`
 	Tracker    TrackerConfig       `json:"tracker"`
 	Webroot    string              `json:"webroot"`
+	Docker     DockerConfig        `json:"docker"`
 }
 
 func (a *AppConfig) TemplatesDir() string {

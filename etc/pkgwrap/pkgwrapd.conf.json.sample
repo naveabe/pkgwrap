@@ -28,5 +28,10 @@
             "mapping_file": "/etc/pkgwrap/ess_mapping.json"
         }
     },
-    "webroot": ""
+    "webroot": "",
+    "docker": {
+        "host": "localhost",
+        "port": 5555,
+        "protocol": "tcp"
+    }
 }

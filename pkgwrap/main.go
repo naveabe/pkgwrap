@@ -27,7 +27,8 @@ const (
 	DOCKER_URI       = "tcp://" + DOCKER_HOST_PORT
 )
 
-func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildRepository, pkgReq *specer.PackageRequest, tmplMgr *templater.TemplatesManager) (*builder.TargetedPackageBuild, error) {
+func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildRepository,
+	pkgReq *specer.PackageRequest, tmplMgr *templater.TemplatesManager) (*builder.TargetedPackageBuild, error) {
 
 	tBuild, err := builder.NewTargetedPackageBuild(bldrCfg, repo, pkgReq)
 	if err != nil {
@@ -112,7 +113,7 @@ func main() {
 	logger.SetLogLevel(*LOGLEVEL)
 
 	if cfg, err = config.LoadConfigFromFile(*CONFIG_FILE); err != nil {
-		logger.Error.Printf("%s\n", err)
+		logger.Error.Printf("Failed to load config: %s\n", err)
 		os.Exit(1)
 	}
 
