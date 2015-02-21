@@ -58,10 +58,9 @@ func (g *GitlabWebHook) parseTagEvent(payload []byte) (*specer.PackageRequest, e
 	pkgReq.Version, err = GetVersionFromRef(glEvt.Ref)
 	if err != nil {
 		g.Logger.Error.Printf("%s\n", err)
+	} else {
+		g.Logger.Debug.Printf("Using version (Gitlab): %s\n", pkgReq.Version)
 	}
-
-	//pkgReq = specer.NewPackageRequest(glEvt.Repository.Name)
-	//pkgReq.Version = version
 
 	pkgReq.Package, err = specer.NewUserPackage(pkgReq.Name, pkgReq.Version,
 		pkgReq.Name+"/"+pkgReq.Version+"/"+pkgReq.Name, initscript.BasicRunnable{})
@@ -101,6 +100,7 @@ func (g *GitlabWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
+
 	if err = pkgReq.Validate(false); err != nil {
 		g.Logger.Error.Printf("Validation failed: %s\n", err)
 		w.WriteHeader(400)

@@ -147,6 +147,31 @@ func NewUserPackageFromURL(url string) (*UserPackage, error) {
 	return &upkg, nil
 }
 
+func (u *UserPackage) Validate() error {
+	if u.URL == "" {
+		return fmt.Errorf("Package url not provided!")
+	}
+
+	if u.Packager == "" || u.Packager == "mock" {
+		pkgr, err := u.PackagerFromURL()
+		if err == nil {
+			u.Packager = pkgr
+		}
+	}
+
+	if u.InitScript != nil && u.InitScript.Runnable.Path != "" {
+		if u.InitScript.Name == "" {
+			u.InitScript.Name = u.Name
+		}
+	}
+
+	if u.Release == 0 {
+		u.Release = DEFAULT_RELEASE
+	}
+
+	return nil
+}
+
 func (u *UserPackage) SourceRepoName() (string, error) {
 	p := strings.Split(u.URL, "/")
 	if len(p) < 3 {
