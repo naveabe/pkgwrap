@@ -57,9 +57,6 @@ app.config(['$routeProvider',
 		}).when('/:repository/:username', {
             templateUrl: 'app/user/user.html',
             controller: 'userController'
-        }).when('/', {
-            templateUrl: 'partials/root.html',
-            controller: 'rootController'
         }).otherwise({
 			redirectTo: '/login'
 		});
@@ -89,5 +86,17 @@ app.filter('objectLength', function() {
         }
 
         return (mb/1024).toFixed(2).toString()+" GB";
+    }
+})
+.filter('distroLabel', function() {
+    /* Ignores everything after the 2nd dash */
+    return function(dlabel) {
+        var arr = dlabel.split("-")
+        return arr[0].replace(/\w\S*/g, 
+            function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }
+        ) + " " + arr[1];
+
     }
 });

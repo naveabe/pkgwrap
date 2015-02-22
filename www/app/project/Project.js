@@ -1,16 +1,18 @@
 angular.module('ipkg.project', [])
 .controller('projectController', [ 
-    '$scope', '$location', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs',
-    function($scope, $location, $routeParams, Authenticator, PkgWrapRepo, PkgWrapJobs) {
+    '$scope', '$location', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs', 'SupportedVCs',
+    function($scope, $location, $routeParams, Authenticator, PkgWrapRepo, PkgWrapJobs, SupportedVCs) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username+"/"+$routeParams.project);
         
-        $scope.pageHeaderHtml = "/partials/page-header.html";
+        //$scope.pageHeaderHtml = "/partials/page-header.html";
 
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;
         $scope.project = $routeParams.project;
         $scope.version = $routeParams.version;
+
+        $scope.repositoryDetails = SupportedVCs.getDetails($scope.repository);
 
         $scope.projectVersions = [];
 

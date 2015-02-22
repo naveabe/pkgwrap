@@ -42,13 +42,15 @@ func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildReposi
 	return tBuild, nil
 }
 
-func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, logger *logging.Logger, reqChan chan specer.PackageRequest) {
+func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, logger *logging.Logger,
+	reqChan chan specer.PackageRequest, datastore *tracker.EssJobstore) {
 
 	methodHandler := websvc.PkgBuilderMethodHandler{
 		Config:      cfg,
 		Repository:  repo,
 		Logger:      logger,
 		RequestChan: reqChan, // testing
+		Datastore:   datastore,
 	}
 
 	websvc.NewRestHandler(cfg.Endpoints.Builder, &methodHandler, logger)
@@ -136,7 +138,7 @@ func main() {
 	}
 
 	// HTTP server /api/builder
-	go StartWebServices(cfg, repo, logger, pkgReqChan)
+	go StartWebServices(cfg, repo, logger, pkgReqChan, datastore)
 
 	// Avoid if statement in busy loop
 	if cfg.Tracker.Enabled {

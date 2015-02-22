@@ -35,7 +35,7 @@ angular.module('ipkg.builder', [])
             version: '@',
             tagbranch: '@',
             username: '=',
-            repository: '=',
+            repository: '='
         },
         templateUrl: 'app/builder/build-request.html',
         link: function(scope, elem, attrs, ctrl) {

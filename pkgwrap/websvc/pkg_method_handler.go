@@ -8,6 +8,7 @@ import (
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"github.com/naveabe/pkgwrap/pkgwrap/specer"
+	"github.com/naveabe/pkgwrap/pkgwrap/tracker"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -38,6 +39,8 @@ type PkgBuilderMethodHandler struct {
 
 	// This channel will be read to get PackageRequests
 	RequestChan chan specer.PackageRequest
+
+	Datastore *tracker.EssJobstore
 }
 
 /*
@@ -193,4 +196,14 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 	}
 
 	return nil, pkgReq, 200
+}
+
+func (m *PkgBuilderMethodHandler) GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
+	rslts, err := m.Datastore.GetRequests(args...)
+	if err != nil {
+		return nil, fmt.Sprintf(`{"error": "%s"}`, err), 400
+	}
+	m.Logger.Trace.Printf("%v\n", rslts)
+	//return nil, `{"status":"in progress"}`, 200
+	return nil, rslts, 200
 }

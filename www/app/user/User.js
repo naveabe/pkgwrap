@@ -6,9 +6,6 @@ angular.module('ipkg.user', [])
     function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo, SupportedVCs) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username);
-        
-        $scope.pageHeaderHtml = "/partials/page-header.html";
-        $scope.buildRequestHtml = "app/builder/build-request.html";
 
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;

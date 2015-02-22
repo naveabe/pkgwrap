@@ -69,7 +69,10 @@ select.form-control.repo-select {
 }
 
 #page-header {
-	padding: 10px 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 2%;
+	padding-right: 2%;
 	background: #505050;
 }
 
@@ -138,15 +141,20 @@ pre.log-content {
 	border-top:1px solid #eee;
 }
 
+.refresh-btn,
 .build-btn {
 	transition:all 0.25s ease;
 	color: #ccc;
 	cursor: pointer;
 }
+
+.refresh-btn:hover,
+.build-btn-dark .build-btn:hover,
 .build-btn:hover {
 	color: #428bca;
 }
 
+.build-btn-dark .build-btn,
 .breadcrumb-path,
 .project-pkgs {
 	color: #505050;
