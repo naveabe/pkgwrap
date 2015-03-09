@@ -1,7 +1,7 @@
-<h4 style="padding-bottom:10px">
+<h4 style="padding:10px 0">
     <span>History</span>
     <span class="pull-right"  title="Refresh history">
-        <a href="javascript:void(0)" ng-click="refreshHistory()" class="refresh-btn">
+        <a href="javascript:void(0)" ng-click="fetchJobHistory()" class="refresh-btn">
             <span class="glyphicon glyphicon-refresh" style="font-weight:bolder"></span>
         </a>
     </span>
@@ -10,22 +10,31 @@
     <li ng-repeat="build in buildHistory" class="list-group-item">
         <div style="padding-bottom:10px">
             <div>
-                <span style="padding-right:5px;">Project: <b>{{build.project}}</b></span>
-                <span style="padding-right:5px;">Ref: <b>{{build.tagbranch}}</b></span>
-                <span style="padding-right:5px;">Version: <b>{{build.version}}</b></span>
-                <span class="pull-right small">{{build.timestamp*1000|date:'medium'}}</span>
+                <span style="padding-right:5px;">Project: <b>{{build.Request.Package.name}}</b></span>
+                <span style="padding-right:5px;">Ref: <b>{{build.Request.Package.tagbranch}}</b></span>
+                <span style="padding-right:5px;">Version: <b>{{build.Request.Package.version}}</b></span>
+                <span class="pull-right small">{{build.Timestamp|date:'medium'}}</span>
             </div>
-            <div class="small" style="color:#aaa;padding-top:3px;"><span class="small">{{build._id}}</span></div>
+            <div class="small" style="color:#aaa;padding-top:3px;"><span class="small"></span></div>
         </div>
         <div class="distro-job-list">
-            <div class="distro-job" ng-repeat="job in build.jobs">
-                <a href="javascript:void(0)" ng-click="loadBuildLog(job)" data-target="[data-log-id={{job.id}}]" data-toggle="collapse">
+            <div class="distro-job" ng-repeat="distro in build.Request.Distributions">
+                <a href="javascript:void(0)" ng-click="" data-target="[data-log-id={{distro.id}}]" data-toggle="collapse">
                     <div>
-                        <img ng-src="imgs/{{job.label}}.png" width="16" height="16" style="opacity:0.6"> <b>{{job.label|distroLabel}}</b>
-                        <span class="pull-right badge {{job.status}}">{{job.status}}</span>
+                        <img ng-src="imgs/{{distro.name}}-{{distro.release}}.png" width="16" height="16" style="opacity:0.6"> <b>{{distro.name|toTitleCase}} {{distro.release}}</b>
+                        <span class="pull-right badge {{build.Containers[distro.id].State.status}}">{{build.Containers[distro.id].State.status}}</span>
+                        <!--
+                        <span ng-if="build.Containers[distro.id].State.ExitCode" class="pull-right badge failed">failed</span>
+                        <span ng-if="build.Containers[distro.id].State.ExitCode==0" class="pull-right badge succeeded">succeeded</span>-->
+                        <!--<span class="pull-right badge {{job.status}}">{{job.status}}</span>-->
+                    </div>
+                    <div class="small" style="padding-top:5px">
+                        <span>{{distro.id}}</span>
+                        <span class="pull-right" ng-if="build.Containers[distro.id].State.Running">Started At: {{build.Containers[distro.id].State.StartedAt}}</span>
+                        <span class="pull-right" ng-if="!build.Containers[distro.id].State.Running">{{build.Containers[distro.id].State|timeDelta}}</span>
                     </div>
                 </a>
-                <div ng-model="job" class="collapse" data-log-id="{{job.id}}" log-tailer></div>
+                <!--<div ng-model="job" class="collapse" data-log-id="{{distro.id}}" log-tailer></div>-->
             </div>
         </div>
     </li>

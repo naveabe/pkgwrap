@@ -41,44 +41,6 @@ angular.module('appServices', [])
         }
     });
 }])
-.factory('PkgWrapJobs', ['$resource', 'Configuration', function($resource, Configuration) {
-    return $resource('/api/jobs/:username/:project/:version/:jobId', {}, {
-        listUser: {
-            params: {
-                "username": "@username"
-            },
-            method: 'GET',
-            isArray: true
-        },
-        listJobsForProject: {
-            params: {
-                "username": "@username",
-                "project" : "@project"
-            },
-            method: 'GET',
-            isArray: true
-        },
-        listProjectVersions: {
-            params: {
-                "username": "@username",
-                "project" : "@project",
-                "version" : "@version"
-            },
-            method: 'GET',
-            isArray: true
-        },
-        listDistro: {
-            params: {
-                "username": "@username",
-                "project" : "@project",
-                "version" : "@version",
-                "jobId"   : "@jobId"
-            },
-            method: 'GET',
-            isArray: true
-        }
-    });
-}])
 .factory('GithubRepo', ['$resource', function($resource) {
     return $resource('https://api.github.com/users/:username/:qtype', {}, {
         userRepos: {
@@ -106,3 +68,47 @@ angular.module('appServices', [])
 
     return supportedVCs;
 }]);
+/*
+.factory('PkgWrapJobs', ['$resource', 'Configuration', function($resource, Configuration) {
+    return $resource('/api/jobs/:repository/:username/:project/:version/:jobId', {}, {
+        listUser: {
+            params: {
+                "repository": "@repository",
+                "username": "@username"
+            },
+            method: 'GET',
+            isArray: true
+        },
+        listJobsForProject: {
+            params: {
+                "repository": "@repository",
+                "username": "@username",
+                "project" : "@project"
+            },
+            method: 'GET',
+            isArray: true
+        },
+        listProjectVersions: {
+            params: {
+                "repository": "@repository",
+                "username": "@username",
+                "project" : "@project",
+                "version" : "@version"
+            },
+            method: 'GET',
+            isArray: true
+        },
+        listDistro: {
+            params: {
+                "repository": "@repository",
+                "username": "@username",
+                "project" : "@project",
+                "version" : "@version",
+                "jobId"   : "@jobId"
+            },
+            method: 'GET',
+            isArray: true
+        }
+    });
+}]);
+*/

@@ -57,8 +57,11 @@ app.config(['$routeProvider',
 		}).when('/:repository/:username', {
             templateUrl: 'app/user/user.html',
             controller: 'userController'
+        }).when('/', {
+            templateUrl: 'partials/root.html',
+            controller: 'rootController'
         }).otherwise({
-			redirectTo: '/login'
+			redirectTo: '/'
 		});
 	}
 ]);
@@ -88,15 +91,27 @@ app.filter('objectLength', function() {
         return (mb/1024).toFixed(2).toString()+" GB";
     }
 })
+.filter('toTitleCase', function() {
+    return function(dlabel) {
+        return dlabel.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
+})
 .filter('distroLabel', function() {
     /* Ignores everything after the 2nd dash */
     return function(dlabel) {
         var arr = dlabel.split("-")
-        return arr[0].replace(/\w\S*/g, 
-            function(txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            }
-        ) + " " + arr[1];
-
+        return arr[0].replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }) + " " + arr[1];
+    }
+})
+.filter('timeDelta', function() {
+    return function(tRange) {
+        //var ft = Date.parse(tRange.FinishedAt);
+        //var st = Date.parse(tRange.StartedAt);
+        var secs = Math.floor((Date.parse(tRange.FinishedAt)-Date.parse(tRange.StartedAt))/1000);
+        return Math.floor(secs/60) + " mins " + Math.floor(secs % 60)+ " secs";
     }
 });

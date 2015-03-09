@@ -17,7 +17,7 @@ angular.module('ipkg.logviewer', [])
                          contentElem = $(jElem.find('[data-log-content='+newVal+']')[0]);
 
                     }, true);
-
+                /*
                 scope.$watch(
                     function() { return ctrl.$modelValue.logContent },
                     function(newVal, oldVal) {
@@ -25,6 +25,7 @@ angular.module('ipkg.logviewer', [])
 
                         contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
                     }, true);
+                */
             }
 
             init();

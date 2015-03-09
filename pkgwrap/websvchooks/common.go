@@ -10,6 +10,9 @@ var (
 	VERSION_RE, _ = regexp.Compile("([0-9\\.]+)")
 )
 
+/*
+	Parse version from git ref
+*/
 func GetVersionFromRef(ref string) (string, error) {
 	refParts := strings.Split(ref, "/")
 	if refParts[1] == "tags" {
@@ -23,6 +26,9 @@ func GetVersionFromRef(ref string) (string, error) {
 	}
 }
 
+/*
+	Parse tag from git ref
+*/
 func GetTagFromRef(ref string) (string, error) {
 
 	refParts := strings.Split(ref, "/")

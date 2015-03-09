@@ -43,7 +43,7 @@ func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildReposi
 }
 
 func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, logger *logging.Logger,
-	reqChan chan specer.PackageRequest, datastore *tracker.EssJobstore) {
+	reqChan chan specer.PackageRequest, datastore *tracker.TrackerStore) {
 
 	methodHandler := websvc.PkgBuilderMethodHandler{
 		Config:      cfg,
@@ -90,13 +90,12 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 }
 
-func StartEventMonitor(dstore *tracker.EssJobstore, logger *logging.Logger) {
-	dem, err := tracker.NewDockerEventMonitor(DOCKER_URI, dstore, logger)
-	if err != nil {
-		logger.Error.Fatalf("%s\n", err)
-	}
-
-	if err := dem.Start(); err != nil {
+func StartEventMonitor(dstore *tracker.TrackerStore, logger *logging.Logger) {
+	if dem, err := tracker.NewDockerEventMonitor(DOCKER_URI, dstore, logger); err == nil {
+		if err := dem.Start(); err != nil {
+			logger.Error.Fatalf("%s\n", err)
+		}
+	} else {
 		logger.Error.Fatalf("%s\n", err)
 	}
 }
@@ -105,11 +104,17 @@ func main() {
 	flag.Parse()
 
 	var (
-		logger     = logging.NewStdLogger()
+		logger = logging.NewStdLogger()
+		// channel receiving package requests
 		pkgReqChan = make(chan specer.PackageRequest)
 		cfg        *config.AppConfig
-		datastore  *tracker.EssJobstore
-		err        error
+		// datastore
+		datastore *tracker.TrackerStore
+		err       error
+		// Build repo with packages
+		repo repository.BuildRepository
+		// rpm and dep templates
+		tmplMgr templater.TemplatesManager
 	)
 
 	logger.SetLogLevel(*LOGLEVEL)
@@ -119,91 +124,47 @@ func main() {
 		os.Exit(1)
 	}
 
-	repo := repository.BuildRepository{cfg.Repository}
-	tmplMgr := templater.TemplatesManager{cfg.TemplatesDir()}
+	repo = repository.BuildRepository{cfg.Repository}
+	tmplMgr = templater.TemplatesManager{cfg.TemplatesDir()}
 
-	if cfg.Tracker.Enabled {
-		logger.Warning.Printf("Tracker ENABLED!\n")
-
-		//datastore, err = tracker.NewEssDatastore(&cfg.Tracker.Datastore, logger)
-		datastore, err = tracker.NewEssJobstore(&cfg.Tracker.Datastore, logger)
-		if err != nil {
-			logger.Error.Printf("Failed to init datastore: %s\n", err)
-			os.Exit(2)
-		}
-
-		jobsHandle := websvc.NewJobsHandler(datastore, logger)
-		websvc.NewRestHandler(cfg.Endpoints.Jobs, jobsHandle, logger)
-		logger.Warning.Printf("Jobs API: %s\n", cfg.Endpoints.Jobs)
+	if datastore, err = tracker.NewTrackerStore(&cfg.Tracker.Datastore, logger); err != nil {
+		logger.Error.Printf("Datastore initialization failed: %s\n", err)
+		os.Exit(2)
 	}
-
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan, datastore)
+	// Used for updating state changes.
+	go StartEventMonitor(datastore, logger)
 
-	// Avoid if statement in busy loop
-	if cfg.Tracker.Enabled {
-		// Used for updating state changes.
-		go StartEventMonitor(datastore, logger)
+	for {
+		pkgReq := <-pkgReqChan
 
-		for {
-			pkgReq := <-pkgReqChan
+		logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
+			pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
 
-			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
-				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
-
-			if pkgReq.Id, err = datastore.AddRequest(pkgReq); err != nil {
-				logger.Error.Printf("%s\n", err)
-				continue
-			}
-
-			pReqBytes, _ := json.MarshalIndent(pkgReq, "", "  ")
-			logger.Trace.Printf("Request added: %s\n", pReqBytes)
-
-			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
-			if err != nil {
-				logger.Error.Printf("%s\n", err)
-				continue
-			}
-
-			builds := tBld.StartBuilds(DOCKER_URI)
-			logger.Info.Printf("Containers started: %d\n", len(builds))
-			logger.Trace.Printf("Containers details: %s\n", builds)
-
-			if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
-				logger.Error.Printf("%s\n", err)
-				continue
-			}
-			b, _ := json.MarshalIndent(tBld.BuildRequest, "", "  ")
-			logger.Trace.Printf("Updated request: %s\n", b)
-
-			bJob := tracker.NewBuildJob(&pkgReq, builds, DOCKER_HOST_PORT)
-
-			for i, _ := range bJob.Jobs {
-				bJob.Jobs[i].Status = "started"
-			}
-			// Add build job
-			if _, err = bJob.Record(datastore); err != nil {
-				logger.Error.Printf("%s\n", err)
-			}
+		if pkgReq.Id, err = datastore.AddRequest(pkgReq); err != nil {
+			logger.Error.Printf("Failed to add request: %s\n", err)
+			continue
 		}
-	} else {
-		logger.Warning.Printf("Tracker DISABLED!\n")
 
-		for {
-			pkgReq := <-pkgReqChan
+		pReqBytes, _ := json.MarshalIndent(pkgReq, "", "  ")
+		logger.Trace.Printf("Request added: %s\n", pReqBytes)
 
-			logger.Info.Printf("Package request: name=%s version=%s release=%d build_type=%s\n",
-				pkgReq.Name, pkgReq.Version, pkgReq.Package.Release, pkgReq.Package.BuildType)
+		tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
+		if err != nil {
+			logger.Error.Printf("Failed to prep build: %s\n", err)
+			continue
+		}
 
-			tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
-			if err != nil {
-				logger.Error.Printf("%s\n", err)
-				continue
-			}
+		builds := tBld.StartBuilds(DOCKER_URI)
+		logger.Info.Printf("Containers started: %d\n", len(builds))
+		logger.Trace.Printf("Containers details: %s\n", builds)
 
-			builds := tBld.StartBuilds(DOCKER_URI)
-			logger.Info.Printf("Containers started: %d\n", len(builds))
-			logger.Trace.Printf("Containers details: %s\n", builds)
+		if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
+			logger.Error.Printf("Failed to update loaded request: %s\n", err)
+		} else {
+			b, _ := json.MarshalIndent(tBld.BuildRequest, "", "  ")
+			logger.Trace.Printf("Request loaded: %s\n", b)
 		}
 	}
 }

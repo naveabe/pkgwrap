@@ -118,6 +118,7 @@ a.started {
 .badge.failed {
 	background: #D94A56;
 }
+.badge.running,
 .badge.started {
 	background: #377BA6;
 }
@@ -128,7 +129,7 @@ pre.log-content {
 	overflow-y: scroll;
 	margin: 0;
 	border-radius: 2px;
-	border: 1px solid #ccc;
+	/*border: 1px solid #ccc;*/
 	background:#444;
 	color: #eee; 
 }

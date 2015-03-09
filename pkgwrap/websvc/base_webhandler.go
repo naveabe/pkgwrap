@@ -59,9 +59,8 @@ func NewRestHandler(prefix string, methodHandler IMethodHandler, logger *logging
 }
 
 func (p *RestHandler) parsePath(path string) []string {
-	sPath := strings.TrimPrefix(path, p.Prefix)
 	parts := make([]string, 0)
-	for _, part := range strings.Split(sPath, "/") {
+	for _, part := range strings.Split(strings.TrimPrefix(path, p.Prefix), "/") {
 		if part != "" {
 			parts = append(parts, part)
 		}
@@ -90,14 +89,17 @@ func (p *RestHandler) callMethod(w http.ResponseWriter, r *http.Request, args ..
 func (p *RestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pathParts := p.parsePath(r.URL.Path)
 
-	if len(pathParts) < 1 {
-		p.writeJsonResponse(w, r, nil, []byte(fmt.Sprintf(`{"error": "Bad request: %s", "code": 404}`, r.URL.Path)), 404)
+	if len(pathParts) < 0 {
+		p.writeJsonResponse(w, r, nil,
+			[]byte(fmt.Sprintf(`{"error": "Bad request: %s", "code": 404}`, r.URL.Path)), 404)
 		return
 	}
 
 	headers, data, code := p.callMethod(w, r, pathParts...)
-	// Don't write response.  The method must write the response
-	// and return -1 for the status code.
+	/*
+		 	Don't write response.  The method must write the response
+			and return -1 for the status code.
+	*/
 	if code != -1 {
 		p.writeJsonResponse(w, r, headers, data, code)
 	} else {
@@ -105,18 +107,15 @@ func (p *RestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (p *RestHandler) writeResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data []byte, respCode int) {
+func (p *RestHandler) writeResponse(w http.ResponseWriter, r *http.Request,
+	headers map[string]string, data interface{}, respCode int) {
+
 	if headers != nil {
 		for k, v := range headers {
 			w.Header().Set(k, v)
 		}
 	}
-	w.WriteHeader(respCode)
-	w.Write(data)
-	p.logger.Info.Printf("%s %d %s\n", r.Method, respCode, r.URL.RequestURI())
-}
 
-func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, headers map[string]string, data interface{}, respCode int) {
 	var b []byte
 	switch data.(type) {
 	case string:
@@ -135,6 +134,14 @@ func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request, 
 		break
 	}
 
+	w.WriteHeader(respCode)
+	w.Write(b)
+	p.logger.Info.Printf("%s %d %s\n", r.Method, respCode, r.URL.RequestURI())
+}
+
+func (p *RestHandler) writeJsonResponse(w http.ResponseWriter, r *http.Request,
+	headers map[string]string, data interface{}, respCode int) {
+
 	w.Header().Set("Content-Type", "application/json")
-	p.writeResponse(w, r, headers, b, respCode)
+	p.writeResponse(w, r, headers, data, respCode)
 }

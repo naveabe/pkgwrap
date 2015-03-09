@@ -1,7 +1,7 @@
 angular.module('ipkg.project', [])
 .controller('projectController', [ 
-    '$scope', '$location', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'PkgWrapJobs', 'SupportedVCs',
-    function($scope, $location, $routeParams, Authenticator, PkgWrapRepo, PkgWrapJobs, SupportedVCs) {
+    '$scope', '$location', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'SupportedVCs',
+    function($scope, $location, $routeParams, Authenticator, PkgWrapRepo, SupportedVCs) {
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username+"/"+$routeParams.project);
         

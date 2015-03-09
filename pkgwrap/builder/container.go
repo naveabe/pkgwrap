@@ -24,7 +24,9 @@ type ContainerRunner struct {
 	logger *logging.Logger
 }
 
-func NewContainerRunner(builderCfg config.BuilderConfig, distro specer.Distribution, pkg *specer.UserPackage) (*ContainerRunner, error) {
+func NewContainerRunner(builderCfg config.BuilderConfig,
+	distro specer.Distribution, pkg *specer.UserPackage) (*ContainerRunner, error) {
+
 	var (
 		c   ContainerRunner
 		err error = nil

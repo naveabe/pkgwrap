@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"encoding/json"
 	"fmt"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
@@ -9,8 +10,9 @@ import (
 	"os"
 )
 
-const ESS_DEFAULT_RESULT_SIZE int = 10000000
-
+/*
+	Generic wrapper to elasticsearch
+*/
 type EssMapping struct {
 	Meta             map[string]interface{} `json:"_meta"`
 	DynamicTemplates []interface{}          `json:"dynamic_templates"`
@@ -72,12 +74,12 @@ func (e *EssDatastore) initializeIndex(mappingFile string) error {
 	if err != nil {
 		return err
 	}
-	e.logger.Warning.Printf("Updated _default_ mapping for %s: %s\n", e.index, b)
+	e.logger.Warning.Printf("Updated '_default_' mapping for %s: %s\n", e.index, b)
 	return nil
 }
 
-func (e *EssDatastore) Add(docType string, data interface{}) (string, error) {
-	resp, err := e.conn.Index(e.index, docType, "", nil, data)
+func (e *EssDatastore) AddWithId(docType, id string, data interface{}) (string, error) {
+	resp, err := e.conn.Index(e.index, docType, id, nil, data)
 	if err != nil {
 		e.logger.Trace.Printf("%s\n", err)
 		return "", err
@@ -89,17 +91,28 @@ func (e *EssDatastore) Add(docType string, data interface{}) (string, error) {
 	return resp.Id, nil
 }
 
+/*
+	Add with auto-generated id.
+*/
+func (e *EssDatastore) Add(docType string, data interface{}) (string, error) {
+	return e.AddWithId(docType, "", data)
+}
+
+/*
+	Args:
+		docType : DTYPE_CONTAINER | DTYPE_REQUEST
+		id      : document id
+		data    : arbitrary data
+*/
 func (e *EssDatastore) Update(docType, id string, data interface{}) error {
 	resp, err := e.conn.Index(e.index, docType, id, nil, data)
 	if err != nil {
 		e.logger.Trace.Printf("%s\n", err)
 		return err
 	}
-	e.logger.Trace.Printf("%s\n", resp)
-	/*
-		if !resp.Created {
-			return fmt.Errorf("Failed to record job: %s", resp)
-		}
-	*/
+	e.logger.Trace.Printf("Updated: %#v\n", data)
+	b, _ := json.MarshalIndent(data, "", "  ")
+	e.logger.Trace.Printf("Updated: %s\n", b)
+	e.logger.Trace.Printf("Updated: %#v\n", resp)
 	return nil
 }

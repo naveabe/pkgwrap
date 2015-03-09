@@ -14,8 +14,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	//"path/filepath"
-	//"strings"
 )
 
 /* Request params mapping */
@@ -40,7 +38,7 @@ type PkgBuilderMethodHandler struct {
 	// This channel will be read to get PackageRequests
 	RequestChan chan specer.PackageRequest
 
-	Datastore *tracker.EssJobstore
+	Datastore *tracker.TrackerStore
 }
 
 /*
@@ -162,19 +160,21 @@ func (m *PkgBuilderMethodHandler) downloadUserPackage(pkg *specer.UserPackage, p
 	return nil
 }
 
+/*
+	Params:
+		binary : Build package from pre-compiled data
+		dryrun : Runs through accepting the request but does not actually
+				 submit for building
+*/
 func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
-
 	var (
-		err error = nil
-
+		err     error = nil
 		pkgReq  specer.PackageRequest
 		pkgFile *multipart.FileHeader
 	)
-
 	if len(args) != 3 {
 		return nil, map[string]string{"error": "Invalid request"}, 400
 	}
-
 	// Determines build type: 'source' or 'binary'
 	if _, ok := r.URL.Query()["binary"]; ok {
 		m.Logger.Debug.Printf("Binary build request!\n")
@@ -190,7 +190,7 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 		m.Logger.Warning.Printf("%s\n", err)
 		return nil, map[string]string{"error": err.Error()}, 400
 	}
-
+	// Do not send over channel
 	if _, ok := r.URL.Query()["dryrun"]; !ok {
 		m.RequestChan <- pkgReq
 	}
@@ -199,11 +199,9 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 }
 
 func (m *PkgBuilderMethodHandler) GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
-	rslts, err := m.Datastore.GetRequests(args...)
+	rslts, err := m.Datastore.GetBuildInfo(args...)
 	if err != nil {
 		return nil, fmt.Sprintf(`{"error": "%s"}`, err), 400
 	}
-	m.Logger.Trace.Printf("%v\n", rslts)
-	//return nil, `{"status":"in progress"}`, 200
 	return nil, rslts, 200
 }
