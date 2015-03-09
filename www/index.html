@@ -29,9 +29,28 @@
   </head>
   <body>
       <div id="stage" ng-controller="defaultController">
-          <ng-include src="pageHeaderHtml"></ng-include>
+          <div id="page-header">
+            <div class="row" style="margin:0;padding:0">
+              <div class="col-md-10" style="padding:0">
+                <h4><a href="#/" id="home-btn">ipkg</a></h4>
+              </div>
+              <div class="col-md-2 text-right" style="padding:0">
+                
+                  <h4>
+                    <a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn">
+                      <span style="padding-left:10px" class="glyphicon glyphicon-user"></span>
+                    </a>
+                    <a ng-if="!isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn">
+                      <span>{{authedUser}}</span>
+                      <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-left:10px"></span>
+                    </a> 
+                  </h4>
+                
+              </div>
+            </div>
+          </div>
           <div style="overflow-y:scroll">
-              <div class="ng-view-content" ng-view></div>
+            <div class="ng-view-content" ng-view></div>
           </div>
       </div>
   </body>

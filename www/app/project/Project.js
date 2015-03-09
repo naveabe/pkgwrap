@@ -5,8 +5,6 @@ angular.module('ipkg.project', [])
         
         Authenticator.checkAuthOrRedirect("/"+$routeParams.username+"/"+$routeParams.project);
         
-        //$scope.pageHeaderHtml = "/partials/page-header.html";
-
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;
         $scope.project = $routeParams.project;

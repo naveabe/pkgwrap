@@ -4,32 +4,37 @@ var appControllers = angular.module('appControllers', []);
 appControllers.controller('rootController', [ '$window', '$location', '$scope', 'Authenticator',
 	function($window, $location, $scope, Authenticator) {
 		
-		Authenticator.checkAuthOrRedirect();
-		
-		$scope.pageHeaderHtml = "/partials/page-header.html";
-
+		//Authenticator.checkAuthOrRedirect("/");
 	}
 ]);
 
-appControllers.controller('defaultController', [ '$window', '$location', '$scope', 
-	function($window, $location, $scope) {
+appControllers.controller('defaultController', [ 
+	'$window', '$location', '$routeParams', '$scope', '$rootScope', 'Authenticator',
+	function($window, $location, $routeParams, $scope, $rootScope, Authenticator) {
 
-		$scope.pageHeaderHtml = "/partials/page-header.html";
+		$scope.authedUser = "" ;
+		$scope.isGuest = true;
 
-		$scope.logOut = function() {
-	        
-	        console.log("De-authing...");
-	        var sStor = $window.sessionStorage;
-	        if(sStor['credentials']) {
-	            delete sStor['credentials'];
-	        }
-
-	        var lStor = $window.localStorage;
-	        for(var k in lStor) {
-	            if(/^token\-/.test(k)) delete lStor[k];
-	        }
-
-	        $location.url("/login");
+		$scope.logout = function() {
+			Authenticator.logout();
 	    }
+
+	    function init() {
+
+	    	//console.log($routeParams);
+			
+			$rootScope.$on('user:auth:success', function(evt, data) {
+				//console.log(evt, data);
+				$scope.authedUser = data.username;
+				$scope.isGuest = false;
+			});
+
+			$rootScope.$on('user:unauth', function(evt, data) {
+				$scope.authedUser = "";
+				$scope.isGuest = true;
+			});
+	    }
+
+	    init();
 	}
 ]);

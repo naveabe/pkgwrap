@@ -56,12 +56,19 @@ select.form-control.repo-select {
 	text-align: right;
 	padding-top: 10px;
 }
+
+#home-btn,
+#logout-btn > span.glyphicon.glyphicon-user,
+#logout-btn > span.glyphicon.glyphicon-log-out,
 #logout-btn {
-	color: #888;
+	color: #888 !important;
 }
+#home-btn:hover,
+#logout-btn:hover > span.glyphicon,
 #logout-btn:hover {
-	color: #428bca
+	color: #428bca !important;
 }
+
 .view-defaults {
 	width: 94%;
 	margin-left: auto;
@@ -166,4 +173,11 @@ pre.log-content {
 .repo-exists {
 	font-weight: bold;
 	color: #428bca;
+}
+
+.build-history-item {
+	transition: all 0.35s ease;
+}
+.build-history-item:hover {
+	background-color: #f6f6f6;
 }

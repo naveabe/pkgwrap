@@ -20,13 +20,6 @@ const (
 )
 
 /*
-type BuildContainerInfo struct {
-	docker.Container
-	State docker.State
-}
-*/
-
-/*
    Complete build information.  Contains:
     - package request
     - array of container info per distro.
@@ -104,7 +97,6 @@ func (t *TrackerStore) GetContainer(id string) (*docker.Container, error) {
 	var (
 		err   error
 		dcont docker.Container
-		//dcont BuildContainerInfo
 	)
 
 	result, err := t.conn.Get(t.index, DTYPE_CONTAINER, id, nil)
@@ -147,6 +139,7 @@ func (t *TrackerStore) GetBuildInfo(args ...string) ([]*BuildInfo, error) {
 	if err != nil {
 		return out, err
 	}
+	/* convert responses to []BuildInfo */
 	return t.assembleBuildInfo(resp)
 }
 
@@ -182,6 +175,11 @@ func (t *TrackerStore) assembleBuildInfo(resp elastigo.SearchResult) ([]*BuildIn
 
 /*
 	Assemble terms query for elastic search
+
+		filtered
+			filter
+				bool
+					must : []
 */
 func (t *TrackerStore) makeTermsQuery(args []string) (map[string]interface{}, error) {
 	var mustTerms []interface{}
@@ -199,7 +197,6 @@ func (t *TrackerStore) makeTermsQuery(args []string) (map[string]interface{}, er
 				},
 			},
 		}
-		//terms["Package.packager"] = strings.ToLower(args[1])
 		break
 	case 3: //project
 		mustTerms = []interface{}{
@@ -214,8 +211,6 @@ func (t *TrackerStore) makeTermsQuery(args []string) (map[string]interface{}, er
 				},
 			},
 		}
-		//terms["Package.packager"] = strings.ToLower(args[1])
-		//terms["Package.name"] = strings.ToLower(args[2])
 		break
 	case 4: //version
 		mustTerms = []interface{}{
@@ -235,9 +230,6 @@ func (t *TrackerStore) makeTermsQuery(args []string) (map[string]interface{}, er
 				},
 			},
 		}
-		//terms["Package.packager"] = strings.ToLower(args[1])
-		//terms["Package.name"] = strings.ToLower(args[2])
-		//terms["Package.version"] = strings.ToLower(args[3])
 		break
 	default:
 		return query, fmt.Errorf("Invalid request: %v", args)
@@ -275,7 +267,6 @@ func (t *TrackerStore) performQuery(docType string,
 
 	query := map[string]interface{}{}
 	if qterms != nil && len(qterms) > 0 {
-		//query["filter"] = map[string]map[string]interface{}{"term": terms}
 		query["query"] = qterms
 	}
 	if opts != nil {
