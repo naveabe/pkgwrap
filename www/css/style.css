@@ -57,6 +57,10 @@ select.form-control.repo-select {
 	padding-top: 10px;
 }
 
+.log-toggler {
+	font-size: 13px;
+}
+
 .log-toggler,
 #user-home-btn,
 #home-btn,
@@ -121,6 +125,15 @@ a.failed {
 }
 a.started {
 	color: #377BA6;
+}
+
+.badge.succeeded,
+.badge.failed,
+.badge.running,
+.badge.started {
+	font-size: 11px;
+	line-height: 1.1;
+	font-weight: 400;
 }
 
 .badge.succeeded {
