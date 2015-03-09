@@ -181,3 +181,8 @@ pre.log-content {
 .build-history-item:hover {
 	background-color: #f6f6f6;
 }
+.remove-distro-btn {
+	padding-right: 0 !important;
+	background: none;
+	border:none;
+}
