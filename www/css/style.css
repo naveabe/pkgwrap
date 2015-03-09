@@ -57,6 +57,7 @@ select.form-control.repo-select {
 	padding-top: 10px;
 }
 
+.log-toggler,
 #user-home-btn,
 #home-btn,
 #logout-btn > span.glyphicon.glyphicon-user,
@@ -64,6 +65,7 @@ select.form-control.repo-select {
 #logout-btn {
 	color: #888 !important;
 }
+.log-toggler:hover,
 #user-home-btn:hover,
 #home-btn:hover,
 #logout-btn:hover > span.glyphicon,
