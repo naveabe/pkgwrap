@@ -56,6 +56,14 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	websvc.NewRestHandler(cfg.Endpoints.Builder, &methodHandler, logger)
 	logger.Warning.Printf("Builder API: %s\n", cfg.Endpoints.Builder)
 
+	// Log handler
+	logHdlr, err := websvc.NewLogHandler(DOCKER_URI, logger)
+	if err != nil {
+		logger.Error.Fatalf("%s\n", err)
+	}
+	websvc.NewRestHandler("/api/logs", logHdlr, logger)
+
+	// Gitlab webhook
 	if cfg.Endpoints.Gitlab != "" {
 		glHandle := websvchooks.GitlabWebHook{logger, reqChan}
 		http.Handle(cfg.Endpoints.Gitlab, &glHandle)

@@ -3,14 +3,15 @@ angular.module('ipkg.project', [])
     '$scope', '$location', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'SupportedVCs',
     function($scope, $location, $routeParams, Authenticator, PkgWrapRepo, SupportedVCs) {
         
-        Authenticator.checkAuthOrRedirect("/"+$routeParams.username+"/"+$routeParams.project);
-        
         $scope.repository = $routeParams.repository;
+        $scope.repositoryDetails = SupportedVCs.getDetails($scope.repository);
+        
+        Authenticator.checkAuthOrRedirect("/"+$routeParams.username+"/"+$routeParams.project,
+            $scope.repositoryDetails);
+
         $scope.username = $routeParams.username;
         $scope.project = $routeParams.project;
         $scope.version = $routeParams.version;
-
-        $scope.repositoryDetails = SupportedVCs.getDetails($scope.repository);
 
         $scope.projectVersions = [];
 

@@ -36,17 +36,19 @@
                 <h4><a href="#/" id="home-btn">ipkg</a></h4>
               </div>
               <div class="col-md-2 text-right" style="padding:0">
-                
-                  <h4>
-                    <a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn">
-                      <span style="padding-left:10px" class="glyphicon glyphicon-user"></span>
-                    </a>
-                    <a ng-if="!isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn">
+                <h4>
+                  <a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Login">
+                    <span style="padding-left:10px" class="glyphicon glyphicon-user"></span>
+                  </a>
+                  <span ng-if="!isGuest">
+                    <a href="#/{{repository}}/{{authedUser}}" id="user-home-btn">
                       <span>{{authedUser}}</span>
+                    </a>
+                    <a href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Logout">
                       <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-left:10px"></span>
                     </a> 
-                  </h4>
-                
+                  </span>
+                </h4>
               </div>
             </div>
           </div>

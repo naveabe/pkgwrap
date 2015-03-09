@@ -1,3 +1,19 @@
-<div style="padding-top:10px;">
-    <pre class="log-content" data-log-content="{{job.id}}">{{job.logContent}}</pre>
+<a href="javascript:void(0)" ng-click="toggleLog()">
+    <div style="padding-left:10px">
+        <div>
+            <img ng-src="imgs/{{distro.name}}-{{distro.release}}.png" width="16" height="16" style="opacity:0.6">
+            <span style="padding-left:5px"><b>{{distro.name|toTitleCase}} {{distro.release}}</b></span>
+            <span class="pull-right badge {{state.status}}">{{state.status}}</span>
+        </div>
+        <div class="small" style="padding-top:5px;color:#999">
+            <span class="small">{{distro.id}}</span>
+            <span class="pull-right" ng-if="state.Running">Started At: {{state.StartedAt}}</span>
+            <span class="pull-right" ng-if="!state.Running">{{state|timeDelta}}</span>
+        </div>
+    </div>
+</a>
+<div class="collapse" data-log-collapse="{{distro.id}}">
+    <div style="margin-top:10px;">
+        <pre class="log-content">{{logcontent}}</pre>
+    </div>
 </div>

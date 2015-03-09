@@ -1,35 +1,62 @@
 angular.module('ipkg.logviewer', [])
-.directive('logTailer', ['Configuration', function(Configuration) {
+.directive('logTailer', [ '$rootScope', 'LogLoader', function($rootScope, LogLoader) {
     return {
-        restrict: 'A',
-        require: '?ngModel',
+        restrict: 'EA',
+        scope: {
+            distro: "=",
+            state: "="
+        },
         templateUrl: 'app/logviewer/log-viewer.html',
         link: function(scope, elem, attrs, ctrl) {
-            if(!ctrl) return;
+            
+            // Cache content elem
+            var contentElem = elem.find('pre');
+            // Cache collapsable
+            var contentTrigger = contentElem.parent().parent();
+            
+            scope.logcontent = "";
 
-            var jElem = $(elem[0]);
-            var contentElem;
+            scope.toggleLog = function() {
+                contentTrigger.collapse('toggle');
+                if (scope.logcontent === "") {
+                    //load content
+                    LogLoader.getLog(scope.distro.id)
+                    .success(function(data) {
+                        scope.logcontent = data;
+                    }).error(function(err) {
+                        console.log(err);
+                    });
+                }
+            }
+            
+            function onLogcontentChange(newVal, oldVal) {
+                if(!newVal) return;
+                contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
+            }
 
             function init() {
-                scope.$watch(
-                    function() { return ctrl.$modelValue.id },
-                    function(newVal, oldVal) {
-                         contentElem = $(jElem.find('[data-log-content='+newVal+']')[0]);
-
-                    }, true);
-                /*
-                scope.$watch(
-                    function() { return ctrl.$modelValue.logContent },
-                    function(newVal, oldVal) {
-                        if(!newVal) return;
-
-                        contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
-                    }, true);
-                */
+                
+                scope.$watch(function() { return scope.logcontent },
+                    onLogcontentChange, true);
             }
 
             init();
 
+        }
+    }
+}])
+.factory('LogLoader', ['$http', function($http) {
+    return {
+        getLog: function(containerId) {
+            return $http({
+                url: '/api/logs/' + containerId,
+                method: 'GET',
+                headers: { 'Content-Type': 'text/plain' },
+                transformResponse: function(value) {
+                    // Since this is plain text
+                    return value;
+                }
+            });
         }
     }
 }]);

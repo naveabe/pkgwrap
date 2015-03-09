@@ -4,13 +4,14 @@ angular.module('ipkg.user', [])
 .controller('userController', [ 
     '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubRepo', 'SupportedVCs',
     function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo, SupportedVCs) {
-        
-        Authenticator.checkAuthOrRedirect("/"+$routeParams.username);
 
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;
 
         $scope.repositoryDetails = SupportedVCs.getDetails($scope.repository);
+
+        Authenticator.checkAuthOrRedirect("/"+$routeParams.username,
+                                            $scope.repositoryDetails);
 
         $scope.userProjects = [];
 

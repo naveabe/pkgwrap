@@ -3,26 +3,29 @@ angular.module('ipkg.login', [])
     '$window', '$http', '$location', '$rootScope',
     function($window, $http, $location, $rootScope) {
     
-        function _sessionIsAuthenticated() {
+        function _sessionIsAuthenticated(evtArgs) {
             if($window.sessionStorage['credentials']) {
 
                 var creds = JSON.parse($window.sessionStorage['credentials']);
                 if(creds.username && creds.username !== "" && creds.password && creds.password !== "") {
+                    var eArgs = $.extend({}, {username:creds.username}, evtArgs);
                     // do custom checking here
-                    $rootScope.$emit('user:auth:success', {username: creds.username});
+                    $rootScope.$emit('user:auth:success', eArgs);
                     return true
                 }
             }
             return false;
         }
         
-        function _login(creds) {
+        function _login(creds, args) {
             // do actual auth here //
             //if(creds.username === "guest" && creds.password === "guest") {
             if(creds.password === "guest") {
                 $window.sessionStorage['credentials'] = JSON.stringify(creds);
+                //console.log(args);
+                var eArgs = $.extend({}, {username:creds.username}, args);
+                $rootScope.$emit('user:auth:success', eArgs);
                 
-                $rootScope.$emit('user:auth:success', {username: creds.username});
                 return true;
             }
             return false;
@@ -41,9 +44,9 @@ angular.module('ipkg.login', [])
             login                 : _login,
             logout                : _logout,
             sessionIsAuthenticated: _sessionIsAuthenticated,
-            checkAuthOrRedirect   : function(redirectTo) {
+            checkAuthOrRedirect   : function(redirectTo, evtArgs) {
                 
-                if( !_sessionIsAuthenticated() ){
+                if( !_sessionIsAuthenticated(evtArgs) ){
                 //    if(redirectTo) $location.url("/login?redirect="+redirectTo);   
                 //    else $location.url("/login");
                 }
@@ -65,7 +68,7 @@ angular.module('ipkg.login', [])
         //$scope.selectedRepo
 
         $scope.attemptLogin = function() {
-            if(Authenticator.login($scope.credentials)) {
+            if(Authenticator.login($scope.credentials, $scope.selectedRepo)) {
 
                 if($routeParams.redirect) {
                     $location.url($routeParams.redirect); 
@@ -81,6 +84,10 @@ angular.module('ipkg.login', [])
         }
 
         function _initialize() {
+            if(!$routeParams.repository) {
+                $location.url($scope.selectedRepo.repo+'/login');
+            }
+
             if($window.sessionStorage['credentials']) {
 
                 var creds = JSON.parse($window.sessionStorage['credentials']);

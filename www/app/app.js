@@ -46,7 +46,10 @@ app.config(['$routeProvider',
 		$routeProvider.when('/login', {
 			templateUrl: 'app/login/login.html',
 			controller: 'loginController'
-		}).when('/:repository/:username/:project/:version/:distro', {
+		}).when('/:repository/login', {
+            templateUrl: 'app/login/login.html',
+            controller: 'loginController'
+        }).when('/:repository/:username/:project/:version/:distro', {
             templateUrl: 'app/project/project.html',
             controller: 'projectController'
         }).when('/:repository/:username/:project/:version', {

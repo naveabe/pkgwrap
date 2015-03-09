@@ -12,8 +12,10 @@ appControllers.controller('defaultController', [
 	'$window', '$location', '$routeParams', '$scope', '$rootScope', 'Authenticator',
 	function($window, $location, $routeParams, $scope, $rootScope, Authenticator) {
 
-		$scope.authedUser = "" ;
+		$scope.authedUser = "";
 		$scope.isGuest = true;
+
+		$scope.repository = "";
 
 		$scope.logout = function() {
 			Authenticator.logout();
@@ -24,14 +26,17 @@ appControllers.controller('defaultController', [
 	    	//console.log($routeParams);
 			
 			$rootScope.$on('user:auth:success', function(evt, data) {
-				//console.log(evt, data);
+				
 				$scope.authedUser = data.username;
 				$scope.isGuest = false;
+
+				$scope.repository = data.repo;
 			});
 
 			$rootScope.$on('user:unauth', function(evt, data) {
 				$scope.authedUser = "";
 				$scope.isGuest = true;
+				$scope.repository = "";
 			});
 	    }
 

@@ -57,12 +57,14 @@ select.form-control.repo-select {
 	padding-top: 10px;
 }
 
+#user-home-btn,
 #home-btn,
 #logout-btn > span.glyphicon.glyphicon-user,
 #logout-btn > span.glyphicon.glyphicon-log-out,
 #logout-btn {
 	color: #888 !important;
 }
+#user-home-btn:hover,
 #home-btn:hover,
 #logout-btn:hover > span.glyphicon,
 #logout-btn:hover {
@@ -136,7 +138,7 @@ pre.log-content {
 	overflow-y: scroll;
 	margin: 0;
 	border-radius: 2px;
-	/*border: 1px solid #ccc;*/
+	border: none;
 	background:#444;
 	color: #eee; 
 }
