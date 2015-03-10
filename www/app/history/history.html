@@ -10,7 +10,7 @@
     <li ng-repeat="build in buildHistory" class="list-group-item build-history-item">
         <div class="history-item-header" >
             <div>
-                <span style="padding-right:5px;">Project: <b>{{build.Request.Package.name}}</b></span>
+                <span style="padding-right:5px;"><b>{{build.Request.Package.name}}</b></span>
                 <span style="padding-right:5px;">Ref: <b>{{build.Request.Package.tagbranch}}</b></span>
                 <span style="padding-right:5px;">Version: <b>{{build.Request.Package.version}}</b></span>
                 <span class="pull-right small">{{build.Timestamp|date:'medium'}}</span>

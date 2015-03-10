@@ -61,9 +61,6 @@ select.form-control.repo-select {
 	color: #888;
 	font-size: 13px;
 }
-.log-toggler:hover {
-	color: #428bca !important;
-}
 
 #user-home-btn,
 #home-btn,
@@ -160,13 +157,21 @@ pre.log-content {
 	background:#444;
 	color: #eee; 
 }
-
+/*
 .distro-job-list > .distro-job:last-child {
 	padding-bottom: 0;
 }
+*/
 .distro-job {
 	padding:10px 0;
 	border-top:1px solid #eee;
+	transition: all 0.25s ease;
+}
+.distro-job:hover {
+	background-color: #777;
+}
+.distro-job:hover .log-toggler {
+	color: #eee !important;
 }
 
 .refresh-btn,
@@ -203,6 +208,7 @@ pre.log-content {
 	transition: all 0.35s ease;
 	padding-left: 0px;
 	padding-right: 0px;
+	padding-bottom: 0px;
 }
 
 .build-history-item:hover {
@@ -216,9 +222,9 @@ pre.log-content {
 }
 
 .history-item-header {
-	padding-left:10px;
-	padding-bottom:10px;
-	padding-right:10px;
+	padding-left: 15px;
+	padding-bottom: 10px;
+	padding-right: 10px;
 }
 .remove-distro-btn {
 	padding-right: 0 !important;
