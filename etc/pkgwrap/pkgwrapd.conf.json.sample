@@ -7,7 +7,7 @@
         "github" : "/webhook/github",
         "builder": "/api/builder",
         "repo"   : "/api/repo",
-        "jobs"   : "/api/jobs"
+        "logs"   : "/api/logs"
     },
     "builder": {
         "image_prefix": "buildsys-",
@@ -20,7 +20,7 @@
         }
     },
     "tracker": {
-        "enabled": false,
+        "enabled": true,
         "datastore": {
             "host": "localhost",
             "port": 9200,
@@ -28,7 +28,7 @@
             "mapping_file": "/etc/pkgwrap/ess_mapping.json"
         }
     },
-    "webroot": "",
+    "webroot": "/opt/pkgwrap/www",
     "docker": {
         "host": "localhost",
         "port": 5555,

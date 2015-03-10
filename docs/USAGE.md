@@ -10,6 +10,8 @@ Although pkgwrap will run, the following minimum requirements are recommended:
 - 2 CPU/Cores (64 bit)
 - 2 GB Memory
 
+- Elasticsearch >= 1.4
+- working go environmnt (for building the project)
 
 ### Usage
 The system can perform packaging of prebuilt data as well as compile then perform packaging.  The pre-built method can be particularly useful for arbitrary data and script/s.
@@ -49,6 +51,22 @@ This is the configruation file used to build the package. The available properti
 
 ##### Distributions
 This section contains distribution specific details to build package.
+
+**name (required)**:
+
+Name of the distribution to build package for
+
+Example:
+
+    centos
+
+**release (required)**:
+
+The release specific to the distribution.
+
+Example:
+    
+    6
 
 **deps**:
 

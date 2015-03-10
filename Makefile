@@ -29,14 +29,13 @@ INSTALL_DIR = build/pkgwrap
 	[ -d "$(INSTALL_DIR)/usr/local/bin" ] || mkdir -p $(INSTALL_DIR)/usr/local/bin/
 	cp $$GOPATH/bin/pkgwrap $(INSTALL_DIR)/usr/local/bin/
 	
-	cp -a etc $(INSTALL_DIR)/
-
 	[ -d "$(INSTALL_DIR)$(APP_HOME)/data" ] || mkdir -p "$(INSTALL_DIR)$(APP_HOME)/data/repository"
 	cp -a data/bin "$(INSTALL_DIR)/$(APP_HOME)/data/"
 	cp -a data/templates "$(INSTALL_DIR)$(APP_HOME)/data/"
 	cp -a data/imagefiles "$(INSTALL_DIR)$(APP_HOME)/data/"
 	cp -a scripts "$(INSTALL_DIR)$(APP_HOME)/"
 	cp -a etc "$(INSTALL_DIR)/"
+	cp -a www $(INSTALL_DIR)$(APP_HOME)
 
-all: .deps .build
+all: .clean .deps .build
 
