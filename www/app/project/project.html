@@ -1,5 +1,5 @@
 <div class="row" style="margin:0;padding:10px 0;border-bottom:1px solid #ddd">
-    <div class="col-md-10" style="padding:0">
+    <div class="col-md-8" style="padding:0">
         <h4 class="breadcrumb-path">{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}} / 
             <span class="dropdown">
                 <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
@@ -13,13 +13,16 @@
             </span>
         </h4>
     </div>
-    <div class="col-md-2 text-right" style="padding:0">
-        <h4 class="build-btn-dark"><request-dialog-button ng-model="project"></request-dialog-button></h4>
+    <div class="col-md-4 text-right" style="padding:0">
+        <h4 class="build-btn-dark">
+            <request-dialog-button ng-model="project"></request-dialog-button>
+        </h4>
     </div>
 </div>
 <div class="row" style="margin:0">
     <div class="col-md-5" style="padding-left:0">
-        <h4 class="text-right" style="padding:10px 0">Packages</h4>
+        <h4 style="padding:10px 0"><span>Packages</span></h4>
+        <!--<config-builder></config-builder>-->
         <ul class="list-group">
             <li class="list-group-item pkg-distro-list-item" ng-repeat="distro in selectedVersion.distros">
                 <table style="width:100%;color:#888">
@@ -66,9 +69,9 @@
             </li>
         </ul>
     </div>
-    <div class="col-md-7" style="border-left:1px solid #eee;padding-right:0">
+    <div class="col-md-7" style="border-left:1px solid #eee;padding-right:0;height:100%">
         <ng-include ng-controller="historyController" src="historyHtml"></ng-include>
-        <!--<config-builder></config-builder>-->
+        <config-builder></config-builder>
     </div>
 </div>
 <package-build username="username" repository="repositoryDetails.url" version="{{version}}"></package-build>

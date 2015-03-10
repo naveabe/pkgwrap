@@ -7,14 +7,12 @@
             <div><b>{{distro.name|toTitleCase}} {{distro.release}}</b></div>
             <div class="small" style="color:#bbb">{{distro.id}}</div>
         </div>
-        <div style="display:inline-block;position:absolute;right:10px">
-            <!--<div class="small" style="padding-top:3px;color:#999">-->
-                <div><span class="badge {{state.status}}">{{state.status}}</span></div>
-                <div><span class="small" ng-if="state.Running">Started At: {{state.StartedAt}}</span></div>
-                <div style="padding-top:5px" class="small">
-                    <span class="small" ng-if="!state.Running">{{state|timeDelta}}</span>
-                </div>
-            <!--</div>-->
+        <div class="text-right" style="display:inline-block;position:absolute;right:10px">
+            <div><span class="badge {{state.status}}">{{state.status}}</span></div>
+            <div><span class="small" ng-if="state.Running">Started At: {{state.StartedAt}}</span></div>
+            <div style="padding-top:5px" class="small">
+                <span class="small" ng-if="!state.Running">{{state|timeDelta}}</span>
+            </div>
         </div>
     </div>
 </a>

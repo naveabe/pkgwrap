@@ -105,6 +105,11 @@ EOF
     # TODO: fire - added-to-repo event
 }
 
+##
+#
+# Common helper function.
+# These are used by the rpm and deb builds
+#
 
 # Install built package on the build system.
 # i.e. test

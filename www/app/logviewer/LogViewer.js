@@ -8,7 +8,7 @@ angular.module('ipkg.logviewer', [])
         },
         templateUrl: 'app/logviewer/log-viewer.html',
         link: function(scope, elem, attrs, ctrl) {
-            
+            scope.logcontent = "";
             // Cache content elem
             var contentElem = elem.find('pre');
             // Cache collapsable
@@ -18,24 +18,48 @@ angular.module('ipkg.logviewer', [])
                 if(!newVal) return;
                 contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
             }
+            // Trigger histroy reload
+            var onLogTailComplete = function(evt) {
+                $rootScope.$broadcast('build:history:changed', {});
+            }
 
-            scope.logcontent = "";
+            var tailLog = function() {
+                var oReq = new XMLHttpRequest();
+
+                oReq.addEventListener("progress", function(evt) {
+                    //console.log(evt.target.responseText);
+                    scope.$apply(function() { 
+                        scope.logcontent = evt.target.responseText; 
+                    });
+                }, false);
+                oReq.addEventListener("load", onLogTailComplete, false);
+                oReq.addEventListener("error", function(e) { console.log('log error'); }, false);
+                oReq.addEventListener("abort", function(e) { console.log('log cancelled'); }, false);
+                oReq.open('GET', '/api/logs/' + scope.distro.id + '?follow');
+                oReq.send();
+            }
+
+
+            
 
             scope.toggleLog = function() {
                 contentTrigger.collapse('toggle');
                 if (scope.logcontent === "") {
-                    
-                    var follow = scope.state.status == 'running' ? true : false;
-                    //load content
-                    LogLoader.getLog(scope.distro.id, follow)
-                    .success(function(data) {
-                        scope.logcontent = data;
-                    }).error(function(err) {
-                        console.log(err);
-                    });
+                    if ( scope.state.status == 'running' ) {
+                        
+                        // TODO; make initial regular call for current data
+                        // tail log
+                        console.log("tailing log...");
+                        tailLog();
+                    } else {
+                        // load complete log 
+                        LogLoader.getLog(scope.distro.id)
+                            .success(function(data) { scope.logcontent = data;})
+                            .error(function(err) { console.log(err); });
+                    }
                 }
             }
-            
+
             function init() {
                 
                 scope.$watch(function() { return scope.logcontent },
@@ -48,9 +72,9 @@ angular.module('ipkg.logviewer', [])
 }])
 .factory('LogLoader', ['$http', function($http) {
     return {
-        getLog: function(containerId, follow) {
+        getLog: function(containerId) {
             return $http({
-                url: follow ? '/api/logs/' + containerId + '?follow' : '/api/logs/' + containerId,
+                url: '/api/logs/' + containerId,
                 method: 'GET',
                 headers: { 'Content-Type': 'text/plain' },
                 transformResponse: function(value) {

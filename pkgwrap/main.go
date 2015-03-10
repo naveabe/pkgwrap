@@ -145,6 +145,7 @@ func main() {
 	// Used for updating state changes.
 	go StartEventMonitor(datastore, logger)
 
+	/* Prep and start builds */
 	for {
 		pkgReq := <-pkgReqChan
 

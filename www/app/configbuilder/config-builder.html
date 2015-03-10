@@ -1,16 +1,10 @@
-<div>
-    <div style="padding:10px 0">
-        <h4>
-            <span>Distributions</span>
-            <span class="pull-right">
-                <button class="btn btn-default" ng-click="addDistribution()">
-                    <span class="glyphicon glyphicon-plus"></span>
-                </button>
-            </span>
-        </h4>
+<div id="config-editor">
+    <div style="padding-top:10px;padding-bottom:15px;padding-right:5px">
+        <span><b>Distributions</b></span>
+        <span ng-click="addDistribution()" class="pull-right glyphicon glyphicon-plus"></span>
     </div>
     <div class="list-group">
-        <div ng-repeat="distro in distributions" class="list-group-item">
+        <div ng-repeat="distro in distributions" class="list-group-item distro-options">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">name</span>
                 <select ng-model="distro.name" ng-options="d.name as d.label for d in support.distros"></select>
@@ -22,26 +16,33 @@
                 <span class="input-group-addon">release</span>
                 <select ng-model="distro.release" ng-options="r as r for r in centosReleases"></select>
             </div>
-            <div class="input-group input-group-sm" title="Dependencies needed for the build">
-                <span class="input-group-addon">build_deps</span><textarea class="form-control" ng-model="distro.build_deps"></textarea>
+            <div title="Dependencies needed for the build">
+                <div>build_deps</div>
+                <textarea class="form-control line-input" ng-model="distro.build_deps"></textarea>
             </div>
-            <div class="input-group input-group-sm" title="Dependencies needed to install the package.">
-                <span class="input-group-addon">deps</span><textarea class="form-control" ng-model="distro.deps"></textarea>
+            <div title="Dependencies needed to install the package.">
+                <div>deps</div>
+                <textarea class="form-control line-input" ng-model="distro.deps"></textarea>
             </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">build_cmd</span><textarea class="form-control" ng-model="distro.build_cmd"></textarea>
+            <div>
+                <div>build_cmd</div>
+                <textarea class="form-control line-input" ng-model="distro.build_cmd"></textarea>
             </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">pre_install</span><textarea class="form-control" ng-model="distro.pre_install"></textarea>
+            <div>
+                <div>pre_install</div>
+                <textarea class="form-control line-input" ng-model="distro.pre_install"></textarea>
             </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">post_install</span><textarea class="form-control" ng-model="distro.post_install"></textarea>
+            <div>
+                <div>post_install</div>
+                <textarea class="form-control line-input" ng-model="distro.post_install"></textarea>
             </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">pre_uninstall</span><textarea class="form-control" ng-model="distro.pre_uninstall"></textarea>
+            <div>
+                <div>pre_uninstall</div>
+                <textarea class="form-control line-input" ng-model="distro.pre_uninstall"></textarea>
             </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-addon">post_uninstall</span><textarea class="form-control" ng-model="distro.post_uninstall"></textarea>
+            <div>
+                <div>post_uninstall</div>
+                <textarea class="form-control line-input" ng-model="distro.post_uninstall"></textarea>
             </div>
         </div>
     </div>

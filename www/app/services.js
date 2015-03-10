@@ -68,3 +68,31 @@ angular.module('appServices', [])
 
     return supportedVCs;
 }]);
+/*
+.factory('GitlabRepo', ['Configuration', function(Configuration) {
+    
+    var GitlabRepo = {};
+
+    GitlabRepo.list = function() {
+        var repoObj = null;
+        for(var r=0; r < Configuration.repos.length; r++) {
+            if ( Configuration.repos[r].type == "gitlab" ) {
+                repoObj = Configuration.repos[r];
+                break;
+            }
+        }
+        if ( repoObj == null) {
+            // error
+            //return
+        }
+
+        return $http({
+            method: 'GET',
+            url: repoObj.url+'/api/v3/projects',
+            headers: {"PRIVATE-TOKEN": ""}
+        });
+    }
+
+    return GitlabRepo;
+}])
+*/
