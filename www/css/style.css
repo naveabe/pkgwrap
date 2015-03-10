@@ -97,7 +97,6 @@ select.form-control.repo-select {
 	color: #ddd !important;
 }
 
-/*#page-header,*/
 .ng-view-content {
 	width: 96%;
 	margin-left: auto;
@@ -158,15 +157,9 @@ pre.log-content {
 	background:#444;
 	color: #eee; 
 }
-/*
-.distro-job-list > .distro-job:last-child {
-	padding-bottom: 0;
-}
-*/
 .distro-job {
 	padding:10px 0;
 	border-top:1px solid #eee;
-	transition: all 0.25s ease;
 }
 .distro-job:hover {
 	background-color: #777;
