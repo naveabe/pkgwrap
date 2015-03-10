@@ -62,6 +62,7 @@ select.form-control.repo-select {
 	font-size: 13px;
 }
 
+.pkg-download-btn,
 #user-home-btn,
 #home-btn,
 #logout-btn > span.glyphicon.glyphicon-user,
@@ -69,7 +70,7 @@ select.form-control.repo-select {
 #logout-btn {
 	color: #888 !important;
 }
-
+.pkg-download-btn:hover,
 #user-home-btn:hover,
 #home-btn:hover,
 #logout-btn:hover > span.glyphicon,
