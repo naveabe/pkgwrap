@@ -48,8 +48,7 @@ To perform source packaging a configruation file .pkgwrap.yml must be included i
 This is the configruation file used to build the package. The available properties a shown below:
 
 ##### Distributions
-
-Distribution specific details to build package.
+This section contains distribution specific details to build package.
 
 **deps**:
 
@@ -80,8 +79,7 @@ Commands to run before uninstalling package on the target system.
 Commands to run after uninstalling package on the target system.
 
 ##### Package
-
-This contains build information pertaining to the package.
+This section contains build information pertaining to the package.
 
 **version (required)**:
 

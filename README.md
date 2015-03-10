@@ -1,6 +1,6 @@
 pkgwrap
 =======
-A simplified docker based package builder.  
+A simplified docker based package builder for aribitrary as well as source data.  
 
 ### Features:
 
@@ -16,3 +16,7 @@ A simplified docker based package builder.
 - Ubuntu
     - 12.04
     - 14.04
+
+Many many more distro's to come...
+
+Suggestions, ideas, pull requests etc. are all always welcomed.
