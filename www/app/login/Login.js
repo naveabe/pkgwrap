@@ -73,14 +73,17 @@ angular.module('ipkg.login', [])
                 if($routeParams.redirect) {
                     $location.url($routeParams.redirect); 
                 } else {
-                    var newUrl = defaultPage+$scope.selectedRepo.repo+'/'+$scope.credentials.username;
-                    //$location.url(defaultPage+$scope.credentials.username);
-                    $location.url(newUrl);
+                    $location.url(defaultPage + $scope.selectedRepo.repo + 
+                        '/' + $scope.credentials.username);
                 }
             } else {
 
                 $("#login-window-header").html("<span>Auth failed!</span>");
             }
+        }
+
+        $scope.onRepoSelectionChange = function() {
+            $location.url('/' + $scope.selectedRepo.repo + '/login')
         }
 
         function _initialize() {
