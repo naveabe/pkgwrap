@@ -22,6 +22,8 @@ Distributions:
       - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
       - "chown -R pkgwrap /opt/pkgwrap"
 
+      post_uninstall:
+      - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
 
     - name: ubuntu
       release: 14.04
@@ -49,7 +51,10 @@ Distributions:
       - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
       - "chown -R pkgwrap /opt/pkgwrap"
 
+      post_uninstall:
+      - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
+
 Package:
     build_env: go
     url: https://github.com/naveabe/pkgwrap
-    tagbranch: ghelsappa
+    tagbranch: ghaghrina

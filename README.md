@@ -1,27 +1,18 @@
 pkgwrap
 =======
+A simplified docker based package builder.  
 
-### Configuration
+### Features:
 
-Client side config:
-
-- www/conf/config.json
-
-Server side config:
-
-- etc/pkgwrapd.conf
+- Build .rpm and .deb packages from pre-built binarys, arbitrarty data and/or scripts as well as building packages from source.  
+- Packages built in their own distro specific container.
+- Integrates with other CI systems.
 
 
-### Image defaults
-
-
-#### RHEL variants
-
-- epel
-- repoforge
-
-
-#### Ubuntu
-
-
-
+### Supported Distributions:
+- CentOS
+    - 6
+    - 7
+- Ubuntu
+    - 12.04
+    - 14.04
