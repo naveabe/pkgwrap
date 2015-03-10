@@ -21,7 +21,7 @@
     <div class="col-md-5" style="padding-left:0">
         <h4 class="text-right" style="padding:10px 0">Packages</h4>
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="distro in selectedVersion.distros">
+            <li class="list-group-item pkg-distro-list-item" ng-repeat="distro in selectedVersion.distros">
                 <table style="width:100%;color:#888">
                     <tr>
                         <td data-toggle="collapse" data-target="[data-distro-name={{distro.name|dotsToUnderscores}}]">

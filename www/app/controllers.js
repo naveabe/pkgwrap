@@ -23,11 +23,9 @@ appControllers.controller('defaultController', [
 
 	    function init() {
 
-			$rootScope.$on('user:auth:success', function(evt, data) {
-				
+			$rootScope.$on('user:auth:success', function(evt, data) {		
 				$scope.username = data.username;
 				$scope.isGuest = false;
-
 				$scope.repository = data.repo;
 			});
 

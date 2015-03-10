@@ -58,10 +58,13 @@ select.form-control.repo-select {
 }
 
 .log-toggler {
+	color: #888;
 	font-size: 13px;
 }
+.log-toggler:hover {
+	color: #428bca !important;
+}
 
-.log-toggler,
 #user-home-btn,
 #home-btn,
 #logout-btn > span.glyphicon.glyphicon-user,
@@ -69,7 +72,7 @@ select.form-control.repo-select {
 #logout-btn {
 	color: #888 !important;
 }
-.log-toggler:hover,
+
 #user-home-btn:hover,
 #home-btn:hover,
 #logout-btn:hover > span.glyphicon,
@@ -152,17 +155,17 @@ pre.log-content {
 	max-height: 500px;
 	overflow-y: scroll;
 	margin: 0;
-	border-radius: 2px;
+	border-radius: 0 0 2px 2px;
 	border: none;
 	background:#444;
 	color: #eee; 
 }
+
 .distro-job-list > .distro-job:last-child {
 	padding-bottom: 0;
 }
 .distro-job {
-	padding-top:10px;
-	padding-bottom:10px;
+	padding:10px 0;
 	border-top:1px solid #eee;
 }
 
@@ -191,12 +194,31 @@ pre.log-content {
 	font-weight: bold;
 	color: #428bca;
 }
+.pkg-distro-list-item,
+.build-history-item {
+	border-color: #ccc;
+}
 
 .build-history-item {
 	transition: all 0.35s ease;
+	padding-left: 0px;
+	padding-right: 0px;
 }
+
 .build-history-item:hover {
 	background-color: #f6f6f6;
+}
+.build-history-item:hover .log-toggler {
+	color: #707070;
+}
+.build-history-item:hover > .history-item-header {
+	color: #606060;
+}
+
+.history-item-header {
+	padding-left:10px;
+	padding-bottom:10px;
+	padding-right:10px;
 }
 .remove-distro-btn {
 	padding-right: 0 !important;

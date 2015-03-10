@@ -6,7 +6,7 @@
         <h4 class="text-right" style="padding:10px 0">Projects</h4>
         <div>
             <ul class="list-group list-group-sm">
-                <li class="list-group-item" ng-repeat="repo in userProjects">
+                <li class="list-group-item pkg-distro-list-item" ng-repeat="repo in userProjects">
                     <a ng-class="{'repo-exists': repo.pkgwrapd}" href="#/{{repository}}/{{username}}/{{repo.name}}" class="project-pkgs">
                         {{repo.name}}
                     </a>
