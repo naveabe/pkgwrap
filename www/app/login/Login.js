@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('ipkg.login', [])
 .factory('Authenticator', [
     '$window', '$http', '$location', '$rootScope',

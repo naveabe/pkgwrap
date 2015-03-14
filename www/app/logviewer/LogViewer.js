@@ -18,7 +18,10 @@ angular.module('ipkg.logviewer', [])
                 if(!newVal) return;
                 contentElem.scrollTop(contentElem[0].scrollHeight-contentElem.height());
             }
-            // Trigger histroy reload
+            /*
+                Trigger histroy reload only when tailing the log.
+                This only gets called when state == running.
+            */
             var onLogTailComplete = function(evt) {
                 $rootScope.$broadcast('build:history:changed', {});
             }
@@ -27,11 +30,11 @@ angular.module('ipkg.logviewer', [])
                 var oReq = new XMLHttpRequest();
 
                 oReq.addEventListener("progress", function(evt) {
-                    //console.log(evt.target.responseText);
                     scope.$apply(function() { 
                         scope.logcontent = evt.target.responseText; 
                     });
                 }, false);
+
                 oReq.addEventListener("load", onLogTailComplete, false);
                 oReq.addEventListener("error", function(e) { console.log('log error'); }, false);
                 oReq.addEventListener("abort", function(e) { console.log('log cancelled'); }, false);
@@ -61,7 +64,6 @@ angular.module('ipkg.logviewer', [])
             }
 
             function init() {
-                
                 scope.$watch(function() { return scope.logcontent },
                     onLogcontentChange, true);
             }

@@ -78,6 +78,11 @@ func (d *DockerEventMonitor) Start() error {
 			continue
 		}
 		d.logger.Debug.Printf("Updated container (%s): %s\n", event.Status, event.ID)
+		/*
+			TODO:
+			- Send notification
+			- Rebuild specific package repo.
+		*/
 	}
 
 	return nil
