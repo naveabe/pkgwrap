@@ -1,22 +1,9 @@
-Documentation (in progress)
-===========================
+Usage
+=====
 
-pkgwrap is system specific package builder.  It is meant to be integrated with other continous integration platforms.  Packages are built in docker containers based on the requested distributions and versions.
-
-### System Requirements
-
-Although pkgwrap will run, the following minimum requirements are recommended:
-
-- 2 CPU/Cores (64 bit)
-- 2 GB Memory
-
-- Elasticsearch >= 1.4
-- working go environmnt (for building the project)
-
-### Usage
 The system can perform packaging of prebuilt data as well as compile then perform packaging.  The pre-built method can be particularly useful for arbitrary data and script/s.
 
-#### Pre-built packaging
+### Pre-built packaging
 To package pre-built data an archive must be provided containing a directory structure with the project name as the root containing data as it would be layed out on the filesystem.
 
 Example directory structure:
@@ -42,8 +29,8 @@ This is a compressed tarball with files layed out as they would be on the filesy
 Build configuration file in json format used to perform builds.
 
 
-#### Source packaging 
-To perform source packaging a configruation file .pkgwrap.yml must be included in the root of your project.  A sample build file can be found at the root of this project.
+### Source packaging 
+To perform source packaging a configruation file **.pkgwrap.yml** must be included in the root of your project.  A sample can be found at the root of this project.
 
 #### .pkgwrap.yml
 
@@ -76,7 +63,7 @@ Dependencies needed to install the package.
 
 Dependencies required to build the package.
 
-**build_cmd**:
+**build_cmd (required)**:
 
 This is the command/s to build the package. This is required for all source builds.  The result of this command should produce a directory ./build/project_name_here.  The build process looks for this directory which should contain files as they would be layed out on the filesystem.
 
@@ -99,7 +86,7 @@ Commands to run after uninstalling package on the target system.
 ##### Package
 This section contains build information pertaining to the package.
 
-**version (required)**:
+**version**:
 
 Version of the package being built.  This information can come from a a tag assuming it contains a version string i.e. x.x.x.  If this cannot be extrapolated from the tag it should be provided in the config.
 
@@ -123,7 +110,7 @@ This is the repo user.  It is also the user the package will be built with.
 
 Example:
 
-    naveable  
+    naveabe  
 
 **build_env**:
 
@@ -158,9 +145,11 @@ Builds can be manually triggered by issuing the following command:
         }
     }'
 
-The endpoint being called should be as follows:
+Options for the body of the request are same ones mentioned above.
 
-    /api/builder/:repository/:username/:project
+The endpoint format should be as follows:
 
-Any configurations specified during a manual build will override the file settings.
+    /api/builder/:repository/:username/:project/:version
+
+Any configurations specified during a manual build will override the settings in the .pkgwrap.yml configuration file.
 

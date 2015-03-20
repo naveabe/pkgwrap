@@ -2,6 +2,8 @@ pkgwrap
 =======
 A simplified docker based package builder for binary (pre-built) as well as source data.  
 
+pkgwrap is system specific package builder.  It is meant to be integrated with other continous integration platforms.  Packages are built in docker containers based on the requested distributions and versions.
+
 ### Features:
 
 - Build .rpm and .deb packages from pre-built binarys, arbitrarty data and/or scripts as well as building packages from source.  
