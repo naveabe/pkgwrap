@@ -1,0 +1,4 @@
+{{.Shell}}
+
+{{if .PreInstall}}{{range .PreInstall}}
+{{.}}{{end}}{{end}}

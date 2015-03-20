@@ -1,0 +1,133 @@
+<div id="config-editor">
+    <div class="row" style="margin:0">
+        <div class="col-md-6" style="padding-left:0">
+            <h4>
+                <div class="row" style="padding:0;margin:0">
+                    <div class="col-md-8" style="padding:0">
+                        <span><b>Distributions</b></span>
+                    </div>
+                    <div class="col-md-4 text-right" style="padding:0">
+                        <button ng-click="addDistribution()" class="btn btn-default" style="border:none;color:#888" title="Add a distribution">
+                            <span class="glyphicon glyphicon-plus" style="position:relative;top:-1px;"></span>
+                        </button>
+                    </div>
+                </div>
+            </h4>
+            <div class="list-group">
+                <div ng-repeat="distro in pkgwrap.distributions" class="list-group-item distro-options">
+                    <div class="row" style="margin:0;padding-bottom:10px">
+                        <div class="col-md-8" style="padding:0">
+                            <img ng-src="imgs/{{distro.name}}-{{distro.release}}.png" width="20" height="20">
+                        </div>
+                        <div class="col-md-4 text-right" style="padding:0">
+                            <span class="remove-distro-btn" ng-click="pkgwrap.distributions.splice($index, 1)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Name</span>
+                        <select ng-model="distro.name" ng-options="d.name as d.label for d in support.distros" style="border-right:none;border-radius:0" ng-change="onDistroChange(distro)"></select>
+                        <span class="input-group-addon">Release</span>
+                        <select ng-model="distro.release" ng-options="r as r for r in distroReleases[distro.name]" style="border-left:none"></select>
+                    </div>
+                    <div class="input-group input-group-sm" title="Dependencies needed for the build">
+                        <div class="input-group-addon">Build Deps.</div>
+                        <textarea class="form-control line-input" ng-model="distro.build_deps" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Dependencies needed to install the package.">
+                        <div class="input-group-addon">Deps.</div>
+                        <textarea class="form-control line-input" ng-model="distro.deps" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Commands to build your project.">
+                        <div class="input-group-addon">Build Cmd. (required)</div>
+                        <textarea class="form-control line-input" ng-model="distro.build_cmd" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Commands to run before installing package.">
+                        <div class="input-group-addon">Pre-Install Cmd.</div>
+                        <textarea class="form-control line-input" ng-model="distro.pre_install" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Commands to run after installing package.">
+                        <div class="input-group-addon">Post-Install Cmd.</div>
+                        <textarea class="form-control line-input" ng-model="distro.post_install" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Commands to run before uninstalling package.">
+                        <div class="input-group-addon">Pre-Uninstall</div>
+                        <textarea class="form-control line-input" ng-model="distro.pre_uninstall" yaml-list></textarea>
+                    </div>
+                    <div class="input-group input-group-sm" title="Commands to run after uninstalling package.">
+                        <div class="input-group-addon">Post-Uninstall</div>
+                        <textarea class="form-control line-input" ng-model="distro.post_uninstall" style="overflow:visible" yaml-list></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="package-options">
+                <h4 style="padding-bottom:10px">Package</h4>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">URL</span>
+                    <input type="url" class="form-control" ng-model="pkgwrap.package.url">
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Version</span>
+                    <input type="text" class="form-control" ng-model="pkgwrap.package.version">
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Tag or Branch</span>
+                    <input type="text" class="form-control" ng-model="pkgwrap.package.tagbranch">
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon">Build Env.</span>
+                    <input type="text" class="form-control" ng-model="pkgwrap.package.build_env">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6" style="padding-right:0">
+            <h4 style="padding-bottom:10px">.pkgwrap.yml <span class="small">(copy this file to the root of your project)</span></h4>
+            <div class="pkgwrap-config">
+                <div class="config-hdr">Distributions:</div>
+                <div ng-repeat="distro in pkgwrap.distributions">
+                    <div class="yaml-list-cont distro-hdr">
+                        <div class="yaml-list">    - name: {{distro.name}}</div>
+                        <div class="yaml-list">      release: {{distro.release}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.build_deps">
+                        <div class="yaml-list build-step">      build_deps:</div>
+                        <div class="yaml-list list" ng-repeat="build_dep in distro.build_deps">      - {{build_dep}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.deps">
+                        <div class="yaml-list build-step">      deps:</div>
+                        <div class="yaml-list list" ng-repeat="dep in distro.deps">      - {{dep}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.build_cmd">
+                        <div class="yaml-list build-step">      build_cmd:</div>
+                        <div class="yaml-list list" ng-repeat="cmd in distro.build_cmd">      - {{cmd}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.pre_install">
+                        <div class="yaml-list build-step">      pre_install:</div>
+                        <div class="yaml-list list" ng-repeat="cmd in distro.pre_install">      - {{cmd}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.post_install">
+                        <div class="yaml-list build-step">      post_install:</div>
+                        <div class="yaml-list list" ng-repeat="cmd in distro.post_install">      - {{cmd}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.pre_uninstall">
+                        <div class="yaml-list build-step">      pre_uninstall:</div>
+                        <div class="yaml-list list" ng-repeat="cmd in distro.pre_uninstall">      - {{cmd}}</div>
+                    </div>
+                    <div class="yaml-list-cont" ng-if="distro.post_uninstall">
+                        <div class="yaml-list build-step">      post_uninstall:</div>
+                        <div class="yaml-list list" ng-repeat="cmd in distro.post_uninstall">      - {{cmd}}</div>
+                    </div>
+                    <br>
+                </div>
+                <div ng-if="hasPackageData(pkgwrap.package)" class="yaml-list-cont">
+                    <div class="config-hdr">Package:</div>
+                    <div ng-if="pkgwrap.package.url" class="yaml-list kvpair">    url: {{pkgwrap.package.url}}</div>
+                    <div ng-if="pkgwrap.package.version" class="yaml-list kvpair">    version: {{pkgwrap.package.version}}</div>
+                    <div ng-if="pkgwrap.package.tagbranch" class="yaml-list kvpair">    tagbranch: {{pkgwrap.package.tagbranch}}</div>
+                    <div ng-if="pkgwrap.package.build_env" class="yaml-list kvpair">    build_env: {{pkgwrap.package.build_env}}</div>
+                </div>
+            </div>
+        </div>    
+    </div>
+</div>

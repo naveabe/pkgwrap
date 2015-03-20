@@ -1,0 +1,38 @@
+<div class="row" style="margin:0;border-bottom:1px solid #ddd;">
+    <div class="col-md-4" style="padding:0">
+        <div style="padding:10px 0;">
+            <h4 class="breadcrumb-path">{{repository}} / {{username}}</h4>
+        </div>
+    </div>
+    <div class="col-md-8 text-right" style="padding:0">
+        <div style="padding:10px 0;" ng-if="orgMembership.length>0">
+            <h4>
+                <a ng-repeat="org in orgMembership" style="padding:5px;" href="#/{{repository}}/{{org.login}}" class="org-btn">
+                    <img ng-src="{{org.icon}}" width="20" height="20">
+                    <span>{{org.login}}</span>
+                </a>
+            </h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h4 class="text-right" style="padding:10px 0">Projects</h4>
+        <div>
+            <ul class="list-group list-group-sm">
+                <li class="list-group-item pkg-distro-list-item" ng-repeat="repo in userProjects">
+                    <a ng-class="{'repo-exists': repo.pkgwrapd}" href="#/{{repository}}/{{username}}/{{repo.name}}" class="project-pkgs">
+                        {{repo.name}}
+                    </a>
+                    <span>
+                        <request-dialog-button ng-model="repo.name"></request-dialog-button>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8" style="border-left:1px solid #eee">
+        <ng-include ng-controller="historyController" src="historyHtml"></ng-include> 
+    </div>
+</div>
+<package-build username="username" repository="repositoryDetails.url"></package-build>

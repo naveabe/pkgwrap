@@ -1,0 +1,28 @@
+package:
+  runnable:
+    path:
+    args:
+    env:
+  packager: 
+  build_env: 
+
+distributions:
+  - name: centos
+    release: 6
+    
+    build_deps:
+    - zeromq3-devel
+
+    deps:
+    - zeromq3
+
+    build_cmd:
+    - make .git2go
+    - make .deps
+    - make .build
+
+    post_install:
+    - id pkgwrap || useradd pkgwrap
+
+    post_uninstall:
+    - "id pkgwrap && userdel pkgwrap"

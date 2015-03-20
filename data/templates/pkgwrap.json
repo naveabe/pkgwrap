@@ -1,0 +1,28 @@
+{
+    "Package": {
+        "init_script": {
+            "runnable": {
+                "path": "",
+                "args": "",
+                "env": {}
+            }
+        },
+        "build_env": "",
+        "packager": "",
+        "url": "",
+        "tagbranch": ""
+    },
+    "Distributions": [
+        {
+            "name": "",
+            "release": "",
+            "build_deps": [],
+            "deps": [],
+            "build_cmd": "",
+            "pre_install": "",
+            "post_install": "",
+            "pre_uninstall": "",
+            "post_uninstall": ""
+        }
+    ]
+}

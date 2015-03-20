@@ -1,0 +1,50 @@
+{
+    "port": 6565,
+    "repository": "/opt/pkgwrap/data/repository",
+    "data_dir": "/opt/pkgwrap/data",
+    "endpoints": {
+        "gitlab" : "/webhook/gitlab",
+        "github" : "/webhook/github",
+        "builder": "/api/builder",
+        "repo"   : "/api/repo",
+        "logs"   : "/api/logs"
+    },
+    "builder": {
+        "image_prefix": "buildsys-",
+        "mounts": {
+            "/opt/pkgwrap/data/bin":"/opt/pkgwrap/bin"
+        },
+        "repo_mount": {
+            "src_base": "/opt/pkgwrap/data/repository",
+            "mount_point": "/opt/pkgwrap/repo"
+        }
+    },
+    "tracker": {
+        "enabled": true,
+        "datastore": {
+            "host": "localhost",
+            "port": 9200,
+            "index": "pkgwrap",
+            "mapping_file": "/etc/pkgwrap/ess_mapping.json"
+        }
+    },
+    "webroot": "/opt/pkgwrap/www",
+    "docker": {
+        "host": "localhost",
+        "port": 5555,
+        "protocol": "tcp"
+    },
+    "code_repos": [
+        {
+            "name": "Github",
+            "type": "github",
+            "local_endpoint": "/github.com/login",
+            "oauth": {
+                "token_url": "https://github.com/login/oauth/access_token",
+                "client_id": "<fill_in>",
+                "client_secret": "<fill_in>",
+                "client_redirect": "/#/github.com/login"
+            }
+        }
+    ]
+}

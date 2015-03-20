@@ -1,0 +1,21 @@
+{
+    "repos": [
+        {
+            "name":"Github",
+            "url" : "https://github.com",
+            "repo": "github.com",
+            "type": "github",
+            "oauth": {
+                "site": "https://github.com/login",
+                "client_id": "",
+                "profile_uri": "https://api.github.com/user",
+                "scope": "public_repo,read:org,user:email"
+            }
+        },{
+            "name": "my.gitlab.org",
+            "url" : "http://my.gitlab.org",
+            "repo": "my.gitlab.org",
+            "type": "gitlab"
+        }
+    ]
+}

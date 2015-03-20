@@ -1,0 +1,65 @@
+<html lang="en">
+  <head>
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	  
+	  <link rel="stylesheet" type="text/css" href="css/style.css">
+
+	  <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+	  <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+	  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular.min.js"></script>
+	  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular-route.min.js"></script>
+	  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular-resource.min.js"></script>
+
+	  <script type="text/javascript" src="libs/ngStorage.min.js"></script>
+	  <script type="text/javascript" src="app/login/oauth/oauth-ng.js"></script>
+
+	  <script type="text/javascript" src="app/app.js"></script>
+	  <script type="text/javascript" src="app/directives.js"></script>
+	  <script type="text/javascript" src="app/controllers.js"></script>
+	  <script type="text/javascript" src="app/services.js"></script>
+
+	  <script type="text/javascript" src="app/login/Login.js"></script>
+	  <script type="text/javascript" src="app/user/User.js"></script>
+	  <script type="text/javascript" src="app/project/Project.js"></script>
+	  <script type="text/javascript" src="app/logviewer/LogViewer.js"></script>
+	  <script type="text/javascript" src="app/history/History.js"></script>
+	  <script type="text/javascript" src="app/builder/Builder.js"></script>
+	  <script type="text/javascript" src="app/repos/GithubRepo.js"></script>
+	  <script type="text/javascript" src="app/repos/GitlabRepo.js"></script>
+	  <script type="text/javascript" src="app/configbuilder/ConfigBuilder.js"></script>
+
+  </head>
+  <body>
+	  <div id="stage" ng-controller="defaultController">
+		  <div id="page-header">
+			<div class="row" style="margin:0;padding:0">
+			  <div class="col-md-8" style="padding:0">
+				<h4><a href="#/" id="home-btn">ipkg</a></h4>
+			  </div>
+				<div class="col-md-4 text-right" style="padding:0">
+					<h4>
+						<!--<span style="color: #888">{{repository}} / </span>-->
+						<a ng-if="!isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Logout">
+						  <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-right:10px"></span>
+						</a>
+						<a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Login">
+							<span style="padding-left:10px" class="glyphicon glyphicon-user"></span>
+						</a>
+						<a ng-if="!isGuest" href="#/{{repository}}/{{username}}" id="user-home-btn">
+							<span style="padding-right:10px">{{username}}</span>
+							<img ng-if="userIcon&&userIcon!=''" ng-src="{{userIcon}}" width="26" height="26" style="opacity:0.75;border-radius:14px">
+						</a>
+					</h4>
+			  	</div>
+			</div>
+		  </div>
+		  <div style="overflow-y:scroll">
+			<div class="ng-view-content" ng-view></div>
+		  </div>
+		  <div style="padding:15px"></div>
+	  </div>
+  </body>
+</html>

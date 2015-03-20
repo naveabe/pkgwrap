@@ -1,0 +1,59 @@
+Distributions:
+    - name: centos
+      release: 6
+      
+      build_deps:
+      - git
+      - cmake
+      - pkgconfig
+      - docker-io-devel
+      - libgit2-devel
+    
+      deps:
+      - libgit2
+      - golang
+      - docker-io
+    
+      build_cmd: 
+      - make .deps .build
+    
+      post_install: 
+      - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
+      - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
+      - "chown -R pkgwrap /opt/pkgwrap"
+
+      post_uninstall:
+      - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
+
+    - name: ubuntu
+      release: 14.04
+
+      build_deps:
+      - git-core
+      - cmake
+      - pkg-config
+      - build-essential
+      - libgit2.0
+      - libgit2-dev
+      - golang
+      - docker.io
+     
+      deps:
+      - libgit2.0
+      - golang
+      - docker.io
+
+      build_cmd:
+      - make .deps .build
+
+      post_install: 
+      - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
+      - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
+      - "chown -R pkgwrap /opt/pkgwrap"
+
+      post_uninstall:
+      - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
+
+Package:
+    build_env: go
+    tagbranch: ghaghrina-oauth

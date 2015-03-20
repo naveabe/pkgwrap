@@ -1,0 +1,290 @@
+ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 10px;
+}
+#stage {
+	style="border: 1px solid #ddd;
+	overflow-x:hidden;
+	transition: all 0.35s ease;
+}
+#stage,
+#stage .table {
+	color: #888;
+	font-size: 14px;
+}
+#stage a {
+	text-decoration: none;
+}
+
+.org-btn,
+.oauth,
+.list-group-item[ng-switch='repo.oauth']>a,
+.list-group-item[ng-switch='repo.oauth'] {
+	color: #666;
+	cursor: pointer;
+}
+.org-btn:hover,
+.oauth:hover,
+.list-group-item[ng-switch='repo.oauth']:hover>a,
+.list-group-item[ng-switch='repo.oauth']:hover {
+	color: #428bca;
+}
+
+table#login-window-container {
+	width: 100%;
+	height: 100%;
+}
+#login-window,
+#login-window-body .input-group>.form-control,
+#login-window .btn.btn-default {
+	color: #666;
+}
+#login-window {
+	width: 300px;
+}
+
+#login-window-body .input-group>.input-group-addon {
+	background: none;
+	color: #bbb;
+}
+#login-window-body .input-group>.form-control {
+	border-left: none;
+	box-shadow: none;
+}
+#login-window-body .input-group>.form-control:focus {
+	border-color: #ccc;
+}
+#login-window-footer {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.log-toggler {
+	color: #888;
+	font-size: 13px;
+}
+
+.pkg-download-btn,
+#user-home-btn,
+#home-btn,
+#logout-btn > span.glyphicon.glyphicon-user,
+#logout-btn > span.glyphicon.glyphicon-log-out,
+#logout-btn {
+	color: #888 !important;
+}
+.pkg-download-btn:hover,
+#user-home-btn:hover,
+#home-btn:hover,
+#logout-btn:hover > span.glyphicon,
+#logout-btn:hover {
+	color: #428bca !important;
+}
+
+.view-defaults {
+	width: 94%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#page-header {
+	padding: 0px 20px;
+	background: #505050;
+}
+
+#page-header,
+#page-header span.glyphicon {
+	color: #ddd !important;
+}
+
+.ng-view-content {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.code-block {
+	font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+	color: #428bca;
+	padding: 10px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+.code-block.details {
+	width:100%;
+	height:100%;
+	border-left: none;
+	border-radius: 0 3px 3px 0;
+}
+
+a.succeeded {
+	color: #76A646;
+}
+a.failed {
+	color: #D94A56;
+}
+a.started {
+	color: #377BA6;
+}
+
+.badge.succeeded,
+.badge.failed,
+.badge.running,
+.badge.started {
+	font-size: 11px;
+	line-height: 1.1;
+	font-weight: 400;
+}
+
+.badge.succeeded {
+	background: #76A646;
+}
+.badge.failed {
+	background: #D94A56;
+}
+.badge.running,
+.badge.started {
+	background: #377BA6;
+}
+
+pre.log-content {
+	font-size: 11px;
+	max-height: 500px;
+	overflow-y: scroll;
+	margin: 0;
+	border-radius: 0 0 2px 2px;
+	border: none;
+	background:#444;
+	color: #eee; 
+}
+.distro-job {
+	padding:10px 0;
+	border-top:1px solid #eee;
+}
+.distro-job:hover {
+	background-color: #777;
+}
+.distro-job:hover .log-toggler {
+	color: #eee !important;
+}
+
+.refresh-btn,
+.build-btn {
+	transition:all 0.25s ease;
+	color: #ccc;
+	cursor: pointer;
+}
+
+.build-btn-dark .glyphicon:hover,
+.refresh-btn:hover,
+.build-btn-dark .build-btn:hover,
+.build-btn:hover {
+	color: #428bca;
+}
+
+.build-btn-dark .glyphicon,
+.build-btn-dark .build-btn,
+.breadcrumb-path,
+.project-pkgs {
+	color: #505050;
+}
+.project-pkgs:hover {
+	color: #428bca;
+}
+.repo-exists {
+	font-weight: bold;
+	color: #428bca;
+}
+.pkg-distro-list-item,
+.build-history-item {
+	border-color: #ccc;
+}
+
+.build-history-item {
+	transition: all 0.35s ease;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+}
+
+.build-history-item:hover {
+	background-color: #f6f6f6;
+}
+.build-history-item:hover .log-toggler {
+	color: #707070;
+}
+.build-history-item:hover > .history-item-header {
+	color: #606060;
+}
+
+.history-item-header {
+	padding-left: 15px;
+	padding-bottom: 10px;
+	padding-right: 10px;
+}
+.remove-distro-btn:hover {
+	color: #428bca;
+}
+.form-control.line-input {
+	border-radius: 2px;
+	padding: 5px;
+	font-size: 13px;
+}
+#config-editor {
+	transition: all 0.35s ease;
+	background: #fff;
+}
+
+.pkgwrap-config {
+	padding: 10px;
+	border-radius:2px;
+	border: 1px solid #ddd;
+	font-size: 13px;
+	font-family: Menlo,Monaco,Consolas,"Courier New",monospace
+}
+.yaml-list {
+	white-space: pre;
+}
+.yaml-list-cont.distro-hdr {
+	color:#609000;
+}
+.pkgwrap-config .config-hdr,
+.yaml-list.build-step {
+	color: #505050;
+}
+.yaml-list.list {
+	color: #428bca;
+}
+.yaml-list-cont {
+	padding: 2px 0;
+}
+.yaml-list.kvpair {
+	color: #FF9754
+}
+.package-options .input-group>.input-group-addon,
+.distro-options .input-group>.input-group-addon {
+	background: none;
+	font-weight: bold;
+}
+.package-options .input-group,
+.distro-options .input-group {
+	margin-bottom: 3px;
+}
+.package-options .input-group:last-child,
+.distro-options .input-group:last-child {
+	margin-bottom: 0;
+}
+.distro-options .input-group>select {
+	appearance:none;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	height: 30px;
+	padding: 5px 10px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 0 3px 3px 0;
+	width: 100%;
+	border-color: #ccc;
+	color: #555; 
+	background: none;
+}

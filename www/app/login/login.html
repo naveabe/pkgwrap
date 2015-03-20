@@ -1,0 +1,22 @@
+<table id="login-window-container"><tr><td align="center">
+	<div id="login-window" class="text-left">
+		<h4 style="padding:10px">Repository :</h4>
+		<ul class="list-group">
+			<li class="list-group-item" ng-repeat="repo in supportedRepos" ng-switch="repo.oauth">
+				<a href="#/{{repo.repo}}/login" ng-switch-when="undefined">
+					<img ng-src="imgs/{{repo.type}}.png" width="20" height="20">
+					<span style="padding-left:10px">{{repo.name}}</span>
+				</a>
+				<oauth ng-switch-default
+					site="{{repo.oauth.site}}"
+				    client-id="{{repo.oauth.client_id}}"
+				    redirect-uri="http://localhost:6565/{{repo.repo}}/login"
+				    response-type="code"
+				    scope="{{repo.oauth.scope}}"
+				    text="{{repo.name}}"
+				    icon-path="imgs/{{repo.type}}.png">
+				</oauth>
+			</li>
+		</ul>
+	</div>
+</td></tr></table>

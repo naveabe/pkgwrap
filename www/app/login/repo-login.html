@@ -1,0 +1,30 @@
+<table id="login-window-container"><tr><td align="center">
+    <div id="login-window" class="text-left">
+        <h4 style="padding:10px 0">
+            <span style="padding:0 10px">
+                <img src="imgs/{{repoDetails.type}}.png" width="20" height="20">
+            </span>
+            <span>{{repository}}</span>
+        </h4>
+        <div id="login-window-body">
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-user" style="position:relative;left:3px;"></span>
+                </span>
+                <input type="text" class="form-control" ng-model="credentials.username">
+            </div>
+            <div style="padding:5px"></div>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-lock" style="position:relative;left:3px;"></span>
+                </span>
+                <input type="password" class="form-control" ng-model="credentials.password">
+            </div>
+        </div>
+        <div style="padding:20px 0" class="text-center">
+            <button class="btn btn-default btn-sm" style="width:100%" ng-click="basicAuthLogin()">
+                <b>Sign In</b>
+            </button>
+        </div>
+    </div>
+</td></tr></table>

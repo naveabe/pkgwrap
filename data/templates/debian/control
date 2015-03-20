@@ -1,0 +1,11 @@
+Package: {{.Name}}
+Version: {{.Version}}
+Section: base
+Priority: optional
+Architecture: {{.Arch}}{{if .BuildDeps}}
+Build-Depends: {{.BuildDeps}}{{end}}{{if .Url}}
+Homepage: {{.Url}}{{end}}{{if .Deps}}
+Depends: {{.Deps}}{{end}}
+Maintainer: {{.Packager}}
+Description: {{.Summary}}
+{{.Description}}
