@@ -17,7 +17,7 @@ INSTALL_DIR = build/pkgwrap
 .deb_deps:
 	apt-get install cmake pkg-config build-essential libgit2-0 libgit2-dev golang docker.io
 
-.deps: .git2go
+.deps:
 	go get -d -v ./...
 
 .build:
