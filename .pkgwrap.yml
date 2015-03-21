@@ -33,13 +33,13 @@ Distributions:
       - cmake
       - pkg-config
       - build-essential
-      - libgit2.0
+      - libgit2-0
       - libgit2-dev
       - golang
       - docker.io
      
       deps:
-      - libgit2.0
+      - libgit2-0
       - golang
       - docker.io
 
