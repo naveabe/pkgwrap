@@ -29,8 +29,8 @@ This is a compressed tarball with files layed out as they would be on the filesy
 Build configuration file in json format used to perform builds.
 
 
-### Source packaging 
-To perform source packaging a configruation file **.pkgwrap.yml** must be included in the root of your project.  A sample can be found at the root of this project.
+### Source packaging
+To perform source packaging a configruation file **.pkgwrap.yml** must be included in the root of your project.  A sample can be found at the root of this project.  The project repository must be a git repository.
 
 #### .pkgwrap.yml
 
