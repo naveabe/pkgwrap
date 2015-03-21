@@ -14,7 +14,7 @@ INSTALL_DIR = build/pkgwrap
 .git2go:
 	go get -d github.com/libgit2/git2go && cd "../../../libgit2/git2go" && git checkout next && git submodule update --init && make install
 
-.deps:
+.deps: .git2go
 	go get -d -v ./...
 
 .build:
