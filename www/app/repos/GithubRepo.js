@@ -7,8 +7,8 @@ angular.module('repositories', [])
     
         var baseUrl = "https://api.github.com",
             github = {},
-            _userInfo = null;
-            _userOrgs = null;
+            _userInfo = null,
+            _userOrgs = null,
             _projList = [];
 
         var oauthToken = AccessToken.set();
