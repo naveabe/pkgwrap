@@ -56,4 +56,3 @@ Distributions:
 
 Package:
     build_env: go
-    tagbranch: ghaghrina-oauth

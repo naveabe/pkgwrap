@@ -200,7 +200,13 @@ func (m *PkgBuilderMethodHandler) POST(w http.ResponseWriter, r *http.Request, a
 
 func (m *PkgBuilderMethodHandler) GET(w http.ResponseWriter, r *http.Request, args ...string) (map[string]string, interface{}, int) {
 	rslts, err := m.Datastore.GetBuildInfo(args...)
+	/*
+		Throws an error if index is empty while sorting on '_timestamp'
+		as it's an internal field and will only be available after at least 1
+		item has been indexed.
+	*/
 	if err != nil {
+		m.Logger.Error.Printf("Could not get history: %s\n", err)
 		return nil, fmt.Sprintf(`{"error": "%s"}`, err), 400
 	}
 	return nil, rslts, 200

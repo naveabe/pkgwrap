@@ -275,6 +275,6 @@ func (t *TrackerStore) performQuery(docType string,
 		}
 	}
 
-	t.logger.Trace.Printf("Tracker query: %s\n", query)
+	t.logger.Trace.Printf("Tracker query: %s %s %s\n", t.index, docType, query)
 	return t.conn.Search(t.index, docType, nil, query)
 }
