@@ -12,7 +12,7 @@ INSTALL_DIR = build/pkgwrap
 	apt-get install cmake pkg-config build-essential libgit2-0 libgit2-dev golang docker.io
 
 .git2go:
-	go get -d github.com/libgit2/git2go && cd "../../../libgit2/git2go" && git checkout next && git submodule update --init && make install
+	go get -d github.com/libgit2/git2go && cd "../../libgit2/git2go" && git checkout next && git submodule update --init && make install
 
 .deps: .git2go
 	go get -d -v ./...
