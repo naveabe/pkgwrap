@@ -14,7 +14,7 @@
                 </div>
             </h4>
             <div class="list-group">
-                <div ng-repeat="distro in pkgwrap.distributions" class="list-group-item distro-options">
+                <div ng-repeat="distro in pkgwrap.Distributions" class="list-group-item distro-options">
                     <div class="row" style="margin:0;padding-bottom:10px">
                         <div class="col-md-8" style="padding:0">
                             <img ng-src="imgs/{{distro.name}}-{{distro.release}}.png" width="20" height="20">
@@ -65,24 +65,26 @@
                 <h4 style="padding-bottom:10px">Package</h4>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">URL</span>
-                    <input type="url" class="form-control" ng-model="pkgwrap.package.url">
+                    <input type="url" class="form-control" ng-model="pkgwrap.Package.url">
                 </div>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Version</span>
-                    <input type="text" class="form-control" ng-model="pkgwrap.package.version">
+                    <input type="text" class="form-control" ng-model="pkgwrap.Package.version">
                 </div>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Tag or Branch</span>
-                    <input type="text" class="form-control" ng-model="pkgwrap.package.tagbranch">
+                    <input type="text" class="form-control" ng-model="pkgwrap.Package.tagbranch">
                 </div>
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Build Env.</span>
-                    <input type="text" class="form-control" ng-model="pkgwrap.package.build_env">
+                    <input type="text" class="form-control" ng-model="pkgwrap.Package.build_env">
                 </div>
             </div>
         </div>
         <div class="col-md-6" style="padding-right:0">
             <h4 style="padding-bottom:10px">.pkgwrap.yml <span class="small">(copy this file to the root of your project)</span></h4>
+            <pre>{{yamlConfig}}</pre>
+            <!--
             <div class="pkgwrap-config">
                 <div class="config-hdr">Distributions:</div>
                 <div ng-repeat="distro in pkgwrap.distributions">
@@ -128,6 +130,7 @@
                     <div ng-if="pkgwrap.package.build_env" class="yaml-list kvpair">    build_env: {{pkgwrap.package.build_env}}</div>
                 </div>
             </div>
+            -->
         </div>    
     </div>
 </div>

@@ -6,7 +6,7 @@
             </span>
             <span>{{repository}}</span>
         </h4>
-        <div id="login-window-body">
+        <div ng-if="repoDetails.type!=='github'" id="login-window-body">
             <div class="input-group input-group-sm">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-user" style="position:relative;left:3px;"></span>
@@ -21,7 +21,7 @@
                 <input type="password" class="form-control" ng-model="credentials.password">
             </div>
         </div>
-        <div style="padding:20px 0" class="text-center">
+        <div style="padding:20px 0" class="text-center" ng-if="repoDetails.type!=='github'">
             <button class="btn btn-default btn-sm" style="width:100%" ng-click="basicAuthLogin()">
                 <b>Sign In</b>
             </button>

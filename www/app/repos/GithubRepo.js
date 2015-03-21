@@ -1,6 +1,9 @@
+'use strict';
+
 angular.module('repositories', [])
-.factory('Github', ['$http', 'AccessToken', 
-    function($http, AccessToken) {
+.factory('Github', ['$http', 'AccessToken', 'Authenticator',
+    /* Github OAuth API */
+    function($http, AccessToken, Authenticator) {
     
         var baseUrl = "https://api.github.com",
             github = {},
@@ -9,14 +12,29 @@ angular.module('repositories', [])
             _projList = [];
 
         var oauthToken = AccessToken.set();
+        /*
+            Generic http call wrapper
 
-        var _callHttp = function(url, method) {
+            Args:
+                method : GET, POST, PUT
+                data   : JSON stringify'able object
+        */
+        var _callHttp = function(url, method, data) {
+            var hdrs = { 'Authorization': 'token ' + AccessToken.get().access_token };
+            if ( data ) {
+                hdrs['Content-Type'] = 'application/json';
+                return $http({
+                    method: method,
+                    url: url,
+                    headers: hdrs,
+                    data: angular.toJson(data)
+                });
+            }
+
             return $http({
                 method: method,
                 url: url,
-                headers: {
-                    'Authorization': 'token ' + AccessToken.get().access_token
-                }
+                headers: hdrs
             });
         }
 
@@ -72,6 +90,39 @@ angular.module('repositories', [])
             return _dfd;
         }
 
+        github.createFile = function(project, path, b64content, commitMsg, branch) {
+            // Format: '/repos/:owner/:repo/contents/:path'
+            var dfd = $.Deferred(),
+                creds = Authenticator.getCreds(),
+                url = baseUrl + '/repos/',
+                payload;
+
+            if ( creds == null ) {
+                dfd.reject({"error": "No credentials!"});
+                return;
+            }
+
+            url += creds.username + '/' + project + '/contents/' + path;
+            
+            payload = {
+                message: commitMsg,
+                content: b64content,
+                committer: {
+                    name: "ipkg UI",
+                    email: "builder@ipkg.io"
+                }
+            }
+
+            _callHttp(url, 'PUT', payload)
+            .success(function(data) {
+                dfd.resolve(data);
+            }, function(err) {
+                dfd.reject({"error": err});
+            });
+
+            return dfd;
+        }
+
         github.listProjects = function() {
             var _dfd = $.Deferred();
 
@@ -96,4 +147,14 @@ angular.module('repositories', [])
 
         return github;
     }
-]);
+])
+.factory('GithubPublic', ['$resource', function($resource) {
+    /* github public (unauthenticated) API */ 
+    return $resource('https://api.github.com/users/:username/:qtype', {}, {
+        userRepos: {
+            params: {"username": "@username", "qtype": "repos"},
+            method: 'GET',
+            isArray: true
+        }
+    });
+}]);

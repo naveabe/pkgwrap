@@ -2,8 +2,8 @@
 
 angular.module('ipkg.user', [])
 .controller('userController', [ 
-    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubRepo', 'SupportedVCs', 'Github', 'Gitlab',
-    function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubRepo, SupportedVCs, Github, Gitlab) {
+    '$scope', '$routeParams', 'Authenticator', 'PkgWrapRepo', 'GithubPublic', 'SupportedVCs', 'Github', 'Gitlab',
+    function($scope, $routeParams, Authenticator, PkgWrapRepo, GithubPublic, SupportedVCs, Github, Gitlab) {
 
         $scope.repository = $routeParams.repository;
         $scope.username = $routeParams.username;
@@ -30,7 +30,7 @@ angular.module('ipkg.user', [])
         }
 
         var loadGithubUserProjects = function() {
-            GithubRepo.userRepos({
+            GithubPublic.userRepos({
                 "username": $scope.username
             }, 
             function(rslt) { 

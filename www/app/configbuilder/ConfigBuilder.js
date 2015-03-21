@@ -20,7 +20,7 @@ angular.module('ipkg.configbuilder', [])
         scope: {},
         templateUrl: 'app/configbuilder/config-builder.html',
         link: function(scope, elem, attrs, ctrl) {
-            
+
             var distroTemplate = {
                 name: 'centos',
                 release: '6',
@@ -43,6 +43,26 @@ angular.module('ipkg.configbuilder', [])
             var ubuntuReleases = ['12.04','14.04'],
                 centosReleases = ['6'];
 
+            var sanitizeConfig = function(data) {
+                /* Remove empty fields from the pkgwrap config */
+                var cfg = angular.copy(data);
+                for(var i in cfg.Package) {
+                    if ( cfg.Package[i] == '' ) delete cfg.Package[i];
+                }
+                if ( Object.keys(cfg.Package).length < 1) delete cfg.Package;
+
+                for(var i=0; i < cfg.Distributions.length; i++) {
+
+                    var distro = cfg.Distributions[i];
+                    for(var j in  distro ) {
+                        if ( j == 'name' || j == 'release' ) continue;
+                        if( distro[j].length < 1 ) delete distro[j];
+                    }
+                }
+
+                return cfg;
+            }
+
             scope.support = {
                 distros: [{
                     name:'centos',
@@ -60,20 +80,8 @@ angular.module('ipkg.configbuilder', [])
                 'ubuntu': ubuntuReleases
             }
 
-            scope.pkgwrap = {
-                'distributions': [ angular.copy(distroTemplate) ],
-                'package': angular.copy(pkgTemplate)
-            };
-
-            scope.hasPackageData = function(obj) {
-                for( var k in obj ) {
-                    if ( obj[k] && obj[k] != null && obj[k] !== '' ) return true;
-                }
-                return false;
-            }
-
             scope.addDistribution = function() {
-                scope.pkgwrap.distributions.push(angular.copy(distroTemplate));
+                scope.pkgwrap.Distributions.push(angular.copy(distroTemplate));
             }
 
             
@@ -81,10 +89,23 @@ angular.module('ipkg.configbuilder', [])
                 distro.release = scope.distroReleases[distro.name][0]
             }
 
+            var init = function() {
+                scope.pkgwrap = {
+                    'Distributions': [ angular.copy(distroTemplate) ],
+                    'Package': angular.copy(pkgTemplate)
+                };
+                
+                scope.$watch(function() {return scope.pkgwrap}, function(newVal) { 
+                    scope.yamlConfig = YAML.stringify(sanitizeConfig(scope.pkgwrap)); 
+                }, true);
+            }
+
+            init();
         }
     }
 }])
 .directive('yamlList', [function() {
+    /* Converts newline delimted input to array */
     return {
         restrict: 'A',
         require: '?ngModel',

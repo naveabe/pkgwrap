@@ -1,7 +1,8 @@
 
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('rootController', [ '$window', '$location', '$scope', 'Authenticator',
+appControllers.controller('rootController', [ 
+	'$window', '$location', '$scope', 'Authenticator',
 	function($window, $location, $scope, Authenticator) {
 		
 		//Authenticator.checkAuthOrRedirect("/");
