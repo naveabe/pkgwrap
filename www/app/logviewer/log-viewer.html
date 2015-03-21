@@ -9,7 +9,7 @@
         </div>
         <div class="text-right" style="display:inline-block;position:absolute;right:10px">
             <div><span class="badge {{state.status}}">{{state.status}}</span></div>
-            <div><span class="small" ng-if="state.Running">Started At: {{state.StartedAt}}</span></div>
+            <div style="padding-top:5px"><span class="small" ng-if="state.Running"><b>Started At:</b> {{state.StartedAt|date:'medium'}}</span></div>
             <div style="padding-top:5px" class="small">
                 <span class="small" ng-if="!state.Running">{{state|timeDelta}}</span>
             </div>
