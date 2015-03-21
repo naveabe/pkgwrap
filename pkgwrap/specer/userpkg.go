@@ -209,7 +209,9 @@ func (u *UserPackage) CloneRepo(dstDir string) error {
 			return err
 		}
 
-		if err = gitRepo.SetHeadDetached(ref.Target(), nil, ""); err != nil {
+		//if err = gitRepo.SetHeadDetached(ref.Target(), nil, ""); err != nil {
+		// below from next branch
+		if err = gitRepo.SetHeadDetached(ref.Target()); err != nil {
 			return err
 		}
 	}

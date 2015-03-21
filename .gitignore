@@ -4,7 +4,7 @@ pkgwrapd.conf.json
 data/repository/*
 
 test
-
+build
 .vagrant
 Vagrantfile
 
