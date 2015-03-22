@@ -16,11 +16,15 @@ su - $BUILD_USER -c "cp -a $REPO_LOCAL_PATH/$PKG_DISTRO/debian/control.tar.gz ~/
 if [ "$BUILD_TYPE" == "source" ]; then
     # Build source.
     if [ "$BUILD_CMD" != "" ]; then
+        fire_build_event "build:started" "$PROJECT"
         # User build command
-        su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || exit 3
+        su - $BUILD_USER -c "cd $PROJECT_PATH && $BUILD_CMD" || {
+            fire_event_exit "build:failed" "$PROJECT" 3;
+        }
         # TODO: fire - user-build-success event    
-        
-        copy_startup "$PROJECT_PATH/build/$PROJECT"
+        fire_build_event "build:succeeded" "$PROJECT";
+
+        copy_startup "$PROJECT_PATH/build/$PROJECT";
 
         # Create data tarball
         su - $BUILD_USER -c "cd ~/debuild && tar zcvf data.tar.gz -C $PROJECT_PATH/build/$PROJECT ." || exit 4; 
@@ -34,8 +38,13 @@ else
     su - $BUILD_USER -c "cd ~/debuild && tar czvf data.tar.gz -C $PROJECT_PATH ." || exit 3;
 fi
 
+fire_build_event "package:deb:started" "$PROJECT"
 # Make .deb (i.e. ar -r ...)
-su - $BUILD_USER -c "cd ~/debuild && ar -r ${PROJECT}_${PKG_VERSION}-${PKG_RELEASE}_amd64.deb debian-binary control.tar.gz data.tar.gz" || exit 5;
+su - $BUILD_USER -c "cd ~/debuild && ar -r ${PROJECT}_${PKG_VERSION}-${PKG_RELEASE}_amd64.deb debian-binary control.tar.gz data.tar.gz" || {
+    fire_event_exit "package:deb:failed" "$PROJECT" 5;
+}
+
+fire_build_event "package:deb:succeeded" "$PROJECT"
 
 # Copy .deb back to repo
 add_pkg_to_repo "$BUILD_HOME_DIR/debuild/"

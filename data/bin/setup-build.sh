@@ -142,7 +142,7 @@ fire_build_event() {
     event=$1
     msg="$2"
     
-    echo "Notifying: $event - $msg..."
+    echo "NOTIFY: $event - $msg"
 }
 
 fire_event_exit() {
