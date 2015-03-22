@@ -10,7 +10,7 @@
 				<oauth ng-switch-default
 					site="{{repo.oauth.site}}"
 				    client-id="{{repo.oauth.client_id}}"
-				    redirect-uri="http://localhost:6565/{{repo.repo}}/login"
+				    redirect-uri="{{repo.oauth.redirect_uri}}"
 				    response-type="code"
 				    scope="{{repo.oauth.scope}}"
 				    text="{{repo.name}}"
