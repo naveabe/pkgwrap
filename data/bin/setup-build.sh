@@ -124,7 +124,6 @@ install_built_pkg() {
     echo "";
     echo "  ** DONE **"
     echo "";
-    # TODO: fire - installed-built-pkg event
 }
 
 copy_startup() {
@@ -137,3 +136,22 @@ copy_startup() {
         }
     fi
 }
+
+
+fire_build_event() {
+    event=$1
+    msg="$2"
+    
+    echo "Notifying: $event - $msg..."
+}
+
+fire_event_exit() {
+    event=$1
+    msg="$2"
+    exit_status=$3
+
+    fire_build_event $event "$msg";
+    exit $exit_status
+}
+
+

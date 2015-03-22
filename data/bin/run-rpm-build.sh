@@ -9,7 +9,7 @@ install_deps "yum"
 
 
 # Copy spec file from repo
-su - $BUILD_USER -c "cp $REPO_LOCAL_PATH/$PKG_DISTRO/$PROJECT.spec ~/rpmbuild/SPECS/" || exit 2
+su - $BUILD_USER -c "cp $REPO_LOCAL_PATH/$PKG_DISTRO/$PROJECT.spec ~/rpmbuild/SPECS/" || fire_event_exit "build:failed" "Could not copy: $PROJECT.spec" 2;
 
 if [ "$BUILD_TYPE" == "source" ]; then
     # Build source.
@@ -34,9 +34,12 @@ else
   su - $BUILD_USER -c "cp -a $PROJECT_PATH $BUILD_HOME_DIR/rpmbuild/SOURCES/";
 fi
 
+fire_build_event "package:build:started" "$PROJECT";
 # Build spec
 # QA_RPATHS=$[ 0x0001|0x0010 ] : Ignore check-rpath warning 
-su - $BUILD_USER -c "QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -ba ~/rpmbuild/SPECS/$PROJECT.spec" || exit 6
+su - $BUILD_USER -c "QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -ba ~/rpmbuild/SPECS/$PROJECT.spec" || fire_event_exit "package:build:failed" "$PROJECT" 6
+
+fire_build_event "package:build:succeeded" "RPM built."
 
 # Copy RPM back to repo
 add_pkg_to_repo "$BUILD_HOME_DIR/rpmbuild/RPMS/"
