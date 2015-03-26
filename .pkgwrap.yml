@@ -35,7 +35,6 @@ Distributions:
       build_deps:
       - libgit2
       - libgit2-devel
-      - cmake
       - pkg-config
       - golang
 
