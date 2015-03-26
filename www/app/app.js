@@ -111,9 +111,15 @@ app.filter('objectLength', function() {
     /* Ignores everything after the 2nd dash */
     return function(dlabel) {
         var arr = dlabel.split("-")
-        return arr[0].replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        }) + " " + arr[1];
+        if ( arr.length == 2 ) {
+            return arr[0].replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }) + " " + arr[1];
+        } else {
+            return arr[0].replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        }
     }
 })
 .filter('timeDelta', function() {
