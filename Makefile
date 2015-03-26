@@ -35,5 +35,5 @@ clean:
 	cp -a etc "$(INSTALL_DIR)/"
 	cp -a www $(INSTALL_DIR)$(APP_HOME)
 
-all: .clean .deps .build
+all: clean .deps .build
 

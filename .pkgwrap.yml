@@ -29,5 +29,30 @@ Distributions:
       post_uninstall:
       - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
 
+   -
+      name: centos
+
+      build_deps:
+      - libgit2
+      - libgit2-devel
+      - cmake
+      - pkg-config
+      - golang
+
+      deps:
+      - docker
+      - libgit2
+
+      build_cmd:
+      - make .deps .build
+
+      post_install: 
+      - "[ -f /etc/pkgwrap/pkgwrapd.conf ] || cp /etc/pkgwrap/pkgwrapd.conf.json.sample /etc/pkgwrap/pkgwrapd.conf"
+      - "( id pkgwrap > /dev/null 2>&1 ) || useradd pkgwrap"
+      - "chown -R pkgwrap /opt/pkgwrap"
+
+      post_uninstall:
+      - "( id pkgwrap > /dev/null 2>&1 ) || userdel pkgwrap"
+
 Package:
     build_env: go
