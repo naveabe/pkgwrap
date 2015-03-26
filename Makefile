@@ -5,10 +5,10 @@ APP_HOME = /opt/pkgwrap
 
 INSTALL_DIR = build/pkgwrap
 
-.clean:
+clean:
 	rm -rf ./build
 	go clean -i ./...
-
+	rm -rf ./data/repository/*
 # Build git2go w/ libgit2 next branch
 .git2go:
 	go get -d -u github.com/libgit2/git2go
