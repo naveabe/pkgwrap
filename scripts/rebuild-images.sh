@@ -20,9 +20,11 @@ IMG_PREFIX="buildsys-"
 
 build_images() {
     distro=$1
-    cd "$IMAGEFILES_DIR/$distro";
-    $DOCKER_CMD build $DOCKER_BUILD_OPTS -t ${IMG_PREFIX}${distro} . ;
-    cd - ;
+    if [ -f "$IMAGEFILES_DIR/$distro/Dockerfile" ]; then
+        cd "$IMAGEFILES_DIR/$distro";
+        $DOCKER_CMD build $DOCKER_BUILD_OPTS -t ${IMG_PREFIX}${distro} . ;
+        cd - ;
+    fi
     for release in `ls $IMAGEFILES_DIR/${distro} | grep -v Dockerfile`; do
         cd "$IMAGEFILES_DIR/${distro}/$release" ;
         $DOCKER_CMD build $DOCKER_BUILD_OPTS -t ${IMG_PREFIX}${distro}:${release} . ;
