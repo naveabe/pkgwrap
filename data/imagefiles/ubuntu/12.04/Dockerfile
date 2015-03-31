@@ -26,3 +26,5 @@ RUN echo "export DEBIAN_FRONTEND=noninteractive" >> /etc/skel/.bashrc
 
 # Python
 RUN apt-get -y install python-setuptools python-dev python-pip
+RUN pip install --upgrade pip
+RUN ln -s /usr/local/bin/pip /usr/bin/pip
