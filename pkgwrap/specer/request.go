@@ -18,6 +18,8 @@ type PackageRequest struct {
 	Distributions []Distribution `yaml:"Distributions"`
 
 	Id string `json:"-"`
+
+	Notifications *BuildNotifications `yaml:"Notifications"`
 }
 
 func NewPackageRequest(name string) *PackageRequest {

@@ -52,7 +52,7 @@ appControllers.controller('defaultController', [
 
 			$rootScope.$on('user:unauth', function(evt, data) {
 				_resetUser();
-				$location.url("/");
+				$location.url("/login");
 			});
 	    }
 
