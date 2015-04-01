@@ -23,4 +23,6 @@ pkgwrap is system specific package builder.  It is meant to be integrated with o
 
 Many many more distro's to come...
 
+Hosted service coming soon and can be found at https://ipkg.io
+
 Suggestions, ideas, pull requests etc. are all always welcomed.
