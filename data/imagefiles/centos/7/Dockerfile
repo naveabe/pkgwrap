@@ -2,7 +2,7 @@
 # Name: buildsys-centos:latest
 #
 
-FROM centos
+FROM centos:7
 
 MAINTAINER pkgwrap
 
