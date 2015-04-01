@@ -108,7 +108,7 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 
 	logger.Warning.Printf("Starting web service: http://0.0.0.0:%d\n", cfg.Port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), nil); err != nil {
 		logger.Error.Printf("%s\n", err)
 		os.Exit(2)
 	}

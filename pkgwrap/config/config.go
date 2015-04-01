@@ -74,6 +74,7 @@ type AppConfig struct {
 	Repository string              `json:"repository"`
 	DataDir    string              `json:"data_dir"`
 	Port       int                 `json:"port"`
+	Host       string              `json:"host"`
 	Endpoints  HttpEndpointsConfig `json:"endpoints"`
 	Builder    BuilderConfig       `json:"builder"`
 	Tracker    TrackerConfig       `json:"tracker"`

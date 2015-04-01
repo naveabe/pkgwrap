@@ -9,7 +9,7 @@
                 "site": "https://github.com/login",
                 "client_id": "",
                 "profile_uri": "https://api.github.com/user",
-                "scope": "public_repo,read:org,user:email"
+                "scope": "public_repo,read:org,user:email",
                 "redirect_uri": "http://localhost:6565/github.com/login"
             }
         },{
