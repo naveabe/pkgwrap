@@ -31,7 +31,8 @@ Distributions:
 
     -
       name: centos
-
+      release: 6
+      
       build_deps:
       - libgit2
       - libgit2-devel
