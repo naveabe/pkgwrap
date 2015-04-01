@@ -41,7 +41,7 @@ angular.module('ipkg.configbuilder', [])
             };
 
             var ubuntuReleases = ['12.04','14.04'],
-                centosReleases = ['6'];
+                centosReleases = ['6', '7'];
 
             var sanitizeConfig = function(data) {
                 /* Remove empty fields from the pkgwrap config */
