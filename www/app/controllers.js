@@ -46,17 +46,13 @@ appControllers.controller('defaultController', [
 	    	
 			$rootScope.$on('user:auth:success', function(evt, data) {		
 				setUser(data);
-
 				if(data.repo) $scope.repository = data.repo;
-				
 				$scope.userData = data;
 			});
 
 			$rootScope.$on('user:unauth', function(evt, data) {
-				//console.log('deauth');
 				_resetUser();
-				
-				$location.url("/login");
+				$location.url("/");
 			});
 	    }
 
