@@ -1,8 +1,8 @@
-package specer
+package request
 
 import (
 	//"encoding/json"
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
 	//"io/ioutil"
 	"testing"
 )

@@ -2,8 +2,8 @@ package specer
 
 import (
 	"fmt"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
-	//"path/filepath"
 	"strings"
 	"time"
 )
@@ -91,7 +91,7 @@ func NewRPMSpec(name, version string) (*RPMSpec, error) {
 	return &rspec, nil
 }
 
-func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *UserPackage, distro Distribution, dstDir string) (*RPMSpec, error) {
+func BuildRPMSpec(tmplMgr *templater.TemplatesManager, pkgReq *request.UserPackage, distro request.Distribution, dstDir string) (*RPMSpec, error) {
 	spec, err := NewRPMSpec(pkgReq.Name, pkgReq.Version)
 	if err != nil {
 		return spec, err

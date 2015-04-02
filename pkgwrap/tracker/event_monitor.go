@@ -12,6 +12,8 @@ type DockerEventMonitor struct {
 	datastore *TrackerStore
 	// docker client
 	client *docker.Client
+
+	//Notifications chan *docker.APIEvents
 }
 
 func NewDockerEventMonitor(dockerUri string,
@@ -54,24 +56,25 @@ func (d *DockerEventMonitor) Start() error {
 		case "start":
 			break
 		case "die":
-			// copy logs (useful when docker gets cleaned up)
+			// TODO: copy logs (useful when docker gets cleaned up)
 			break
 		case "kill":
-			// copy logs
+			// TODO: copy logs
 			break
 		default:
 			d.logger.Trace.Printf("Skipping event: %s\n", event.Status)
 			continue
 		}
+
 		// Get container info
 		if dCont, err = d.client.InspectContainer(event.ID); err != nil {
 			d.logger.Error.Printf("Failed to get container info (%s): %s\n", event.ID, err)
 			continue
 		}
-
-		d.logger.Trace.Printf("inspect container: %#v\n", dCont.State)
+		//d.logger.Trace.Printf("inspect container: %#v\n", dCont.State)
 		b, _ := json.MarshalIndent(dCont.State, "", "  ")
 		d.logger.Trace.Printf("inspect container: %s\n", b)
+
 		// Update datastore
 		if err = d.datastore.UpdateContainer(event.ID, dCont); err != nil {
 			d.logger.Error.Printf("Failed to update container info (%s): %s\n", event.ID, err)
@@ -81,9 +84,27 @@ func (d *DockerEventMonitor) Start() error {
 		/*
 			TODO:
 			- Send notification
+			d.Notifications <- event
 			- Rebuild specific package repo.
 		*/
 	}
 
 	return nil
+}
+
+/*
+	Params:
+		dockerUri : docker uri
+		dstore : datastore struct
+		notifChan: channel so send notifications on
+		logger : global logger
+*/
+func StartEventMonitor(dockerUri string, dstore *TrackerStore, notifChan chan *docker.APIEvents, logger *logging.Logger) {
+	if dem, err := NewDockerEventMonitor(dockerUri, dstore, logger); err == nil {
+		if err := dem.Start(); err != nil {
+			logger.Error.Fatalf("%s\n", err)
+		}
+	} else {
+		logger.Error.Fatalf("%s\n", err)
+	}
 }

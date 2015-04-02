@@ -116,7 +116,7 @@ angular.module('repositories', [])
             _callHttp(url, 'PUT', payload)
             .success(function(data) {
                 dfd.resolve(data);
-            }, function(err) {
+            }).error(function(err) {
                 dfd.reject({"error": err});
             });
 
@@ -143,6 +143,29 @@ angular.module('repositories', [])
                 _dfd.resolve(_projList);
             }
             return _dfd;
+        }
+
+        github.createWebhook = function(project) {
+            // push is default
+            var hookData = {
+                name: 'ipkg.io',
+                active: true,
+                events: ["create", "release"],
+                config: {
+                    insecure_ssl: true,
+                    url: '',
+                    content_type: 'json',
+                }
+            };
+
+            return _callHttp(baseUrl+'/repos/'+Authenticator.getCreds().username+'/'+project+'/hooks' , 'POST', hookData)
+        }
+
+        /* In progress */
+        github.disableWebhook = function(project) {
+            var hookData = {
+                active: false
+            };
         }
 
         return github;

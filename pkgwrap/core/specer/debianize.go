@@ -1,15 +1,15 @@
 package specer
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"fmt"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
-	//"time"
-	"archive/tar"
-	"compress/gzip"
 )
 
 const DEB_BIN_VERSION = "2.0"
@@ -167,7 +167,7 @@ func WriteDebControlFile(tmplMgr *templater.TemplatesManager, data interface{}, 
 	return tbldr.Build(data, fh)
 }
 
-func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *UserPackage, distro Distribution, dstDir string) error {
+func BuildDebStructure(tmplMgr *templater.TemplatesManager, uPkg *request.UserPackage, distro request.Distribution, dstDir string) error {
 	var (
 		dspec   = NewDEBSpec(uPkg.Name, uPkg.Version)
 		err     error

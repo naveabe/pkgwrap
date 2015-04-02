@@ -1,4 +1,4 @@
-package specer
+package request
 
 import (
 	"fmt"
@@ -10,6 +10,12 @@ const (
 	DEFAULT_PKG_VERSION = "0.0.1"
 )
 
+type BuildNotifications struct {
+	// e.g. chat.freenode.net#ipkgio
+	IRC   []string `json:"irc" yaml:"irc"`
+	Email []string `json:"email" yaml:"email"`
+}
+
 type PackageRequest struct {
 	Name    string
 	Version string
@@ -20,6 +26,8 @@ type PackageRequest struct {
 	Id string `json:"-"`
 
 	Notifications *BuildNotifications `yaml:"Notifications"`
+
+	Status string
 }
 
 func NewPackageRequest(name string) *PackageRequest {

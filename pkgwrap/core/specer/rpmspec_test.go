@@ -1,7 +1,8 @@
 package specer
 
 import (
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"testing"
 )
 
@@ -22,9 +23,9 @@ func Test_NewRPMSpec(t *testing.T) {
 
 func Test_BuildRPMSpec(t *testing.T) {
 
-	pkg, _ := NewUserPackage(testPkgName, testPkgVersion, testPkgPath, testBsRunnable)
+	pkg, _ := request.NewUserPackage(testPkgName, testPkgVersion, testPkgPath, testBsRunnable)
 
-	tDistro, _ := NewDistribution("centos", "6")
+	tDistro, _ := request.NewDistribution("centos", "6")
 	tDistro.Deps = []string{"zeromq3"}
 	_, err := BuildRPMSpec(&testTmplMgr, pkg, tDistro, testTmpRepoDir)
 	if err != nil {

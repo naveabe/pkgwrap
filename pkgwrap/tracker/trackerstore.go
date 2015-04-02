@@ -85,6 +85,32 @@ func (t *TrackerStore) UpdateRequest(id string, pkgReq specer.PackageRequest) er
 }
 
 /*
+	IN PROGRESS
+	Get the request containing the container id
+*/
+func (t *TrackerStore) GetRequestByContainerId(id string) (*specer.PackageRequest, error) {
+	var preq *specer.PackageRequest
+
+	terms := map[string]interface{}{
+		"term": map[string]string{"Distributions.id": id},
+	}
+
+	eRslt, err := t.performQuery("pkgreq", terms, nil)
+	if err != nil {
+		return preq, err
+	}
+
+	if len(eRslt.Hits.Hits) < 1 {
+		return preq, fmt.Errorf("Not found: %s", id)
+	}
+
+	if err = json.Unmarshal(*eRslt.Hits.Hits[0].Source, preq); err != nil {
+		return preq, err
+	}
+	return preq, nil
+}
+
+/*
 	Get build container.  This contains all the container information.
 
 	Args:
@@ -108,7 +134,7 @@ func (t *TrackerStore) GetContainer(id string) (*docker.Container, error) {
 }
 
 /*
-	Gets the combined information containing the request, container info
+	Gets the combined information containing the request, container/s info
 	and posted timestamp.
 
 	Args:

@@ -114,16 +114,6 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 }
 
-func StartEventMonitor(dstore *tracker.TrackerStore, logger *logging.Logger) {
-	if dem, err := tracker.NewDockerEventMonitor(DOCKER_URI, dstore, logger); err == nil {
-		if err := dem.Start(); err != nil {
-			logger.Error.Fatalf("%s\n", err)
-		}
-	} else {
-		logger.Error.Fatalf("%s\n", err)
-	}
-}
-
 func main() {
 	flag.Parse()
 
@@ -157,8 +147,9 @@ func main() {
 	}
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan, datastore)
+
 	// Used for updating state changes.
-	go StartEventMonitor(datastore, logger)
+	go tracker.StartEventMonitor(DOCKER_URI, datastore, nil, logger)
 
 	/* Prep and start builds */
 	for {

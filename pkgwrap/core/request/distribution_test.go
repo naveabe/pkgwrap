@@ -1,4 +1,4 @@
-package specer
+package request
 
 import (
 	"testing"

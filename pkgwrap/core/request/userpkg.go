@@ -1,11 +1,11 @@
-package specer
+package request
 
 import (
 	"archive/tar"
 	"compress/gzip"
 	"fmt"
 	"github.com/libgit2/git2go"
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
 	"io"
 	"os"
 	"path/filepath"
@@ -17,19 +17,6 @@ const (
 	DEFAULT_RELEASE  = 1
 )
 
-/*
-type AugmentableProperties struct {
-	BuildDeps []string `json:"build_deps" yaml:"build_deps"`
-	Deps      []string `json:"deps"`
-
-	BuildCmd []string `json:"build_cmd" yaml:"build_cmd"`
-
-	PreInstall    []string `json:"pre_install,omitempty" yaml:"pre_install"`
-	PostInstall   []string `json:"post_install,omitempty" yaml:"post_install"`
-	PreUninstall  []string `json:"pre_uninstall,omitempty" yaml:"pre_uninstall"`
-	PostUninstall []string `json:"post_uninstall,omitempty" yaml:"post_uninstall"`
-}
-*/
 type PkgBuildType string
 
 const (
