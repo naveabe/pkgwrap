@@ -167,7 +167,7 @@ func (g *GithubWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "push":
 		pkgReq, err = g.parsePushEvent(evtType, payloadBytes)
 		if err != nil {
-			g.Logger.Error.Printf("%s\n", err)
+			g.Logger.Error.Printf("%s ==> %s\n", err, payloadBytes)
 			w.WriteHeader(400)
 			return
 		} else {
