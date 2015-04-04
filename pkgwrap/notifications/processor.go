@@ -1,13 +1,12 @@
 package notifications
 
 import (
-	"fmt"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/tracker"
 )
 
-func IrcNotify(ircs []string, msg string) {
+func IrcNotify(ircs []string, msg string, logger *logging.Logger) {
 	var (
 		err error
 		nt  *IRCNotifier
@@ -15,16 +14,16 @@ func IrcNotify(ircs []string, msg string) {
 
 	for _, v := range ircs {
 		if nt, err = NewIRCNotifierFromString(v); err != nil {
-			fmt.Println(err)
+			logger.Error.Printf("IRC notification request: %s\n", err)
 			continue
 		}
 		if err = nt.Notify(msg); err != nil {
-			fmt.Println(err)
+			logger.Error.Printf("Failed to send IRC notification: %s\n", err)
 		}
 	}
 }
 
-func EmailNotify(recipients []string, subject, msg string) {
+func EmailNotify(recipients []string, subject, msg string, logger *logging.Logger) {
 	var err error
 	for _, r := range recipients {
 		nen := NewEmailNotifier(r)
@@ -32,8 +31,7 @@ func EmailNotify(recipients []string, subject, msg string) {
 		nen.Body = msg
 
 		if err = nen.Notify(); err != nil {
-			fmt.Printf("%s", err)
-			continue
+			logger.Error.Printf("Failed to send email notification: %s\n", err)
 		}
 	}
 }
@@ -98,9 +96,9 @@ func (n *NotificationProcessor) Start() {
 		}
 
 		msg = GetNotificationMessage(preq.Name, preq.Version, status, string(distro.Name), distro.Release)
-		go IrcNotify(preq.Notifications.IRC, msg)
+		go IrcNotify(preq.Notifications.IRC, msg, n.logger)
 
 		subject = GetNotificationSubject(preq.Name, preq.Version, string(distro.Name), distro.Release, status)
-		go EmailNotify(preq.Notifications.Email, subject, msg)
+		go EmailNotify(preq.Notifications.Email, subject, msg, n.logger)
 	}
 }
