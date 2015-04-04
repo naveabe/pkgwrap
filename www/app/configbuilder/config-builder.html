@@ -15,13 +15,13 @@
             </h4>
             <div class="list-group">
                 <div ng-repeat="distro in pkgwrap.Distributions" class="list-group-item distro-options">
-                    <div class="row" style="margin:0;padding-bottom:20px;padding-top:10px">
+                    <div class="row" style="margin:0;padding-bottom:10px">
                         <div class="col-md-8" style="padding:0;color:#555;font-weight:bold">
                             <img ng-src="imgs/{{distro.name}}-{{distro.release}}.png" width="20" height="20">
                             <span style="padding:0 5px;">{{distro.name|toTitleCase}} {{distro.release}}</span>
                         </div>
                         <div class="col-md-4 text-right" style="padding:0">
-                            <span class="remove-distro-btn" ng-click="pkgwrap.distributions.splice($index, 1)">
+                            <span class="remove-distro-btn" ng-click="pkgwrap.Distributions.splice($index, 1)">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </span>
                         </div>
@@ -64,10 +64,12 @@
             </div>
             <div class="package-options">
                 <h4 style="padding-bottom:10px">Package</h4>
+                <!--
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">URL</span>
                     <input type="url" class="form-control" ng-model="pkgwrap.Package.url">
                 </div>
+                -->
                 <div class="input-group input-group-sm">
                     <span class="input-group-addon">Version</span>
                     <input type="text" class="form-control" ng-model="pkgwrap.Package.version">

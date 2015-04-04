@@ -18,11 +18,10 @@ ul {
 	text-decoration: none;
 }
 
-.org-btn,
 .oauth,
 .list-group-item[ng-switch='repo.oauth']>a,
 .list-group-item[ng-switch='repo.oauth'] {
-	color: #666;
+	color: #555;
 	cursor: pointer;
 }
 .org-btn:hover,
@@ -30,6 +29,10 @@ ul {
 .list-group-item[ng-switch='repo.oauth']:hover>a,
 .list-group-item[ng-switch='repo.oauth']:hover {
 	color: #428bca;
+}
+
+.org-btn-btn {
+	-webkit-font-smoothing: antialiased;
 }
 
 table#login-window-container {
@@ -66,6 +69,7 @@ table#login-window-container {
 	font-size: 13px;
 }
 
+#page-header h4 a,
 .pkg-download-btn,
 #user-home-btn,
 #home-btn,
@@ -74,6 +78,8 @@ table#login-window-container {
 #logout-btn {
 	color: #888 !important;
 }
+
+#page-header h4 a:hover,
 .pkg-download-btn:hover,
 #user-home-btn:hover,
 #home-btn:hover,
@@ -89,7 +95,7 @@ table#login-window-container {
 }
 
 #page-header {
-	padding: 0px 20px;
+	padding: 5px 20px;
 	background: #505050;
 }
 
@@ -161,18 +167,32 @@ pre.log-content {
 	padding:10px 0;
 	border-top:1px solid #eee;
 }
+/*
 .distro-job:hover {
 	background-color: #777;
-}
+}*/
 .distro-job:hover .log-toggler {
-	color: #eee !important;
+	color: #428bca !important;
 }
 
-.refresh-btn,
-.build-btn {
+.refresh-btn {
 	transition:all 0.25s ease;
 	color: #ccc;
 	cursor: pointer;
+}
+.circle-btn,
+.circle-btn .glyphicon {
+	color: #555;
+}
+.circle-btn {
+	transition:all 0.25s ease;
+	padding:8px 10px;
+	border:1px solid #555;
+	border-radius:30px;
+	opacity: 0.5;
+}
+.circle-btn:hover {
+ 	opacity: 1;
 }
 
 .build-btn-dark .glyphicon:hover,
@@ -182,6 +202,10 @@ pre.log-content {
 	color: #428bca;
 }
 
+.org-btn,
+.packages-title-label,
+.projects-title-label,
+.history-title-label,
 .build-btn-dark .glyphicon,
 .build-btn-dark .build-btn,
 .breadcrumb-path,
@@ -191,9 +215,10 @@ pre.log-content {
 .project-pkgs:hover {
 	color: #428bca;
 }
-.repo-exists {
+.project-pkgs.repo-exists {
 	font-weight: bold;
 	color: #428bca;
+	-webkit-font-smoothing: antialiased;
 }
 .pkg-distro-list-item,
 .build-history-item {
@@ -205,10 +230,18 @@ pre.log-content {
 	padding-left: 0px;
 	padding-right: 0px;
 	padding-bottom: 0px;
+	border-left: 3px solid transparent;
+	border-right: 1px solid transparent;
 }
 
+.build-history-item:last-child,
+.build-history-item:first-child {
+	border-radius: 0;
+}
 .build-history-item:hover {
 	background-color: #f6f6f6;
+	border-left: 3px solid #428bca;
+	border-right: 1px solid #ccc;
 }
 .build-history-item:hover .log-toggler {
 	color: #707070;

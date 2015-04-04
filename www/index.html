@@ -39,19 +39,26 @@
 		  <div id="page-header">
 			<div class="row" style="margin:0;padding:0">
 			  <div class="col-md-8" style="padding:0">
-				<h4><a href="#/" id="home-btn">ipkg</a></h4>
+				<h4>
+					<a href="#/" id="home-btn" style="border-right:1px solid #666;">
+						<span style="padding-right:10px;">ipkg.io</span>
+					</a>
+					<a href="https://docs.ipkg.io" style="padding:0 10px;border-left:1px solid #414141;">
+						<span style="padding:0 10px;">Docs</span>
+					</a>
+				</h4>
 			  </div>
 				<div class="col-md-4 text-right" style="padding:0">
 					<h4>
 						<!--<span style="color: #888">{{repository}} / </span>-->
 						<a ng-if="!isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Logout">
-						  <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-right:10px"></span>
+						  <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-right:10px;border-right:1px solid #666;"></span>
 						</a>
 						<a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Login">
-							<span style="padding-left:10px" class="glyphicon glyphicon-user"></span>
+							<span style="padding-left:10px;border-left:1px solid #414141;" class="glyphicon glyphicon-user"></span>
 						</a>
 						<a ng-if="!isGuest" href="#/{{repository}}/{{username}}" id="user-home-btn">
-							<span style="padding-right:10px">{{username}}</span>
+							<span style="padding-left:10px;padding-right:10px">{{username}}</span>
 							<img ng-if="userIcon&&userIcon!=''" ng-src="{{userIcon}}" width="26" height="26" style="opacity:0.75;border-radius:14px">
 						</a>
 					</h4>

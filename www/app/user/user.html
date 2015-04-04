@@ -8,8 +8,10 @@
         <div style="padding:10px 0;" ng-if="orgMembership.length>0">
             <h4>
                 <a ng-repeat="org in orgMembership" style="padding:5px;" href="#/{{repository}}/{{org.login}}" class="org-btn">
-                    <img ng-src="{{org.icon}}" width="20" height="20">
-                    <span>{{org.login}}</span>
+                    <span  class="org-btn-btn">
+                        <img ng-src="{{org.icon}}" width="20" height="20" style="border-radius: 30px;">
+                        <span style="padding-left:5px;">{{org.login}}</span>
+                    </span>
                 </a>
             </h4>
         </div>
@@ -17,17 +19,12 @@
 </div>
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-right" style="padding:10px 0">Projects</h4>
+        <h4 class="text-right projects-title-label" style="padding:10px 0">Projects</h4>
         <div>
             <ul class="list-group list-group-sm">
-                <li class="list-group-item pkg-distro-list-item" ng-repeat="repo in userProjects">
-                    <a ng-class="{'repo-exists': repo.pkgwrapd}" href="#/{{repository}}/{{username}}/{{repo.name}}" class="project-pkgs">
+                <a href="#/{{repository}}/{{username}}/{{repo.name}}" class="list-group-item pkg-distro-list-item project-pkgs" ng-repeat="repo in userProjects" ng-class="{'repo-exists': repo.pkgwrapd}">
                         {{repo.name}}
-                    </a>
-                    <span>
-                        <request-dialog-button ng-model="repo.name"></request-dialog-button>
-                    </span>
-                </li>
+                </a>
             </ul>
         </div>
     </div>
