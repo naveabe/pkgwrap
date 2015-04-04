@@ -1,6 +1,7 @@
 package notifications
 
 import (
+	"bytes"
 	"fmt"
 	"net/smtp"
 )
@@ -40,14 +41,34 @@ func NewEmailNotifier(toAddr string) *EmailNotifier {
 }
 
 func (e *EmailNotifier) Notify() error {
-	// Set up authentication information.
-	//auth := smtp.PlainAuth("", e.From, "", DEFAULT_MAIL_HOST)
-	auth := smtp.CRAMMD5Auth("", "")
-	if err := smtp.SendMail(fmt.Sprintf("%s:%d", DEFAULT_MAIL_HOST, DEFAULT_MAIL_PORT),
-		auth, e.From, []string{e.To}, []byte(e.Body)); err != nil {
-
+	c, err := smtp.Dial(fmt.Sprintf("%s:%d", DEFAULT_MAIL_HOST, DEFAULT_MAIL_PORT))
+	if err != nil {
 		return err
 	}
+	// Set the sender and recipient.
+	c.Mail(e.From)
+	c.Rcpt(e.To)
+
+	// Send the email body.
+	wc, err := c.Data()
+	if err != nil {
+		return err
+	}
+	defer wc.Close()
+
+	buf := bytes.NewBufferString(e.Body)
+	if _, err = buf.WriteTo(wc); err != nil {
+		return err
+	}
+
+	// Set up authentication information.
+	//auth := smtp.PlainAuth("", e.From, "", DEFAULT_MAIL_HOST)
+	//auth := smtp.CRAMMD5Auth("", "")
+	//if err := smtp.SendMail(,
+	//	auth, e.From, []string{e.To}, []byte(e.Body)); err != nil {
+
+	//	return err
+	//}
 
 	return nil
 }
