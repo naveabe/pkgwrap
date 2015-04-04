@@ -41,7 +41,8 @@ func NewEmailNotifier(toAddr string) *EmailNotifier {
 
 func (e *EmailNotifier) Notify() error {
 	// Set up authentication information.
-	auth := smtp.PlainAuth("", e.From, "", DEFAULT_MAIL_HOST)
+	//auth := smtp.PlainAuth("", e.From, "", DEFAULT_MAIL_HOST)
+	auth := smtp.CRAMMD5Auth("", "")
 	if err := smtp.SendMail(fmt.Sprintf("%s:%d", DEFAULT_MAIL_HOST, DEFAULT_MAIL_PORT),
 		auth, e.From, []string{e.To}, []byte(e.Body)); err != nil {
 
