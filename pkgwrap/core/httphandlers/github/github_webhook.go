@@ -134,6 +134,12 @@ func (g *GithubWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		respCode int
 		err      error
 	)
+	// extra check
+	if len(r.Header.Get("X-Github-Delivery")) != 36 {
+		g.Logger.Error.Printf("X-Github-Delivery - not found!\n")
+		w.WriteHeader(401)
+		return
+	}
 
 	payloadBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
