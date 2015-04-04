@@ -200,7 +200,7 @@ func SetupGithubWebHook(cfg *config.AppConfig, reqChan chan request.PackageReque
 }
 
 /*
-	Helper function for github hook and oauth
+	Helper function for github hook and github oauth
 */
 func SetupGithubHandlers(cfg *config.AppConfig, reqChan chan request.PackageRequest, logger *logging.Logger) {
 	SetupGithubWebHook(cfg, reqChan, logger)

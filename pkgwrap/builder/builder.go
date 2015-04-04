@@ -185,8 +185,7 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 		} else if nextRelease > distro.PkgRelease {
 			b.BuildRequest.Distributions[i].PkgRelease = nextRelease
 		}
-		b.logger.Trace.Printf("Set distro (%s) release: %d\n",
-			distro.Label(), b.BuildRequest.Distributions[i].PkgRelease)
+		b.logger.Trace.Printf("Set distro (%s) release: %d\n", distro.Label(), b.BuildRequest.Distributions[i].PkgRelease)
 		b.logger.Debug.Printf("Processing distro: %s", distro.Label())
 
 		// Process based on package type

@@ -123,9 +123,8 @@ func main() {
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan, datastore)
 
-	// send user email/irc after build exit.
+	// notifier to send user email/irc after build exit.
 	notifier = StartUserNotifier(datastore, logger)
-
 	// Used for updating state changes.
 	go tracker.StartEventMonitor(DOCKER_URI, datastore, notifier.Listener, logger)
 
@@ -144,7 +143,7 @@ func main() {
 		pReqBytes, _ := json.MarshalIndent(pkgReq, "", "  ")
 		logger.Trace.Printf("Request added: %s\n", pReqBytes)
 
-		/* this is what gets queued */
+		/* queue package build here */
 		//bldReqChan <- &pkgReq
 		if err = RunBuildRequest(cfg.Builder, datastore, repo, &pkgReq, &tmplMgr, logger); err != nil {
 			logger.Error.Printf("%s", err)
