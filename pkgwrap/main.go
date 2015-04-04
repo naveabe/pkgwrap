@@ -92,12 +92,9 @@ func main() {
 		logger = logging.NewStdLogger()
 		// channel receiving package requests
 		pkgReqChan = make(chan request.PackageRequest)
-
 		// package requests will get sent on this channel for builds
 		//bldReqChan = make(chan *request.PackageRequest)
-
 		notifier *notifications.NotificationProcessor
-
 		// global config
 		cfg *config.AppConfig
 		// datastore
@@ -149,7 +146,6 @@ func main() {
 
 		/* this is what gets queued */
 		//bldReqChan <- &pkgReq
-		/* end queue */
 		if err = RunBuildRequest(cfg.Builder, datastore, repo, &pkgReq, &tmplMgr, logger); err != nil {
 			logger.Error.Printf("%s", err)
 		}
