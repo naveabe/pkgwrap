@@ -56,6 +56,12 @@ func (e *EmailNotifier) Notify() error {
 	}
 	defer wc.Close()
 
+	// write subject
+	subject := bytes.NewBufferString(fmt.Sprintf("Subject: %s\r\n\r\n", e.Subject))
+	if _, err = subject.WriteTo(wc); err != nil {
+		return err
+	}
+
 	buf := bytes.NewBufferString(e.Body)
 	if _, err = buf.WriteTo(wc); err != nil {
 		return err
