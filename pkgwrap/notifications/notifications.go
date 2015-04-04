@@ -9,7 +9,7 @@ import (
 const (
 	DEFAULT_MAIL_HOST = "localhost"
 	DEFAULT_MAIL_PORT = 25
-	SUBJECT_TMPL      = "%s-%s (%s %s) Status: %s"
+	SUBJECT_TMPL      = "ipkg.io %s-%s (%s %s) Status: %s"
 	FROM_ADDR_DEFAULT = "packager@ipkg.io"
 	NOTIFICATION_TMPL = `
 %s-%s [ Status: %s ]
