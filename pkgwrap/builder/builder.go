@@ -2,12 +2,12 @@ package builder
 
 import (
 	"fmt"
-	//"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -18,7 +18,7 @@ import (
 	i.e. one container per package type
 */
 type TargetedPackageBuild struct {
-	BuildRequest     *specer.PackageRequest
+	BuildRequest     *request.PackageRequest
 	Repository       repository.BuildRepository
 	DistroContainers map[string]*ContainerRunner
 
@@ -26,7 +26,7 @@ type TargetedPackageBuild struct {
 	logger *logging.Logger
 }
 
-func NewTargetedPackageBuild(cfg config.BuilderConfig, repo repository.BuildRepository, pkgReq *specer.PackageRequest) (*TargetedPackageBuild, error) {
+func NewTargetedPackageBuild(cfg config.BuilderConfig, repo repository.BuildRepository, pkgReq *request.PackageRequest) (*TargetedPackageBuild, error) {
 	var (
 		b = TargetedPackageBuild{
 			BuildRequest: pkgReq,
@@ -96,7 +96,7 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		return err
 	}
 
-	if b.BuildRequest.Package.BuildType == specer.BUILDTYPE_BIN {
+	if b.BuildRequest.Package.BuildType == request.BUILDTYPE_BIN {
 		// Uncompress if binary
 		if err = b.BuildRequest.Package.Uncompress(b.Repository.RepoDir); err != nil {
 			return err
@@ -174,7 +174,7 @@ func (b *TargetedPackageBuild) readProjectPkgwrapConfig() error {
 	Setup rpm/deb build structure needed to make the package.
 */
 func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesManager) error {
-	var ptype specer.OSPackageType
+	var ptype request.OSPackageType
 
 	// 'distro' is by value
 	for i, distro := range b.BuildRequest.Distributions {
@@ -192,12 +192,12 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 		// Process based on package type
 		ptype = distro.PackageType()
 		switch ptype {
-		case specer.OS_PKG_TYPE_RPM:
+		case request.OS_PKG_TYPE_RPM:
 			if err := b.setupRPMBuild(b.BuildRequest.Distributions[i], tmplMgr); err != nil {
 				return err
 			}
 			break
-		case specer.OS_PKG_TYPE_DEB:
+		case request.OS_PKG_TYPE_DEB:
 			if err := b.setupDEBBuild(b.BuildRequest.Distributions[i], tmplMgr); err != nil {
 				return err
 			}
@@ -212,7 +212,7 @@ func (b *TargetedPackageBuild) prepPerDistroBuilds(tmplMgr *templater.TemplatesM
 /*
 	All pre-build setup before the .rpm build can start
 */
-func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
+func (b *TargetedPackageBuild) setupRPMBuild(distro request.Distribution, tmplMgr *templater.TemplatesManager) error {
 	specDst := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + distro.Label()
 	// Write spec to repository
 	_, err := specer.BuildRPMSpec(tmplMgr, b.BuildRequest.Package, distro, specDst)
@@ -222,12 +222,12 @@ func (b *TargetedPackageBuild) setupRPMBuild(distro specer.Distribution, tmplMgr
 /*
 	All pre-build setup before the .deb build can start
 */
-func (b *TargetedPackageBuild) setupDEBBuild(distro specer.Distribution, tmplMgr *templater.TemplatesManager) error {
+func (b *TargetedPackageBuild) setupDEBBuild(distro request.Distribution, tmplMgr *templater.TemplatesManager) error {
 	dstDir := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + distro.Label()
 	return specer.BuildDebStructure(tmplMgr, b.BuildRequest.Package, distro, dstDir)
 }
 
-func (b *TargetedPackageBuild) Add(distro specer.Distribution, pkg *specer.UserPackage) error {
+func (b *TargetedPackageBuild) Add(distro request.Distribution, pkg *request.UserPackage) error {
 
 	cRunner, err := NewContainerRunner(b.cfg, distro, pkg)
 	if err != nil {

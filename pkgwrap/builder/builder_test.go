@@ -1,8 +1,8 @@
 package builder
 
 import (
+	"github.com/naveabe/pkgwrap/pkgwrap/core/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
 	"testing"
 )

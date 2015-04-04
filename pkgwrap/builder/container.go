@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"strings"
 )
 
 type ContainerRunner struct {
-	Distro  specer.Distribution
-	Package *specer.UserPackage
+	Distro  request.Distribution
+	Package *request.UserPackage
 
 	client *docker.Client
 
@@ -25,7 +25,7 @@ type ContainerRunner struct {
 }
 
 func NewContainerRunner(builderCfg config.BuilderConfig,
-	distro specer.Distribution, pkg *specer.UserPackage) (*ContainerRunner, error) {
+	distro request.Distribution, pkg *request.UserPackage) (*ContainerRunner, error) {
 
 	var (
 		c   ContainerRunner

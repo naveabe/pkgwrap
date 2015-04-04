@@ -6,8 +6,8 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"strings"
 )
 
@@ -27,7 +27,7 @@ const (
 */
 
 type BuildInfo struct {
-	Request *specer.PackageRequest
+	Request *request.PackageRequest
 	// Container info index
 	Containers map[string]*docker.Container
 	//Containers map[string]BuildContainerInfo
@@ -66,7 +66,7 @@ func (t *TrackerStore) AddContainer(id string, contInfo interface{}) (string, er
 /*
 	Add build request (packaging request)
 */
-func (t *TrackerStore) AddRequest(pkgReq specer.PackageRequest) (string, error) {
+func (t *TrackerStore) AddRequest(pkgReq request.PackageRequest) (string, error) {
 	return t.Add(DTYPE_REQUEST, pkgReq)
 }
 
@@ -80,7 +80,7 @@ func (t *TrackerStore) UpdateContainer(id string, contInfo interface{}) error {
 /*
 	Update packaging request. Usually after the build has started
 */
-func (t *TrackerStore) UpdateRequest(id string, pkgReq specer.PackageRequest) error {
+func (t *TrackerStore) UpdateRequest(id string, pkgReq request.PackageRequest) error {
 	return t.Update(DTYPE_REQUEST, id, pkgReq)
 }
 
@@ -88,8 +88,8 @@ func (t *TrackerStore) UpdateRequest(id string, pkgReq specer.PackageRequest) er
 	IN PROGRESS
 	Get the request containing the container id
 */
-func (t *TrackerStore) GetRequestByContainerId(id string) (*specer.PackageRequest, error) {
-	var preq *specer.PackageRequest
+func (t *TrackerStore) GetRequestByContainerId(id string) (*request.PackageRequest, error) {
+	preq := &request.PackageRequest{}
 
 	terms := map[string]interface{}{
 		"term": map[string]string{"Distributions.id": id},
@@ -103,6 +103,8 @@ func (t *TrackerStore) GetRequestByContainerId(id string) (*specer.PackageReques
 	if len(eRslt.Hits.Hits) < 1 {
 		return preq, fmt.Errorf("Not found: %s", id)
 	}
+
+	t.logger.Trace.Printf("%s\n", *eRslt.Hits.Hits[0].Source)
 
 	if err = json.Unmarshal(*eRslt.Hits.Hits[0].Source, preq); err != nil {
 		return preq, err

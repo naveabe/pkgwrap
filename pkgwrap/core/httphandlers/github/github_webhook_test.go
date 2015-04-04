@@ -1,4 +1,4 @@
-package websvchooks
+package github
 
 import (
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"

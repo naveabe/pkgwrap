@@ -1,4 +1,4 @@
-package websvc
+package httphandlers
 
 import (
 	"encoding/json"

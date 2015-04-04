@@ -1,10 +1,12 @@
-package websvchooks
+package github
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/httphandlers"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"io/ioutil"
 	"net/http"
 )
@@ -50,12 +52,12 @@ type GithubPushEvent struct {
 type GithubWebHook struct {
 	Logger *logging.Logger
 	// This channel will be read to get PackageRequests
-	RequestChan chan specer.PackageRequest
+	RequestChan chan request.PackageRequest
 }
 
-func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*specer.PackageRequest, error) {
+func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*request.PackageRequest, error) {
 	var (
-		pkgReq  *specer.PackageRequest
+		pkgReq  *request.PackageRequest
 		pushEvt = GithubPushEvent{GenericGithubEvent: GenericGithubEvent{EventType: evtType}}
 		err     error
 	)
@@ -64,10 +66,10 @@ func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*specer.
 		return pkgReq, err
 	}
 
-	pkgReq = specer.NewPackageRequest(pushEvt.Repository.Name)
+	pkgReq = request.NewPackageRequest(pushEvt.Repository.Name)
 	g.Logger.Trace.Printf("Push: %s\n", pushEvt)
 
-	tagbranch, err := GetTagFromRef(pushEvt.Ref)
+	tagbranch, err := httphandlers.GetTagFromRef(pushEvt.Ref)
 	if err != nil {
 		g.Logger.Warning.Printf("Could not determine tag: %s\n", err)
 	} else {
@@ -77,7 +79,7 @@ func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*specer.
 	pkgReq.Package.URL = "https://github.com/" + pushEvt.Repository.FullName
 	pkgReq.Package.Packager = pushEvt.Sender.Login
 
-	version, err := GetVersionFromRef(pushEvt.Ref)
+	version, err := httphandlers.GetVersionFromRef(pushEvt.Ref)
 	if err != nil {
 		g.Logger.Warning.Printf("Could not determine version: %s", pushEvt.Ref)
 	} else {
@@ -89,9 +91,9 @@ func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*specer.
 	return pkgReq, pkgReq.Validate(false)
 }
 
-func (g *GithubWebHook) parseCreateEvent(evtType string, payload []byte) (*specer.PackageRequest, error) {
+func (g *GithubWebHook) parseCreateEvent(evtType string, payload []byte) (*request.PackageRequest, error) {
 	var (
-		pkgReq      *specer.PackageRequest
+		pkgReq      *request.PackageRequest
 		createEvent = GithubCreateDeleteEvent{
 			GenericGithubEvent: GenericGithubEvent{
 				EventType: evtType,
@@ -107,12 +109,12 @@ func (g *GithubWebHook) parseCreateEvent(evtType string, payload []byte) (*spece
 	} else {
 		g.Logger.Trace.Printf("Create: %s\n", createEvent)
 
-		pkgReq := specer.NewPackageRequest(createEvent.Repository.Name)
+		pkgReq := request.NewPackageRequest(createEvent.Repository.Name)
 		pkgReq.Package.TagBranch = createEvent.Ref
 		pkgReq.Package.URL = "https://github.com/" + createEvent.Repository.FullName
 		pkgReq.Package.Packager = createEvent.Repository.Owner.Login
 
-		mchArr := VERSION_RE.FindStringSubmatch(createEvent.Ref)
+		mchArr := httphandlers.VERSION_RE.FindStringSubmatch(createEvent.Ref)
 		if len(mchArr) <= 0 {
 			g.Logger.Warning.Printf("Could not determine version: %s", createEvent.Ref)
 		} else {
@@ -127,7 +129,7 @@ func (g *GithubWebHook) parseCreateEvent(evtType string, payload []byte) (*spece
 
 func (g *GithubWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
-		pkgReq   *specer.PackageRequest
+		pkgReq   *request.PackageRequest
 		evtType  = r.Header.Get("X-Github-Event")
 		respCode int
 		err      error
@@ -179,4 +181,22 @@ func (g *GithubWebHook) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rslt, _ := json.MarshalIndent(pkgReq, "", "  ")
 	g.Logger.Trace.Printf("%s\n", rslt)
 	w.WriteHeader(respCode)
+}
+
+func SetupGithubWebHook(cfg *config.AppConfig, reqChan chan request.PackageRequest, logger *logging.Logger) {
+	if cfg.Endpoints.Github != "" {
+		ghHandle := GithubWebHook{logger, reqChan}
+		http.Handle(cfg.Endpoints.Github, &ghHandle)
+		logger.Warning.Printf("Github service: %s\n", cfg.Endpoints.Github)
+	} else {
+		logger.Warning.Printf("Github service disabled!\n")
+	}
+}
+
+/*
+	Helper function for github hook and oauth
+*/
+func SetupGithubHandlers(cfg *config.AppConfig, reqChan chan request.PackageRequest, logger *logging.Logger) {
+	SetupGithubWebHook(cfg, reqChan, logger)
+	SetupGithubOauthHandler(cfg.CodeRepos, logger)
 }

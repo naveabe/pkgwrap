@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/specer"
 	"testing"
 )
 

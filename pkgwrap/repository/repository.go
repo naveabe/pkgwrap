@@ -2,7 +2,7 @@ package repository
 
 import (
 	//"fmt"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -141,12 +141,12 @@ func (b *BuildRepository) GetPackagePathForDistro(repo, pkgr, name, version, dis
 	return pkgPath, nil
 }
 
-func (b *BuildRepository) BuildDir(pkg *specer.UserPackage) string {
+func (b *BuildRepository) BuildDir(pkg *request.UserPackage) string {
 	return b.RepoDir + "/" + pkg.VersionBaseDir()
 	//return b.RepoDir + "/" + pkg.Packager + "/" + pkg.Name + "/" + pkg.Version
 }
 
-func (b *BuildRepository) BuildConfig(pkg *specer.UserPackage) string {
+func (b *BuildRepository) BuildConfig(pkg *request.UserPackage) string {
 	return b.BuildDir(pkg) + "/" + pkg.Name + "/" + PROJECT_CONFIG_NAME
 }
 
@@ -154,7 +154,7 @@ func (b *BuildRepository) BuildConfig(pkg *specer.UserPackage) string {
 	Last release stored in repository under RELEASE for each package
 	type.
 */
-func (b *BuildRepository) LastRelease(pkg *specer.UserPackage, distroLabel string) int64 {
+func (b *BuildRepository) LastRelease(pkg *request.UserPackage, distroLabel string) int64 {
 	if b, err := ioutil.ReadFile(b.BuildDir(pkg) + "/" + distroLabel + "/RELEASE"); err == nil {
 
 		relstr := strings.TrimSpace(string(b))
@@ -168,7 +168,7 @@ func (b *BuildRepository) LastRelease(pkg *specer.UserPackage, distroLabel strin
 /*
 	Next release version that will be built.
 */
-func (b *BuildRepository) NextRelease(pkg *specer.UserPackage, distroLabel string) int64 {
+func (b *BuildRepository) NextRelease(pkg *request.UserPackage, distroLabel string) int64 {
 	lastRel := b.LastRelease(pkg, distroLabel)
 	if lastRel == -1 {
 		return lastRel
@@ -180,7 +180,7 @@ func (b *BuildRepository) NextRelease(pkg *specer.UserPackage, distroLabel strin
 	Remove cloned package repo or uncompressed tarball upload
 	by the user
 */
-func (b *BuildRepository) Clean(pkg *specer.UserPackage) error {
+func (b *BuildRepository) Clean(pkg *request.UserPackage) error {
 	rmDir := b.BuildDir(pkg) + "/" + pkg.Name
 	if _, err := os.Stat(rmDir); err == nil {
 		return os.RemoveAll(rmDir)

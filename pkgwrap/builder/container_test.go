@@ -3,8 +3,8 @@ package builder
 import (
 	"encoding/json"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/specer"
 	"testing"
 )
 

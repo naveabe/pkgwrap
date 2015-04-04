@@ -12,17 +12,18 @@ type DockerEventMonitor struct {
 	datastore *TrackerStore
 	// docker client
 	client *docker.Client
-
-	//Notifications chan *docker.APIEvents
+	// notification channel for post build tasks.
+	notifications chan *docker.APIEvents
 }
 
-func NewDockerEventMonitor(dockerUri string,
-	dstore *TrackerStore, logger *logging.Logger) (*DockerEventMonitor, error) {
+func NewDockerEventMonitor(dockerUri string, dstore *TrackerStore,
+	nChan chan *docker.APIEvents, logger *logging.Logger) (*DockerEventMonitor, error) {
 
 	var (
 		dem = DockerEventMonitor{
-			logger:    logger,
-			datastore: dstore,
+			logger:        logger,
+			datastore:     dstore,
+			notifications: nChan,
 		}
 		err error
 	)
@@ -81,12 +82,13 @@ func (d *DockerEventMonitor) Start() error {
 			continue
 		}
 		d.logger.Debug.Printf("Updated container (%s): %s\n", event.Status, event.ID)
-		/*
-			TODO:
-			- Send notification
-			d.Notifications <- event
-			- Rebuild specific package repo.
-		*/
+
+		// Only send on die and kill events.
+		if d.notifications != nil {
+			if event.Status == "die" || event.Status == "kill" {
+				d.notifications <- event
+			}
+		}
 	}
 
 	return nil
@@ -100,7 +102,7 @@ func (d *DockerEventMonitor) Start() error {
 		logger : global logger
 */
 func StartEventMonitor(dockerUri string, dstore *TrackerStore, notifChan chan *docker.APIEvents, logger *logging.Logger) {
-	if dem, err := NewDockerEventMonitor(dockerUri, dstore, logger); err == nil {
+	if dem, err := NewDockerEventMonitor(dockerUri, dstore, notifChan, logger); err == nil {
 		if err := dem.Start(); err != nil {
 			logger.Error.Fatalf("%s\n", err)
 		}

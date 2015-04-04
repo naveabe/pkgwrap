@@ -1,6 +1,7 @@
-package websvc
+package httphandlers
 
 import (
+	"github.com/naveabe/pkgwrap/pkgwrap/config"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
 	"net/http"
@@ -76,4 +77,10 @@ func (rh *RepoHandler) GET(w http.ResponseWriter, r *http.Request, args ...strin
 	}
 	// default error
 	return ALL_ORIGIN_ACL, map[string]string{"error": "Invalid path"}, 400
+}
+
+func SetupRepoHandler(cfg *config.AppConfig, repo repository.BuildRepository, logger *logging.Logger) {
+	repoHandle := NewRepoHandler(repo, logger)
+	NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
+	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
 }

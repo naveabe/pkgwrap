@@ -1,4 +1,4 @@
-package websvchooks
+package httphandlers
 
 import (
 	"fmt"

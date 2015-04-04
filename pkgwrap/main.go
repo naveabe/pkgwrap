@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/builder"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/httphandlers"
+	ghhandlers "github.com/naveabe/pkgwrap/pkgwrap/core/httphandlers/github"
+	glhandlers "github.com/naveabe/pkgwrap/pkgwrap/core/httphandlers/gitlab"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/request"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
+	"github.com/naveabe/pkgwrap/pkgwrap/notifications"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/templater"
 	"github.com/naveabe/pkgwrap/pkgwrap/tracker"
-	"github.com/naveabe/pkgwrap/pkgwrap/websvc"
-	"github.com/naveabe/pkgwrap/pkgwrap/websvchooks"
 	"net/http"
 	"os"
 )
@@ -27,78 +29,41 @@ const (
 	DOCKER_URI       = "tcp://" + DOCKER_HOST_PORT
 )
 
-func PrepTargetedBuild(bldrCfg config.BuilderConfig, repo repository.BuildRepository,
-	pkgReq *specer.PackageRequest, tmplMgr *templater.TemplatesManager) (*builder.TargetedPackageBuild, error) {
+func RunBuildRequest(bldCfg config.BuilderConfig, datastore *tracker.TrackerStore,
+	repo repository.BuildRepository, pkgReq *request.PackageRequest, tmplMgr *templater.TemplatesManager, logger *logging.Logger) error {
 
-	tBuild, err := builder.NewTargetedPackageBuild(bldrCfg, repo, pkgReq)
+	tBld, err := builder.NewTargetedPackageBuild(bldCfg, repo, pkgReq)
 	if err != nil {
-		return tBuild, err
+		return err
 	}
 
-	if err = tBuild.SetupEnv(tmplMgr); err != nil {
-		return tBuild, err
+	if err = tBld.SetupEnv(tmplMgr); err != nil {
+		return err
 	}
 
-	return tBuild, nil
+	builds := tBld.StartBuilds(DOCKER_URI)
+	logger.Info.Printf("Containers started: %d\n", len(builds))
+	logger.Trace.Printf("Containers details: %s\n", builds)
+
+	if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
+		return fmt.Errorf("Failed to update build state: %s", err)
+	} else {
+		b, _ := json.MarshalIndent(tBld.BuildRequest, "", "  ")
+		logger.Trace.Printf("Build started: %s\n", b)
+	}
+
+	return nil
 }
 
-func SetupGithubOauthHandler(cfgs []config.CodeRepoConfig, logger *logging.Logger) {
-	for _, v := range cfgs {
-		if v.Type == "github" {
-			ghOauthHandler := websvc.NewGithubOauthHandler(v, logger)
-			websvc.NewRestHandler(v.LocalEndpoint, ghOauthHandler, logger)
-			logger.Warning.Printf("Github oauth API: %s\n", v.LocalEndpoint)
-			return
-		}
-	}
-	logger.Warning.Printf("Github config not found. Disabling...!\n")
+func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository,
+	logger *logging.Logger, reqChan chan request.PackageRequest, datastore *tracker.TrackerStore) {
 
-}
+	httphandlers.SetupBuildHandler(cfg, datastore, repo, reqChan, logger)
+	httphandlers.SetupRepoHandler(cfg, repo, logger)
+	httphandlers.SetupLogHandler(cfg, DOCKER_URI, logger)
 
-func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, logger *logging.Logger,
-	reqChan chan specer.PackageRequest, datastore *tracker.TrackerStore) {
-
-	methodHandler := websvc.PkgBuilderMethodHandler{
-		Config:      cfg,
-		Repository:  repo,
-		Logger:      logger,
-		RequestChan: reqChan, // testing
-		Datastore:   datastore,
-	}
-
-	websvc.NewRestHandler(cfg.Endpoints.Builder, &methodHandler, logger)
-	logger.Warning.Printf("Builder API: %s\n", cfg.Endpoints.Builder)
-
-	// Log handler
-	logHdlr, err := websvc.NewLogHandler(DOCKER_URI, logger)
-	if err != nil {
-		logger.Error.Fatalf("%s\n", err)
-	}
-	websvc.NewRestHandler(cfg.Endpoints.Logs, logHdlr, logger)
-	logger.Warning.Printf("Logs API: %s\n", cfg.Endpoints.Logs)
-
-	// Gitlab webhook
-	if cfg.Endpoints.Gitlab != "" {
-		glHandle := websvchooks.GitlabWebHook{logger, reqChan}
-		http.Handle(cfg.Endpoints.Gitlab, &glHandle)
-		logger.Warning.Printf("Gitlab service: %s\n", cfg.Endpoints.Gitlab)
-	} else {
-		logger.Warning.Printf("Gitlab service disabled!\n")
-	}
-
-	if cfg.Endpoints.Github != "" {
-		ghHandle := websvchooks.GithubWebHook{logger, reqChan}
-		http.Handle(cfg.Endpoints.Github, &ghHandle)
-		logger.Warning.Printf("Github service: %s\n", cfg.Endpoints.Github)
-	} else {
-		logger.Warning.Printf("Github service disabled!\n")
-	}
-
-	SetupGithubOauthHandler(cfg.CodeRepos, logger)
-
-	repoHandle := websvc.NewRepoHandler(repo, logger)
-	websvc.NewRestHandler(cfg.Endpoints.Repo, repoHandle, logger)
-	logger.Warning.Printf("Repository API: %s\n", cfg.Endpoints.Repo)
+	glhandlers.SetupGitlabHandler(cfg, reqChan, logger)
+	ghhandlers.SetupGithubHandlers(cfg, reqChan, logger)
 
 	if cfg.Webroot != "" {
 		logger.Warning.Printf("HTTP root directory: %s\n", cfg.Webroot)
@@ -114,14 +79,27 @@ func StartWebServices(cfg *config.AppConfig, repo repository.BuildRepository, lo
 	}
 }
 
+func StartUserNotifier(dstore *tracker.TrackerStore, logger *logging.Logger) *notifications.NotificationProcessor {
+	np := notifications.NewNotificationProcessor(dstore, logger)
+	go np.Start()
+	return np
+}
+
 func main() {
 	flag.Parse()
 
 	var (
 		logger = logging.NewStdLogger()
 		// channel receiving package requests
-		pkgReqChan = make(chan specer.PackageRequest)
-		cfg        *config.AppConfig
+		pkgReqChan = make(chan request.PackageRequest)
+
+		// package requests will get sent on this channel for builds
+		//bldReqChan = make(chan *request.PackageRequest)
+
+		notifier *notifications.NotificationProcessor
+
+		// global config
+		cfg *config.AppConfig
 		// datastore
 		datastore *tracker.TrackerStore
 		err       error
@@ -148,8 +126,11 @@ func main() {
 	// HTTP server /api/builder
 	go StartWebServices(cfg, repo, logger, pkgReqChan, datastore)
 
+	// send user email/irc after build exit.
+	notifier = StartUserNotifier(datastore, logger)
+
 	// Used for updating state changes.
-	go tracker.StartEventMonitor(DOCKER_URI, datastore, nil, logger)
+	go tracker.StartEventMonitor(DOCKER_URI, datastore, notifier.Listener, logger)
 
 	/* Prep and start builds */
 	for {
@@ -166,21 +147,11 @@ func main() {
 		pReqBytes, _ := json.MarshalIndent(pkgReq, "", "  ")
 		logger.Trace.Printf("Request added: %s\n", pReqBytes)
 
-		tBld, err := PrepTargetedBuild(cfg.Builder, repo, &pkgReq, &tmplMgr)
-		if err != nil {
-			logger.Error.Printf("Failed to prep build: %s\n", err)
-			continue
-		}
-
-		builds := tBld.StartBuilds(DOCKER_URI)
-		logger.Info.Printf("Containers started: %d\n", len(builds))
-		logger.Trace.Printf("Containers details: %s\n", builds)
-
-		if err = datastore.UpdateRequest(tBld.BuildRequest.Id, *tBld.BuildRequest); err != nil {
-			logger.Error.Printf("Failed to update loaded request: %s\n", err)
-		} else {
-			b, _ := json.MarshalIndent(tBld.BuildRequest, "", "  ")
-			logger.Trace.Printf("Request loaded: %s\n", b)
+		/* this is what gets queued */
+		//bldReqChan <- &pkgReq
+		/* end queue */
+		if err = RunBuildRequest(cfg.Builder, datastore, repo, &pkgReq, &tmplMgr, logger); err != nil {
+			logger.Error.Printf("%s", err)
 		}
 	}
 }

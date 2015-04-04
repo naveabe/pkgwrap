@@ -1,14 +1,14 @@
-package websvc
+package httphandlers
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
-	"github.com/naveabe/pkgwrap/pkgwrap/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/initscript"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/specer"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"github.com/naveabe/pkgwrap/pkgwrap/repository"
-	"github.com/naveabe/pkgwrap/pkgwrap/specer"
 	"io"
 	"io/ioutil"
 	"mime/multipart"

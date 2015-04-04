@@ -72,3 +72,15 @@ func (p *PackageRequest) Validate(deepInspection bool) error {
 
 	return p.Package.Validate()
 }
+
+/*
+	Get distribution based on container ID
+*/
+func (p *PackageRequest) GetDistribution(id string) (*Distribution, error) {
+	for i, v := range p.Distributions {
+		if v.Id == id {
+			return &p.Distributions[i], nil
+		}
+	}
+	return nil, fmt.Errorf("Not found: %s", id)
+}

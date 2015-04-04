@@ -1,9 +1,10 @@
-package websvc
+package github
 
 import (
 	"encoding/json"
 	//"fmt"
 	"github.com/naveabe/pkgwrap/pkgwrap/config"
+	"github.com/naveabe/pkgwrap/pkgwrap/core/httphandlers"
 	"github.com/naveabe/pkgwrap/pkgwrap/logging"
 	"io/ioutil"
 	"net/http"
@@ -16,7 +17,7 @@ type GithubAccessToken struct {
 }
 
 type GithubOauthHandler struct {
-	DefaultMethodHandler
+	httphandlers.DefaultMethodHandler
 
 	logger *logging.Logger
 	cfg    config.CodeRepoConfig
@@ -93,4 +94,16 @@ func (g *GithubOauthHandler) GET(w http.ResponseWriter, r *http.Request,
 	http.Redirect(w, r, redirectTo, 302)
 
 	return nil, nil, -1
+}
+
+func SetupGithubOauthHandler(cfgs []config.CodeRepoConfig, logger *logging.Logger) {
+	for _, v := range cfgs {
+		if v.Type == "github" {
+			ghOauthHandler := NewGithubOauthHandler(v, logger)
+			httphandlers.NewRestHandler(v.LocalEndpoint, ghOauthHandler, logger)
+			logger.Warning.Printf("Github oauth API: %s\n", v.LocalEndpoint)
+			return
+		}
+	}
+	logger.Warning.Printf("Github config not found. Disabling...!\n")
 }
