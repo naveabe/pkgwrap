@@ -19,7 +19,7 @@ type GithubRepoOwner struct {
 
 type GithubRepo struct {
 	Name        string
-	Id          string          `json:"id"`
+	Id          int64           `json:"id"`
 	FullName    string          `json:"full_name"`
 	Description string          `json:"description"`
 	Owner       GithubRepoOwner `json:"owner"`
@@ -27,7 +27,7 @@ type GithubRepo struct {
 
 type GithubSender struct {
 	Login string
-	Id    int
+	Id    int64
 	Type  string
 }
 
