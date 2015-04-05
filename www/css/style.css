@@ -92,6 +92,22 @@ table#login-window-container {
 	color: #555;
 }
 
+.latest-pkg-dl-section {
+	text-align:right;
+	opacity: 0.5;
+}
+.latest-pkg-dl-section:hover {
+	opacity: 1;
+}
+.latest-pkg-dl-section:hover .latest-pkg {
+	opacity: 1;
+}
+.latest-pkg {
+	padding-right:5px;
+	transition: all 0.35s ease;
+	opacity: 0;
+}
+
 .list-group-item.pkg-distro-list-item,
 .org-btn {
 	color: #888;
