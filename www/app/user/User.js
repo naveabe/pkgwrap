@@ -14,6 +14,7 @@ angular.module('ipkg.user', [])
                                             $scope.repositoryDetails);
 
         $scope.userProjects = [];
+        $scope.userInfo = Authenticator.getCreds();
         $scope.orgMembership = [];
 
         var setActiveProjects = function(projList) {

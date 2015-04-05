@@ -1,31 +1,28 @@
-<div class="row" style="margin:0">
-    <div class="col-md-4" style="padding:0 20px">
-        <div style="padding:10px 0;">
-            <h4 class="breadcrumb-path">{{repository}} / {{username}}</h4>
-        </div>
-    </div>
-    <div class="col-md-8 text-right" style="padding:0 20px">
-        <div style="padding:10px 0;" ng-if="orgMembership.length>0">
-            <h4>
-                <a ng-repeat="org in orgMembership" style="padding:5px;" href="#/{{repository}}/{{org.login}}" class="org-btn">
-                    <span  class="org-btn-btn">
-                        <img ng-src="{{org.icon}}" width="20" height="20" style="border-radius: 30px;">
-                        <span style="padding-left:5px;">{{org.login}}</span>
-                    </span>
-                </a>
-            </h4>
-        </div>
-    </div>
+<div style="padding:0px 20px;">
+    <h4 style="margin:0;padding:0">
+        <!--<a href="#/{{repository}}/{{username}}" class="org-btn">
+            <button  class="org-btn-btn" ng-class="{'active': userInfo.username==username}">
+                <img ng-src="{{userInfo.icon}}" width="20" height="20" style="border-radius: 30px;">
+                <span style="padding-left:5px;">{{userInfo.username}}</span>
+            </button>
+        </a>-->
+        <a ng-repeat="org in orgMembership" href="#/{{repository}}/{{org.login}}" class="org-btn">
+            <button  class="org-btn-btn" ng-class="{'active': org.login==username}">
+                <img ng-src="{{org.icon}}" width="20" height="20" style="border-radius: 30px;">
+                <span style="padding:0 5px;">{{org.login}}</span>
+            </button>
+        </a>
+    </h4>
 </div>
 <div class="row" style="margin:0">
     <div class="col-md-4" style="padding:0 20px;border-right:1px solid #ccc">
-        <h4 style="padding:10px 15px">Projects</h4>
+        <h4 style="padding:10px 15px;">Projects</h4>
         <div style="height:100%;overflow-y:scroll;">
             <ul class="list-group list-group-sm">
                 <a href="#/{{repository}}/{{username}}/{{repo.name}}" class="list-group-item pkg-distro-list-item project-pkgs" ng-repeat="repo in userProjects" ng-class="{'repo-exists': repo.pkgwrapd}">
                     <div>
                         <div>{{repo.name}}</div>
-                        <div class="row" style="margin:0;font-size:11px;color: #aaa;min-height:15px;">
+                        <div class="row" style="font-weight:normal;margin:0;font-size:11px;color: #777;min-height:15px;">
                             <div class="col-md-8" style="padding:0">{{repo.description}}</div>
                             <div class="col-md-4 text-right" style="padding:0">{{repo.language}}</div>
                         </div>
