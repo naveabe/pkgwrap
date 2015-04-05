@@ -1,25 +1,27 @@
 <h4 style="padding:10px 20px">
-    <span class="history-title-label">History</span>
-    <span class="pull-right"  title="Refresh history">
+    <span title="Refresh history" style="margin-right:10px">
         <a href="javascript:void(0)" ng-click="fetchJobHistory()" class="refresh-btn">
             <span class="glyphicon glyphicon-refresh" style="font-weight:bolder"></span>
         </a>
     </span>
+    <span>History</span>
 </h4>
-<ul class="list-group">
-    <li ng-repeat="build in buildHistory" class="list-group-item build-history-item">
-        <div class="history-item-header" >
-            <div>
-                <span style="padding-right:5px;"><b>{{build.Request.Package.name}}</b></span>
-                <span style="padding-right:5px;">Ref: <b>{{build.Request.Package.tagbranch}}</b></span>
-                <span style="padding-right:5px;">Version: <b>{{build.Request.Package.version}}</b></span>
-                <span class="pull-right small">{{build.Timestamp|date:'medium'}}</span>
+<div style="overflow-y:scroll;height:100%">
+    <ul class="list-group">
+        <li ng-repeat="build in buildHistory" class="list-group-item build-history-item">
+            <div class="history-item-header" >
+                <div>
+                    <span style="padding-right:5px;"><b>{{build.Request.Package.name}}</b></span>
+                    <span style="padding-right:5px;">Ref: <b>{{build.Request.Package.tagbranch}}</b></span>
+                    <span style="padding-right:5px;">Version: <b>{{build.Request.Package.version}}</b></span>
+                    <span class="small">{{build.Timestamp|date:'medium'}}</span>
+                </div>
             </div>
-        </div>
-        <div class="distro-job-list">
-            <div class="distro-job" ng-repeat="distro in build.Request.Distributions">
-                <log-tailer distro="distro" state="build.Containers[distro.id].State"></log-tailer>
+            <div class="distro-job-list">
+                <div class="distro-job" ng-repeat="distro in build.Request.Distributions">
+                    <log-tailer distro="distro" state="build.Containers[distro.id].State"></log-tailer>
+                </div>
             </div>
-        </div>
-    </li>
-</ul>
+        </li>
+    </ul>
+</div>

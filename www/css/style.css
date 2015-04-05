@@ -95,20 +95,22 @@ table#login-window-container {
 }
 
 #page-header {
-	padding: 5px 20px;
-	background: #505050;
+	padding: 10px 0px;
+	margin: 0 20px;
+	border-bottom: 1px solid #eee;
+	background: none;
 }
 
 #page-header,
 #page-header span.glyphicon {
 	color: #ddd !important;
 }
-
+/*
 .ng-view-content {
 	margin-left: 20px;
 	margin-right: 0px;
 }
-
+*/
 .code-block {
 	font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 	color: #428bca;
@@ -180,6 +182,21 @@ pre.log-content {
 	color: #ccc;
 	cursor: pointer;
 }
+
+a.circle-btn,
+button.circle-btn {
+	height:30px;
+	width: 30px;
+	background:none;
+	outline: none;
+}
+a.circle-btn .glyphicon,
+button.circle-btn .glyphicon {
+	font-size: 12px;
+	position: relative;
+	left:-1px;
+}
+
 .circle-btn,
 .circle-btn .glyphicon {
 	color: #555;
@@ -191,6 +208,8 @@ pre.log-content {
 	border-radius:30px;
 	opacity: 0.5;
 }
+.circle-btn:active,
+.circle-btn:focus,
 .circle-btn:hover {
  	opacity: 1;
 }
@@ -203,12 +222,8 @@ pre.log-content {
 }
 
 .org-btn,
-.packages-title-label,
-.projects-title-label,
-.history-title-label,
 .build-btn-dark .glyphicon,
 .build-btn-dark .build-btn,
-.breadcrumb-path,
 .project-pkgs {
 	color: #505050;
 }
@@ -220,6 +235,23 @@ pre.log-content {
 	color: #428bca;
 	-webkit-font-smoothing: antialiased;
 }
+
+.list-group-item.pkg-distro-list-item {
+	border-radius: 3px;
+}
+
+.list-group-item.pkg-distro-list-item.project-pkgs {
+	border-radius: 0px;
+	border-left: 1px solid transparent;
+	border-right: 1px solid transparent;
+}
+.list-group-item.pkg-distro-list-item.project-pkgs:hover {
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	background: none;
+}
+
+
 .pkg-distro-list-item,
 .build-history-item {
 	border-color: #ccc;
@@ -242,7 +274,7 @@ pre.log-content {
 	background: none;
 }
 .build-history-item:hover {
-	background-color: #f6f6f6;
+	/*background-color: #f6f6f6;*/
 	border-left: 3px solid #428bca;
 	border-right: 1px solid #ccc;
 }

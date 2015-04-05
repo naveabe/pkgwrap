@@ -38,29 +38,41 @@
 	  <div id="stage" ng-controller="defaultController">
 		  <div id="page-header">
 			<div class="row" style="margin:0;padding:0">
-			  <div class="col-md-8" style="padding:0">
-				<h4>
-					<a href="#/" id="home-btn" style="border-right:1px solid #666;">
-						<span style="padding-right:10px;">ipkg.io</span>
-					</a>
-					<a href="https://docs.ipkg.io" style="padding:0 10px;border-left:1px solid #414141;">
-						<span style="padding:0 10px;">Docs</span>
-					</a>
-				</h4>
-			  </div>
+				<div class="col-md-8" style="padding:3px 0">
+					<h4>
+						<a href="#/" id="home-btn">
+							<span style="padding-right:10px;">ipkg.io</span>
+						</a>
+						<a href="https://docs.ipkg.io" style="padding:0 10px;">
+							<span style="padding:0 10px;">docs</span>
+						</a>
+					</h4>
+				</div>
 				<div class="col-md-4 text-right" style="padding:0">
 					<h4>
-						<!--<span style="color: #888">{{repository}} / </span>-->
-						<a ng-if="!isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Logout">
-						  <span class="glyphicon glyphicon-log-out" style="font-size:14px;padding-right:10px;border-right:1px solid #666;"></span>
-						</a>
 						<a ng-if="isGuest" href="javascript:void(0)" ng-click="logout()" id="logout-btn" title="Login">
-							<span style="padding-left:10px;border-left:1px solid #414141;" class="glyphicon glyphicon-user"></span>
+							<span style="padding-left:10px;" class="glyphicon glyphicon-user"></span>
 						</a>
 						<a ng-if="!isGuest" href="#/{{repository}}/{{username}}" id="user-home-btn">
 							<span style="padding-left:10px;padding-right:10px">{{username}}</span>
-							<img ng-if="userIcon&&userIcon!=''" ng-src="{{userIcon}}" width="26" height="26" style="opacity:0.75;border-radius:14px">
 						</a>
+						<span class="dropdown" ng-if="!isGuest">
+						  <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+						  	<img ng-if="userIcon&&userIcon!=''" ng-src="{{userIcon}}" width="26" height="26" style="opacity:0.75;border-radius:14px">
+						  </span>
+						  <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" style="padding:none;margin-top:none;background:none;box-shadow:none;border:none">
+						  	<li class="text-right" style="padding-right:5px;min-height:0;line-height:0.8;">
+						  		<svg width="20" height="10" fill="#ddd">
+						  			<polygon points="0,10 20,10 10,0"></polygon>
+						  		</svg>
+						  	</li>
+						    <li role="presentation" style="background:#ddd;padding:10px;border-radius:2px;box-shadow: 0 10px 6px -6px rgba(0,0,0,0.2) !important;cursor:pointer">
+						    	<div ng-click="logout()" style="color:#666">
+						    		<span class="glyphicon glyphicon-user" style="color:#666!important"></span><span style="padding:0 10px">Logout</span>
+						    	</div>
+						    </li>
+						  </ul>
+						</span>		
 					</h4>
 			  	</div>
 			</div>

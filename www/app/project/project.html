@@ -1,34 +1,6 @@
-<!--
-<div class="row" style="margin:0;padding:10px 0;border-bottom:1px solid #ddd">
-    <div class="col-md-8" style="padding:0">
-        <h4 class="breadcrumb-path">{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}} / 
-            <span class="dropdown">
-                <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-                    <span>{{selectedVersion.version}} <span class="caret"></span></span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="version-dropdown" role="menu">
-                    <li ng-repeat="projVersion in projectVersions" role="presentation">
-                        <a role="menuitem" tabindex="-1" href="#/{{repository}}/{{username}}/{{project}}/{{projVersion.version}}">{{projVersion.version}}</a>
-                    </li>    
-                </ul>
-            </span>
-        </h4>
-    </div>
-    <div class="col-md-4 text-right" style="padding:0">
-        <h4 class="build-btn-dark">
-            <a href="#/{{repository}}/{{username}}/{{project}}/configbuilder" title="New Config File">
-                <span style="margin-right:20px">
-                    <span class="glyphicon glyphicon-edit"></span>
-                </span>
-            </a>
-            <request-dialog-button ng-model="project"></request-dialog-button>
-        </h4>
-    </div>
-</div>
--->
 <div class="row" style="margin:0">
-    <div class="col-md-5" style="padding-left:0;">
-        <h4 class="breadcrumb-path" style="margin:20px 0">{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}}
+    <div class="col-md-4" style="padding:0 20px;">
+        <h4 class="breadcrumb-path" style="margin:20px 0">{{repository}} / <a href="#/{{repository}}/{{username}}">{{username}}</a> / {{project}}<!--
             <span class="dropdown pull-right">
                 <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
                     <span>{{selectedVersion.version}} <span class="caret"></span></span>
@@ -38,11 +10,39 @@
                         <a role="menuitem" tabindex="-1" href="#/{{repository}}/{{username}}/{{project}}/{{projVersion.version}}">{{projVersion.version}}</a>
                     </li>    
                 </ul>
-            </span>
+            </span>-->
         </h4>
+        <div class="row" style="margin:0 0 20px 0"><!--
+            <a href="#/{{repository}}/{{username}}/{{project}}/configbuilder" title="New Config File">
+                <span style="margin-right:20px;" class="circle-btn">
+                    <span class="glyphicon glyphicon-edit"></span>
+                </span>
+            </a>-->
+            <div class="col-md-9" style="padding:5px 0;font-size:16px">
+                <span>Version : </span>
+                <span class="dropdown">
+                    <a id="version-dropdown" href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                        <span>{{selectedVersion.version}} <span class="caret"></span></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="version-dropdown" role="menu">
+                        <li ng-repeat="projVersion in projectVersions" role="presentation">
+                            <a role="menuitem" tabindex="-1" href="#/{{repository}}/{{username}}/{{project}}/{{projVersion.version}}">{{projVersion.version}}</a>
+                        </li>    
+                    </ul>
+                </span>
+            </div>
+            <div class="col-md-3 text-right" style="padding:0 10px 0 0">
+                <a href="#/{{repository}}/{{username}}/{{project}}/configbuilder">
+                    <button class="circle-btn" style="margin-right:10px" title="New Config File">
+                        <span class="glyphicon glyphicon-edit" style="position:relative;left:-2px"></span>
+                    </button>
+                </a>
+                <request-dialog-button ng-model="project"></request-dialog-button>
+            </div>
+        </div>
         <!--<h4 style="padding:10px 0"><span class="packages-title-label">Packages</span></h4>-->
-        <ul class="list-group">
-            <li class="list-group-item pkg-distro-list-item" ng-repeat="distro in selectedVersion.distros">
+        <ul class="list-group" ng-repeat="distro in selectedVersion.distros">
+            <li class="list-group-item pkg-distro-list-item">
                 <table style="width:100%;color:#888">
                     <tr>
                         <td data-toggle="collapse" data-target="[data-distro-name={{distro.name|dotsToUnderscores}}]" style="width:45px;border-right:1px solid #ddd">
@@ -52,16 +52,18 @@
                             <div><b>{{distro.name|distroLabel}}</b></div>
                         </td>
                         <td style="text-align:right">
-                            <a href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{distro.packages[distro.packages.length-1].name}}" class="pkg-download-btn">
+                            <!--<a href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{distro.packages[distro.packages.length-1].name}}" class="pkg-download-btn">
                                 <div style="font-size:12px;display:inline-block">{{distro.packages[distro.packages.length-1].name}}</div><br/>
                             </a>
                         </td>
-                        <td style="text-align:center">
-                            <a href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{distro.packages[distro.packages.length-1].name}}" class="pkg-download-btn">
-                                <div><span class="glyphicon glyphicon-download"></span></div>
+                        <td style="text-align:center">-->
+                            <a href="/api/repo/{{repository}}/{{username}}/{{project}}/{{version}}/{{distro.name}}/{{distro.packages[distro.packages.length-1].name}}" class="pkg-download-btn" title="Download Latest">
+                                <span style="font-size:11px;">{{distro.packages[distro.packages.length-1].name}}</span>
+                                <span class="glyphicon glyphicon-download-alt"></span>
+                                <!--
                                 <div style="padding-top:3px;font-size:10px;display:inline-block">
                                     {{distro.packages[distro.packages.length-1].size|valueUnit}}
-                                </div>
+                                </div>-->
                             </a>
                         </td>
                     </tr>
@@ -76,7 +78,7 @@
                                 <div style="display:inline-block;font-size:13px;padding-top:5px;padding-bottom:5px;padding-left:15px">
                                     <div>{{package.name}}</div>
                                     <div class="small" style="padding-top:1px;">
-                                        <span class="small">{{package.mtime*1000|date:'medium'}}  ({{package.size|valueUnit}})</span>
+                                        <span class="small">Created At: {{package.mtime*1000|date:'medium'}} ( {{package.size|valueUnit}} )</span>
                                     </div>
                                 </div>
                                 <!--<div style="font-size:11px;">{{package.size|valueUnit}}</div>-->
@@ -87,16 +89,8 @@
             </li>
         </ul>
         <!--<config-builder></config-builder>-->
-        <h4 style="position:fixed;left:0;bottom:0;padding:10px 20px">
-            <a href="#/{{repository}}/{{username}}/{{project}}/configbuilder" title="New Config File">
-                <span style="margin-right:20px;" class="circle-btn">
-                    <span class="glyphicon glyphicon-edit"></span>
-                </span>
-            </a>
-            <request-dialog-button ng-model="project"></request-dialog-button>
-        </h4>
     </div>
-    <div class="col-md-7" style="border-left:1px solid #eee;padding:0;height:100%">
+    <div class="col-md-8" style="padding:0 20px 0 0px;height:100%">
         <ng-include ng-controller="historyController" src="historyHtml"></ng-include>
     </div>
 </div>

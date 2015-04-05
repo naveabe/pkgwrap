@@ -1,10 +1,10 @@
-<div class="row" style="margin:0;border-bottom:1px solid #ddd;">
-    <div class="col-md-4" style="padding:0">
+<div class="row" style="margin:0">
+    <div class="col-md-4" style="padding:0 20px">
         <div style="padding:10px 0;">
             <h4 class="breadcrumb-path">{{repository}} / {{username}}</h4>
         </div>
     </div>
-    <div class="col-md-8 text-right" style="padding:0">
+    <div class="col-md-8 text-right" style="padding:0 20px">
         <div style="padding:10px 0;" ng-if="orgMembership.length>0">
             <h4>
                 <a ng-repeat="org in orgMembership" style="padding:5px;" href="#/{{repository}}/{{org.login}}" class="org-btn">
@@ -17,9 +17,9 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <h4 class="text-right projects-title-label" style="padding:10px 0">Projects</h4>
+<div class="row" style="margin:0">
+    <div class="col-md-4" style="padding:0 20px;border-right:1px solid #eee">
+        <h4 style="padding:10px 0">Projects</h4>
         <div>
             <ul class="list-group list-group-sm">
                 <a href="#/{{repository}}/{{username}}/{{repo.name}}" class="list-group-item pkg-distro-list-item project-pkgs" ng-repeat="repo in userProjects" ng-class="{'repo-exists': repo.pkgwrapd}">
@@ -28,7 +28,7 @@
             </ul>
         </div>
     </div>
-    <div class="col-md-8" style="border-left:1px solid #eee">
+    <div class="col-md-8" style="padding:0 20px">
         <ng-include ng-controller="historyController" src="historyHtml"></ng-include> 
     </div>
 </div>
