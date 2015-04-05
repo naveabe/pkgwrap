@@ -23,7 +23,13 @@
         <div>
             <ul class="list-group list-group-sm">
                 <a href="#/{{repository}}/{{username}}/{{repo.name}}" class="list-group-item pkg-distro-list-item project-pkgs" ng-repeat="repo in userProjects" ng-class="{'repo-exists': repo.pkgwrapd}">
-                        {{repo.name}}
+                    <div>
+                        <div>{{repo.name}}</div>
+                        <div class="row" style="margin:0;font-size:11px;color: #aaa;min-height:15px;">
+                            <div class="col-md-8" style="padding:0">{{repo.description}}</div>
+                            <div class="col-md-4 text-right" style="padding:0">{{repo.language}}</div>
+                        </div>
+                    </div>
                 </a>
             </ul>
         </div>

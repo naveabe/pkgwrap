@@ -69,6 +69,10 @@ table#login-window-container {
 	font-size: 13px;
 }
 
+.list-group-item.pkg-distro-list-item,
+.org-btn {
+	color: #888;
+}
 #page-header h4 a,
 .pkg-download-btn,
 #user-home-btn,
@@ -79,6 +83,7 @@ table#login-window-container {
 	color: #888 !important;
 }
 
+.org-btn:hover,
 #page-header h4 a:hover,
 .pkg-download-btn:hover,
 #user-home-btn:hover,
@@ -221,33 +226,35 @@ button.circle-btn .glyphicon {
 	color: #428bca;
 }
 
-.org-btn,
 .build-btn-dark .glyphicon,
-.build-btn-dark .build-btn,
-.project-pkgs {
+.build-btn-dark .build-btn {
 	color: #505050;
 }
 .project-pkgs:hover {
 	color: #428bca;
 }
-.project-pkgs.repo-exists {
+.list-group-item.pkg-distro-list-item.project-pkgs.repo-exists {
 	font-weight: bold;
 	color: #428bca;
-	-webkit-font-smoothing: antialiased;
+}
+.list-group-item.pkg-distro-list-item.project-pkgs.repo-exists:hover {
+	background: #eee;
+	border: 1px solid transparent;
 }
 
 .list-group-item.pkg-distro-list-item {
 	border-radius: 3px;
+	-webkit-font-smoothing: antialiased;
 }
 
 .list-group-item.pkg-distro-list-item.project-pkgs {
 	border-radius: 0px;
+	border-color: #ddd;
 	border-left: 1px solid transparent;
 	border-right: 1px solid transparent;
+	font-weight: bold;
 }
 .list-group-item.pkg-distro-list-item.project-pkgs:hover {
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
 	background: none;
 }
 
