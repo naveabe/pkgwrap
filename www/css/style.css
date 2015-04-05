@@ -140,13 +140,16 @@ a.started {
 	color: #377BA6;
 }
 
+.badge {
+	-webkit-font-smoothing: antialiased;
+}
 .badge.succeeded,
 .badge.failed,
 .badge.running,
 .badge.started {
 	font-size: 11px;
 	line-height: 1.1;
-	font-weight: 400;
+	/*font-weight: 400;*/
 }
 
 .badge.succeeded {
