@@ -156,6 +156,10 @@ func (u *UserPackage) Validate() error {
 		u.Release = DEFAULT_RELEASE
 	}
 
+	if string(u.BuildType) == "" {
+		u.BuildType = BUILDTYPE_SOURCE
+	}
+
 	return nil
 }
 
