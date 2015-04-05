@@ -106,7 +106,7 @@ table#login-window-container {
 
 .ng-view-content {
 	margin-left: 20px;
-	margin-right: 20px;
+	margin-right: 0px;
 }
 
 .code-block {
@@ -238,6 +238,9 @@ pre.log-content {
 .build-history-item:first-child {
 	border-radius: 0;
 }
+.list-group-item.build-history-item {
+	background: none;
+}
 .build-history-item:hover {
 	background-color: #f6f6f6;
 	border-left: 3px solid #428bca;
@@ -253,7 +256,7 @@ pre.log-content {
 .history-item-header {
 	padding-left: 15px;
 	padding-bottom: 10px;
-	padding-right: 10px;
+	padding-right: 15px;
 }
 .remove-distro-btn:hover {
 	color: #428bca;

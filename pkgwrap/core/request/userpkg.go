@@ -20,8 +20,9 @@ const (
 type PkgBuildType string
 
 const (
-	BUILDTYPE_BIN    PkgBuildType = "binary"
-	BUILDTYPE_SOURCE PkgBuildType = "source"
+	BUILDTYPE_BIN     PkgBuildType = "binary"
+	BUILDTYPE_SOURCE  PkgBuildType = "source"
+	DEFAULT_BUILDTYPE              = BUILDTYPE_SOURCE
 )
 
 type PackageMetadata struct {
@@ -49,7 +50,6 @@ type UserPackage struct {
 	BuildEnv  string       `json:"build_env" yaml:"build_env"`
 	BuildType PkgBuildType `json:"build_type"`
 
-	//Augmentable Properties
 	BuildDeps []string `json:"build_deps,omitempty" yaml:"build_deps"`
 	Deps      []string `json:"deps,omitempty"`
 
@@ -69,7 +69,6 @@ func NewUserPackageWithName(name string) *UserPackage {
 			Packager: DEFAULT_PACKAGER,
 		},
 		TagBranch: "master",
-		//AugmentableProperties: AugmentableProperties{},
 	}
 	uPkg.InitScript, _ = initscript.NewBasicInitScript(uPkg.Name)
 
@@ -88,7 +87,6 @@ func NewUserPackage(name, version, pkgpath string, runnable initscript.BasicRunn
 			TagBranch: "master",
 			Path:      pkgpath,
 			BuildType: BUILDTYPE_BIN,
-			//AugmentableProperties: AugmentableProperties{},
 		}
 		err error
 	)
@@ -115,7 +113,6 @@ func NewUserPackageFromURL(url string) (*UserPackage, error) {
 			URL:       url,
 			TagBranch: "master",
 			BuildType: BUILDTYPE_SOURCE,
-			//AugmentableProperties: AugmentableProperties{},
 		}
 		err error
 	)
@@ -157,7 +154,7 @@ func (u *UserPackage) Validate() error {
 	}
 
 	if string(u.BuildType) == "" {
-		u.BuildType = BUILDTYPE_SOURCE
+		u.BuildType = DEFAULT_BUILDTYPE
 	}
 
 	return nil

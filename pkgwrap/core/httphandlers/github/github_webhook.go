@@ -14,6 +14,7 @@ import (
 type GithubRepoOwner struct {
 	Login   string
 	Id      int64
+	Name    string
 	HtmlUrl string `json:"html_url"`
 }
 
@@ -77,7 +78,9 @@ func (g *GithubWebHook) parsePushEvent(evtType string, payload []byte) (*request
 	}
 
 	pkgReq.Package.URL = "https://github.com/" + pushEvt.Repository.FullName
-	pkgReq.Package.Packager = pushEvt.Sender.Login
+
+	pkgReq.Package.Packager = pushEvt.Repository.Owner.Name
+	//pkgReq.Package.Packager = pushEvt.Sender.Login
 
 	version, err := httphandlers.GetVersionFromRef(pushEvt.Ref)
 	if err != nil {
