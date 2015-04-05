@@ -103,16 +103,15 @@ func (b *TargetedPackageBuild) SetupEnv(tmplMgr *templater.TemplatesManager) err
 		}
 	} else {
 		b.logger.Trace.Printf("Cloning: name: %s;  tagbranch: %s\n", b.BuildRequest.Name, b.BuildRequest.Package.TagBranch)
-
 		// Git clone if build type source
 		dstDir := b.Repository.BuildDir(b.BuildRequest.Package) + "/" + b.BuildRequest.Package.Name
-
 		//b.logger.Trace.Printf("Cloning %s\n", b.BuildRequest.Package.TagBranch)
 		if err = b.BuildRequest.Package.CloneRepo(dstDir); err != nil {
 			//b.logger.Error.Printf("%s\n", err)
 			return err
 		}
 		b.logger.Trace.Printf("Cloned: %s %s\n", b.BuildRequest.Name, b.BuildRequest.Version)
+
 		// Check for .yml in project root - read, validate, re-evaluate distro
 		if err = b.readProjectPkgwrapConfig(); err != nil {
 			return err

@@ -106,4 +106,10 @@ angular.module('ipkg.project', [])
 
         init();
     }
-]);
+])
+.directive('packageDistroList', [function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/project/package-distro-list.html'
+    }
+}]);
