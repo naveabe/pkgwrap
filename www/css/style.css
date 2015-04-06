@@ -406,3 +406,26 @@ button.circle-btn .glyphicon {
 	color: #555; 
 	background: none;
 }
+
+.dropdown-menu.arrow-dropdown-menu {
+	padding:none;
+	margin-top:none;
+	background:none;
+	box-shadow:none;
+	border:none;
+}
+
+.dropdown-menu.arrow-dropdown-menu > .arrow-dropdown-menu-item {
+	background:#ddd;
+	border:none;
+}
+.dropdown-menu.arrow-dropdown-menu > .arrow-dropdown-menu-item>a{
+	color: #555;
+	outline: none;
+}
+
+.arrow-dropdown-menu > .arrow-dropdown-menu-item:last-child {
+	box-shadow: 0 10px 6px -6px rgba(0,0,0,0.2) !important;
+	border-radius:0 0 3px 3px;
+}
+
